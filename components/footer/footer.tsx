@@ -13,7 +13,7 @@ import {
   PCMAYoutubeIcon,
 } from "../icons";
 import PrimaryButton from "../primary-button/primary-button";
-import { mergeCn, montserrat } from "@/lib/utils";
+import { mergeCn, montserrat, pxToRem } from "@/lib/utils";
 
 interface FooterFormFieldProps extends HTMLAttributes<HTMLInputElement> {
   fieldName: string;
@@ -57,10 +57,13 @@ const FooterFormField = ({
 };
 
 const Footer = () => {
+  // const px = pxToRem(491);
+
+  // console.log({px})
   return (
     <footer className="w-full">
       <section className="px-[7.5rem] py-[5rem] flex items-center justify-between">
-        <main className=" h-[560px] w-full  max-w-[491px] bg-[#F7F9FD] rounded-3xl  px-10 py-12 gap-6">
+        <main className={`h-[35rem] w-full  max-w-[30.6875rem] bg-[#F7F9FD] rounded-3xl  px-10 py-12 gap-6`}>
           <div className="w-full">
             <h2 className=" font-semibold  text-[28px] text-secondary-black leading-9">
               Contact Information
@@ -90,6 +93,9 @@ const Footer = () => {
               </span>
             </div>
           </div>
+
+
+
         </main>
 
         <main className="h-full pr-8">

@@ -1,5 +1,6 @@
 "use client";
 import Footer from "@/components/footer/footer";
+import Header from "@/components/header/header";
 import {
   PCMAHeartIcon,
   PCMALogo,
@@ -9,10 +10,11 @@ import {
 } from "@/components/icons";
 import PrimaryButton from "@/components/primary-button/primary-button";
 import Spacer from "@/components/spacer/spacer";
-import { mergeCn } from "@/lib/utils";
+import { mergeCn, pxToRem } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 interface HomeStackedCardProps {
   card_type?: "start" | "end";
@@ -25,12 +27,14 @@ const HomeStackedCard = ({
   card_type = "start",
   ...props
 }: HomeStackedCardProps) => {
+  const height = card_type === "start" ? pxToRem(75) : pxToRem(85);
+  // },[card_type])
   return (
     <div className="w-full -mt-1">
       <div
         className={mergeCn(
           "w-fit mx-auto rounded-t-3xl flex flex-col items-center justify-center border-t-4 border-x-4 border-solid border-t-[#0074FF4D] border-x-[#0074FF4D] bg-[#F7F9FD] px-4 py-2  text-center",
-          card_type === "start" ? " h-[75px]" : "h-[85px] w-full",
+          card_type === "start" ? `h-[${height}]` : `h-[${height}] w-full`,
           props.className
         )}
       >
@@ -50,49 +54,13 @@ const HomeStackedCard = ({
 
 export default function Home() {
   const router = useRouter();
+  // const pixelVal = pxToRem(17);
+  // console.log("pixelVal",pixelVal);
   return (
     <main className="flex min-h-screen flex-col items-center justify-between  bg-neutral-white w-full h-full">
       {/* FIRST  SECTION */}
-      <section className="h-screen w-full grid grid-rows-[82px_1fr] grid-cols-1 gap-0 z-0">
-        <header className=" bg-grey-10 border-b border-b-grey-30 w-full py-4 px-[7.5rem] flex items-center justify-between gap-[10px] h-full z-10">
-          <div className="">
-            <PCMALogo />
-          </div>
-
-          <nav className="w-fit h-full">
-            <ul className="flex items-center gap-6 h-full">
-              <li>
-                <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
-                  About
-                </span>
-              </li>
-              <li>
-                <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
-                  Features
-                </span>
-              </li>
-              <li>
-                <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
-                  Contact
-                </span>
-              </li>
-            </ul>
-          </nav>
-
-          <div className="flex items-center gap-5">
-            <Link href={"/login"}>
-              <PrimaryButton className=" bg-transparent text-pretty text-primary p-0">
-                Login
-              </PrimaryButton>
-            </Link>
-            <Link href={"/register"}>
-              <PrimaryButton>
-                <span>Register</span>
-              </PrimaryButton>
-            </Link>
-          </div>
-        </header>
-
+      <section className="h-screen w-full grid grid-rows-[5.125rem_1fr] grid-cols-1 gap-0 z-0">
+        <Header variant="grey" />
         <section className="h-full  w-full  flex flex-col items-center justify-between relative">
           <Spacer size={96} />
           {/* <section className="h-full  w-full bg-red-500 relative"> */}
@@ -226,28 +194,28 @@ export default function Home() {
           <HomeStackedCard
             title="Register"
             content="Data Owners and Transaction Parties register on the PCMA."
-            className="w-full max-w-[950px] mx-auto"
+            className="w-full max-w-[59.375rem] mx-auto"
           />
           <HomeStackedCard
             title="Request Consent"
             content="Applications request consent from users for data access."
-            className="w-full max-w-[999px] mx-auto"
+            className="w-full max-w-[62.4375rem] mx-auto"
           />
           <HomeStackedCard
             title="Manage Consent"
             content="Users manage their consents through a user-friendly interface."
-            className="w-full  max-w-[1063px] mx-auto"
+            className="w-full  max-w-[66.4375rem] mx-auto"
           />
           <HomeStackedCard
             title="Manage Consent"
             content="Receive real-time notifications for any data transfer requests."
-            className="w-full max-w-[1119px] mx-auto"
+            className="w-full max-w-[69.9375rem] mx-auto"
           />
           <HomeStackedCard
             card_type="end"
             title="Audit and Review"
             content="Track all your consent actions and data transfers with our audit trail."
-            className="w-full max-w-[1173px] mx-auto"
+            className="w-full max-w-[73.3125rem] mx-auto"
           />
         </div>
         <PrimaryButton className=" mx-auto">Get&nbsp;Started</PrimaryButton>

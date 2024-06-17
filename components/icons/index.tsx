@@ -1,6 +1,28 @@
+import React from "react";
 import { SVGAttributes } from "react";
 
-interface ReactSVGProps extends SVGAttributes<SVGElement> {}
+interface ReactSVGProps extends SVGAttributes<SVGSVGElement> {}
+
+export const CheckIcon = ({stroke,...props}: ReactSVGProps & {stroke?:string;}) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M16.8 8.40002L9.64043 15.6L7.19995 13.1457"
+        stroke={stroke ?? 'black'}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
 
 export const ChevronDownIcon = (props: ReactSVGProps) => {
   return (
@@ -348,3 +370,80 @@ export const PCMALocationIcon = (props: ReactSVGProps) => {
     </svg>
   );
 };
+
+export const EyeOpenIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M14.4 12.0291C14.4 13.3189 13.3255 14.3645 12 14.3645C10.6745 14.3645 9.60002 13.3189 9.60002 12.0291C9.60002 10.7393 10.6745 9.69377 12 9.69377C13.3255 9.69377 14.4 10.7393 14.4 12.0291Z"
+        stroke="#0074FF"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+};
+export const EyeCloseIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M20.3999 19.5L5.3999 4.5M10.1999 10.4416C9.82648 10.8533 9.5999 11.394 9.5999 11.9863C9.5999 13.2761 10.6744 14.3217 11.9999 14.3217C12.611 14.3217 13.1688 14.0994 13.5926 13.7334M20.4387 14.3217C21.2649 13.0848 21.5999 12.0761 21.5999 12.0761C21.5999 12.0761 19.4153 5.1 11.9999 5.1C11.5836 5.1 11.1838 5.12199 10.7999 5.16349M17.3999 17.3494C16.0225 18.2281 14.2492 18.8495 11.9999 18.8127C4.67683 18.693 2.3999 12.0761 2.3999 12.0761C2.3999 12.0761 3.45776 8.69808 6.5999 6.64332"
+        stroke="#0074FF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
+
+function EyeIconD({ title = "", titleId = "", ...props }, svgRef: any) {
+  return /*#__PURE__*/ React.createElement(
+    "svg",
+    Object.assign(
+      {
+        xmlns: "http://www.w3.org/2000/svg",
+        fill: "none",
+        viewBox: "0 0 24 24",
+        strokeWidth: 1.5,
+        stroke: "currentColor",
+        "aria-hidden": "true",
+        ref: svgRef,
+        "aria-labelledby": titleId,
+      },
+      props
+    ),
+    title
+      ? /*#__PURE__*/ React.createElement(
+          "title",
+          {
+            id: titleId,
+          },
+          title
+        )
+      : null,
+    /*#__PURE__*/ React.createElement("path", {
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      d: "M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z",
+    }),
+    /*#__PURE__*/ React.createElement("path", {
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      d: "M15 12a3 3 0 11-6 0 3 3 0 016 0z",
+    })
+  );
+}
+export const EyeIcon = React.forwardRef(EyeIconD);

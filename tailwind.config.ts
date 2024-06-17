@@ -18,6 +18,7 @@ const config: Config = {
         secondary:{
           green:'#01F971',
           black:"#262535",
+          blue:'#4169E1',
         },
         neutral:{
           white:"#FFFFFF",
@@ -26,6 +27,7 @@ const config: Config = {
         grey:{
           '10':"#F7F9FD",
           '30':"#D7E1F4",
+          '70':'#4C689E',
         }
       }
     },
