@@ -1,7 +1,9 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 import { Montserrat, Plus_Jakarta_Sans } from "next/font/google";
-import { CountNumber, DynPixel } from '../types';
+import { CountNumber, DynPixel } from './types';
+
+
 
 
 
@@ -15,10 +17,11 @@ export const plusJakartaSans = Plus_Jakarta_Sans({
 })
 
 // NOTE: this is a helper function to merge tailwind classes
-export function mergeCn(...classes: ClassValue[]) {
-  const requiredClasses = classes.filter(Boolean);
-  return twMerge(clsx(requiredClasses));
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }
+
+
 
 
 

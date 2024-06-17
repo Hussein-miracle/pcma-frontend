@@ -10,7 +10,7 @@ import {
 } from "@/components/icons";
 import PrimaryButton from "@/components/primary-button/primary-button";
 import Spacer from "@/components/spacer/spacer";
-import { mergeCn, pxToRem } from "@/lib/utils";
+import { cn, pxToRem } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,7 @@ const HomeStackedCard = ({
   return (
     <div className="w-full -mt-1">
       <div
-        className={mergeCn(
+        className={cn(
           "w-fit mx-auto rounded-t-3xl flex flex-col items-center justify-center border-t-4 border-x-4 border-solid border-t-[#0074FF4D] border-x-[#0074FF4D] bg-[#F7F9FD] px-4 py-2  text-center",
           card_type === "start" ? `h-[${height}]` : `h-[${height}] w-full`,
           props.className

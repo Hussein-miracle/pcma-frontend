@@ -9,3 +9,9 @@ export  type SelectItem<T> = {
   label:string;
   value:T;
 }
+
+export type OverviewActivity = {
+  name:string;
+  activity:string;
+  date:string;
+}

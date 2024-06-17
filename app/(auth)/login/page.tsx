@@ -6,7 +6,7 @@ import PrimaryButton from "@/components/primary-button/primary-button";
 import TextInput from "@/components/text-input/text-input";
 import { USER_LOGIN_TYPES } from "@/lib/constant";
 import { SelectItem, UserLoginType } from "@/lib/types";
-import { mergeCn, pxToRem } from "@/lib/utils";
+import { cn, pxToRem } from "@/lib/utils";
 import {
   Listbox,
   ListboxButton,
@@ -94,7 +94,7 @@ const Login = () => {
                                 </span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                   <ChevronDownIcon
-                                    className={mergeCn(
+                                    className={cn(
                                       "h-5 w-5 transform rotate-0 transition-transform ",
                                       open && "rotate-180",
                                       "stroke-red"

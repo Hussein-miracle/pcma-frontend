@@ -13,7 +13,7 @@ import {
   PCMAYoutubeIcon,
 } from "../icons";
 import PrimaryButton from "../primary-button/primary-button";
-import { mergeCn, montserrat, pxToRem } from "@/lib/utils";
+import { cn, montserrat, pxToRem } from "@/lib/utils";
 
 interface FooterFormFieldProps extends HTMLAttributes<HTMLInputElement> {
   fieldName: string;
@@ -37,7 +37,7 @@ const FooterFormField = ({
       htmlFor={fieldName}
     >
       <label
-        className={mergeCn("flex items-center gap-1 whitespace-nowrap",`${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`)}
+        className={cn("flex items-center gap-1 whitespace-nowrap",`${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`)}
         htmlFor={fieldName}
       >
         <span>{fieldName}</span>
@@ -50,7 +50,7 @@ const FooterFormField = ({
         required={endFieldNameWithAsterisk}
         onChange={otherProps?.onChange}
         value={otherProps?.value}
-        className={mergeCn("h-full w-full outline-none border-none focus:outline-none",`${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`)}
+        className={cn("h-full w-full outline-none border-none focus:outline-none",`${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`)}
       />
     </label>
   );
@@ -142,7 +142,7 @@ const Footer = () => {
                   <Select
                     id="where"
                     name="where"
-                    className={mergeCn(
+                    className={cn(
                       "block w-full appearance-none h-full border-none outline-none",
                       `${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`
                       // "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",

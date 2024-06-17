@@ -14,7 +14,7 @@ import TextInput from "@/components/text-input/text-input";
 import ErrorMessage from "@/components/error-message/error-message";
 import { ChevronDownIcon, CheckIcon } from "@/components/icons";
 import { USER_LOGIN_TYPES } from "@/lib/constant";
-import { mergeCn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { SelectItem, UserLoginType } from "@/lib/types";
 
 interface RegisterForm {
@@ -100,7 +100,7 @@ const Register = () => {
                                 </span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                   <ChevronDownIcon
-                                    className={mergeCn(
+                                    className={cn(
                                       "h-5 w-5 transform rotate-0 transition-transform ",
                                       open && "rotate-180",
                                       "stroke-red"
@@ -173,7 +173,7 @@ const Register = () => {
               render={({ field: { onChange, value } }) => {
                 return (
                   <TextInput
-                    fieldId="email-address"
+                    fieldId="email_address"
                     fieldName="Email Address"
                     value={value}
                     onChange={onChange}
@@ -190,7 +190,7 @@ const Register = () => {
                   <TextInput
                     fieldId="firstname"
                     fieldName="First Name"
-                    secureTextEntry
+                    
                     value={value}
                     onChange={onChange}
                   />
@@ -205,7 +205,6 @@ const Register = () => {
                   <TextInput
                     fieldId="lastname"
                     fieldName="Last Name"
-                    secureTextEntry
                     value={value}
                     onChange={onChange}
                   />
@@ -235,7 +234,7 @@ const Register = () => {
               render={({ field: { onChange, value } }) => {
                 return (
                   <TextInput
-                    fieldId="confirm-password"
+                    fieldId="confirm_password"
                     fieldName="Confirm Password"
                     secureTextEntry
                     value={value}
