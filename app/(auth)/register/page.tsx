@@ -16,6 +16,7 @@ import { ChevronDownIcon, CheckIcon } from "@/components/icons";
 import { USER_LOGIN_TYPES } from "@/lib/constant";
 import { cn } from "@/lib/utils";
 import { SelectItem, UserLoginType } from "@/lib/types";
+import Spacer from "@/components/spacer/spacer";
 
 interface RegisterForm {
   email: string;
@@ -250,6 +251,8 @@ const Register = () => {
           </PrimaryButton>
         </form>
       </main>
+
+      <Spacer size={108}/>
     </section>
   );
 };
