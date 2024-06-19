@@ -45,14 +45,12 @@ const AuthenticatedHeaderItem = ({
   );
 };
 
-type D<S extends string> = S extends   `/${infer T}` ? T : never;
+type D<S extends string> = S extends `/${infer T}` ? T : never;
 
 const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
   const pathname = usePathname();
 
-
-
-  console.log({pathname},"PN")
+  console.log({ pathname }, "PN");
 
   return (
     <header
@@ -88,14 +86,41 @@ const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
 
         {type === "authed" && (
           <ul className="flex items-center gap-6 h-full">
-            <AuthenticatedHeaderItem icon={<GridIcon stroke={pathname === '/overview' ? '#fff' : undefined } />} className={cn(pathname === '/overview' && `bg-primary`)}>
-              <span className={cn(pathname === '/overview' && `text-white`)}>Overview</span>
+            <AuthenticatedHeaderItem
+              icon={
+                <GridIcon
+                  stroke={pathname === "/overview" ? "#fff" : undefined}
+                />
+              }
+              className={cn(pathname === "/overview" && `bg-primary`)}
+            >
+              <span className={cn(pathname === "/overview" && `text-white`)}>
+                Overview
+              </span>
             </AuthenticatedHeaderItem>
-            <AuthenticatedHeaderItem icon={<UserProfileIcon stroke={pathname === '/profile' ? '#fff' : undefined }  />}  className={cn(pathname === '/profile' && `bg-primary`)}>
-              <span className={cn(pathname === '/profile' && `text-white`)}>Profile</span>
+            <AuthenticatedHeaderItem
+              icon={
+                <UserProfileIcon
+                  stroke={pathname === "/profile" ? "#fff" : undefined}
+                />
+              }
+              className={cn(pathname === "/profile" && `bg-primary`)}
+            >
+              <span className={cn(pathname === "/profile" && `text-white`)}>
+                Profile
+              </span>
             </AuthenticatedHeaderItem>
-            <AuthenticatedHeaderItem icon={<ColorSwatchIcon stroke={pathname === '/audit-trail' ? '#fff' : undefined }  />}   className={cn(pathname === '/audit-trail' && `bg-primary`)}>
-              <span className={cn(pathname === '/audit-trail' && `text-white`)}>Audit Trail</span>
+            <AuthenticatedHeaderItem
+              icon={
+                <ColorSwatchIcon
+                  stroke={pathname === "/audit-trail" ? "#fff" : undefined}
+                />
+              }
+              className={cn(pathname === "/audit-trail" && `bg-primary`)}
+            >
+              <span className={cn(pathname === "/audit-trail" && `text-white`)}>
+                Audit Trail
+              </span>
             </AuthenticatedHeaderItem>
             <AuthenticatedHeaderItem
               icon={<ShieldCheckIcon />}

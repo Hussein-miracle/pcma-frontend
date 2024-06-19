@@ -9,7 +9,7 @@ const WelcomeCard = () => {
           Welcome&nbsp;<span className="text-3xl -mt-0.5">🎉</span>
         </h2>
         <p className=" text-base text-center font-normal text-[#4C689E]">
-          We're glad to have you here.
+          We&apos;re glad to have you here.
         </p>
       </div>
 

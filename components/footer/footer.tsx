@@ -105,8 +105,8 @@ const Footer = () => {
                 Get in <span className=" text-primary">Touch</span>{" "}
               </h2>
               <p className=" text-base text-secondary-black text-left leading-6 max-w-lg">
-                We're here to help and answer any questions you may have. Reach
-                out to us and we'll respond as soon as we can.
+                We&apos;re here to help and answer any questions you may have. Reach
+                out to us and we&apos;ll respond as soon as we can.
               </p>
             </div>
 
