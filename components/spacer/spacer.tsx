@@ -1,4 +1,4 @@
-import { type } from 'os';
+"use client";
 import React from 'react';
 
 interface SpacerProps  {

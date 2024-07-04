@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { plusJakartaSans } from "@/lib/utils";
+import RootClientLayout from "./layout.client";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`bg-neutral-white ${plusJakartaSans.className}`}>{children}</body>
+      <body className={`bg-neutral-white ${plusJakartaSans.className}`}>
+        <RootClientLayout>
+
+        {children}
+        </RootClientLayout>
+      </body>
     </html>
   );
 }

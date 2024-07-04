@@ -3,6 +3,220 @@ import { SVGAttributes } from "react";
 
 interface ReactSVGProps extends SVGAttributes<SVGSVGElement> {}
 
+export const MoreIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M8 18C9.10457 18 10 17.1046 10 16C10 14.8954 9.10457 14 8 14C6.89543 14 6 14.8954 6 16C6 17.1046 6.89543 18 8 18Z"
+        fill="#0074FF"
+      />
+      <path
+        d="M16 18C17.1046 18 18 17.1046 18 16C18 14.8954 17.1046 14 16 14C14.8954 14 14 14.8954 14 16C14 17.1046 14.8954 18 16 18Z"
+        fill="#0074FF"
+      />
+      <path
+        d="M24 18C25.1046 18 26 17.1046 26 16C26 14.8954 25.1046 14 24 14C22.8954 14 22 14.8954 22 16C22 17.1046 22.8954 18 24 18Z"
+        fill="#0074FF"
+      />
+    </svg>
+  );
+};
+
+export const PCMASeamlessIntegrationIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="100" height="100" fill="white" />
+      <path
+        d="M47.8959 11.308C48.7566 9.56401 51.2434 9.56401 52.1041 11.308L63.2458 33.8835C63.5876 34.576 64.2482 35.056 65.0125 35.167L89.926 38.7872C91.8506 39.0668 92.619 41.4319 91.2264 42.7894L73.1988 60.362C72.6458 60.901 72.3934 61.6777 72.524 62.4389L76.7797 87.2518C77.1085 89.1685 75.0966 90.6302 73.3752 89.7253L51.0919 78.0102C50.4083 77.6508 49.5917 77.6508 48.9081 78.0102L26.6248 89.7253C24.9034 90.6302 22.8915 89.1685 23.2203 87.2518L27.476 62.4389C27.6066 61.6777 27.3542 60.901 26.8012 60.362L8.77358 42.7894C7.38096 41.4319 8.14943 39.0668 10.074 38.7872L34.9875 35.167C35.7518 35.056 36.4124 34.576 36.7542 33.8835L47.8959 11.308Z"
+        fill="#F7F9FD"
+        stroke="#0074FF"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const PCMADataLeakPreventionIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="100" height="100" fill="white" />
+      <path
+        d="M66.433 10L89.9042 33.3356L90 66.433L66.6644 89.9042L33.567 90L10.0958 66.6644L10 33.567L33.3356 10.0958L66.433 10Z"
+        fill="#F7F9FD"
+        stroke="#0074FF"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const PCMARealTimeNotificationsIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="100" height="100" fill="white" />
+      <path
+        d="M45.3792 13.2172C46.9664 8.92761 53.0336 8.9276 54.6208 13.2172L62.5213 34.5678C63.0203 35.9164 64.0836 36.9797 65.4322 37.4787L86.7828 45.3792C91.0724 46.9664 91.0724 53.0336 86.7828 54.6208L65.4322 62.5213C64.0836 63.0203 63.0203 64.0836 62.5213 65.4322L54.6208 86.7828C53.0336 91.0724 46.9664 91.0724 45.3792 86.7828L37.4787 65.4322C36.9797 64.0836 35.9164 63.0203 34.5678 62.5213L13.2172 54.6208C8.92761 53.0336 8.9276 46.9664 13.2172 45.3792L34.5678 37.4787C35.9164 36.9797 36.9797 35.9164 37.4787 34.5678L45.3792 13.2172Z"
+        fill="#F7F9FD"
+        stroke="#0074FF"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const PCMAAuditTrailIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="100" height="100" fill="white" />
+      <path
+        d="M75 9.99976C83.2843 9.99976 90 16.7155 90 24.9998V75.0002C90 83.2845 83.2843 90.0002 75 90.0002H25C16.7157 90.0002 10 83.2845 10 75.0002L10 24.9998C10 16.7155 16.7157 9.99976 25 9.99976L75 9.99976Z"
+        fill="#F7F9FD"
+        stroke="#0074FF"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const PCMAIncreasedTrustIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="100" height="100" fill="white" />
+      <path
+        d="M50 10L85 30V70L50 90L15 70V30L50 10Z"
+        fill="#F7F9FD"
+        stroke="#0074FF"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const PCMARegulatoryComplianceIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="100" height="100" fill="white" />
+      <path
+        d="M50 15L90 85H10L50 15Z"
+        fill="#F7F9FD"
+        stroke="#0074FF"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const PCMAUserControlIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="100" height="100" fill="white" />
+      <path
+        d="M50 10L90 50L50 90L10 50L50 10Z"
+        fill="#F7F9FD"
+        stroke="#0074FF"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const PCMATransparencyIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect width="100" height="100" fill="white" />
+      <path
+        d="M90 50C90 72.0914 72.0914 90 50 90C27.9086 90 10 72.0914 10 50C10 27.9086 27.9086 10 50 10C72.0914 10 90 27.9086 90 50Z"
+        fill="#F7F9FD"
+        stroke="#0074FF"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+};
+export const AttachmentIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M11.6998 21.5998H5.69979C4.37431 21.5998 3.2998 20.5253 3.2998 19.1998L3.2999 4.79989C3.29991 3.47441 4.37442 2.3999 5.6999 2.3999H16.5002C17.8256 2.3999 18.9002 3.47442 18.9002 4.7999V9.5999M7.50018 7.1999H14.7002M7.50018 10.7999H14.7002M14.7002 15.5539V18.4982C14.7002 19.9532 16.2516 21.2877 17.7065 21.2877C19.1615 21.2877 20.7002 19.9532 20.7002 18.4982V14.779C20.7002 14.0088 20.2574 13.2271 19.2723 13.2271C18.2186 13.2271 17.7065 14.0087 17.7065 14.779V18.3433M7.50018 14.3999H11.1002"
+        stroke="#0074FF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
 export const CalenderIcon = (props: ReactSVGProps) => {
   return (
     <svg
@@ -70,7 +284,10 @@ export const ShieldCheckIcon = (props: ReactSVGProps) => {
     </svg>
   );
 };
-export const ColorSwatchIcon = ({stroke,...props}: ReactSVGProps & {stroke?:string;}) => {
+export const ColorSwatchIcon = ({
+  stroke,
+  ...props
+}: ReactSVGProps & { stroke?: string }) => {
   return (
     <svg
       width="25"
@@ -90,7 +307,10 @@ export const ColorSwatchIcon = ({stroke,...props}: ReactSVGProps & {stroke?:stri
     </svg>
   );
 };
-export const UserProfileIcon = ({stroke,...props}: ReactSVGProps & {stroke?:string;}) => {
+export const UserProfileIcon = ({
+  stroke,
+  ...props
+}: ReactSVGProps & { stroke?: string }) => {
   return (
     <svg
       width="25"
@@ -102,20 +322,23 @@ export const UserProfileIcon = ({stroke,...props}: ReactSVGProps & {stroke?:stri
     >
       <path
         d="M16.5454 7.2936C16.5454 9.99625 14.8291 11.9697 12.7118 11.9697C10.5946 11.9697 8.87825 9.99625 8.87825 7.2936C8.87825 4.59095 10.5946 2.40002 12.7118 2.40002C14.8291 2.40002 16.5454 4.59095 16.5454 7.2936Z"
-        stroke="#0074FF"
+        stroke={stroke ?? "#0074FF"}
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
       <path
         d="M4.9001 15.8845C5.17491 15.3834 5.67926 15.0753 6.22465 15.0753H18.7752C19.3206 15.0753 19.8249 15.3834 20.0997 15.8845L21.8887 19.1469C22.485 20.2344 21.7477 21.6 20.5642 21.6H4.43564C3.25215 21.6 2.51477 20.2344 3.1111 19.1469L4.9001 15.8845Z"
-        stroke="#0074FF"
+        stroke={stroke ?? "#0074FF"}
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
     </svg>
   );
 };
-export const GridIcon = ({stroke,...props}: ReactSVGProps & {stroke?:string;}) => {
+export const GridIcon = ({
+  stroke,
+  ...props
+}: ReactSVGProps & { stroke?: string }) => {
   return (
     <svg
       width="25"
@@ -134,21 +357,21 @@ export const GridIcon = ({stroke,...props}: ReactSVGProps & {stroke?:string;}) =
       />
       <path
         d="M5.03323 2.40002C3.85503 2.40002 2.8999 3.34207 2.8999 4.50413L2.89991 8.09596C2.89991 9.25802 3.85504 10.2001 5.03324 10.2001H8.23324C9.41145 10.2001 10.3666 9.25802 10.3666 8.09596L10.3666 4.50413C10.3666 3.34207 9.41144 2.40002 8.23323 2.40002L5.03323 2.40002Z"
-         stroke={stroke ?? "#0074FF"}
+        stroke={stroke ?? "#0074FF"}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M19.9666 13.8001C21.1448 13.8001 22.0999 14.7421 22.0999 15.9042V19.496C22.0999 20.658 21.1448 21.6001 19.9666 21.6001H16.7666C15.5884 21.6001 14.6332 20.658 14.6332 19.496L14.6332 15.9042C14.6332 14.7421 15.5884 13.8001 16.7666 13.8001H19.9666Z"
-         stroke={stroke ?? "#0074FF"}
+        stroke={stroke ?? "#0074FF"}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M5.03324 13.8001C3.85504 13.8001 2.89991 14.7421 2.89991 15.9042L2.89991 19.496C2.89991 20.658 3.85504 21.6001 5.03325 21.6001H8.23325C9.41145 21.6001 10.3666 20.658 10.3666 19.496L10.3666 15.9042C10.3666 14.7421 9.41145 13.8001 8.23324 13.8001H5.03324Z"
-         stroke={stroke ?? "#0074FF"}
+        stroke={stroke ?? "#0074FF"}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"

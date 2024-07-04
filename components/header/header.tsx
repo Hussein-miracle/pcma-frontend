@@ -11,7 +11,7 @@ import {
 } from "../icons";
 import PrimaryButton from "../primary-button/primary-button";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface HeaderProps {
   variant?: "white" | "grey";
@@ -48,6 +48,7 @@ const AuthenticatedHeaderItem = ({
 type D<S extends string> = S extends `/${infer T}` ? T : never;
 
 const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
+  const router = useRouter();
   const pathname = usePathname();
 
   console.log({ pathname }, "PN");
@@ -55,17 +56,19 @@ const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
   return (
     <header
       className={cn(
-        "border-b border-b-grey-30 w-full py-4 px-[7.5rem] flex items-center justify-between gap-[10px] h-full z-10",
+        "border-b border-b-grey-30 w-full py-4 px-6 sm:px-[7.5rem] flex items-center justify-between gap-[10px] h-full z-10",
         variant === "white" ? "bg-neutral-white" : "bg-grey-10"
       )}
     >
-      <div className="">
+      <div className="cursor-pointer" onClick={() => {
+        router.push('/')
+      }}>
         <PCMALogo />
       </div>
 
       <nav className="w-fit h-full">
         {type === "unauthed" && (
-          <ul className="flex items-center gap-6 h-full">
+          <ul className="hidden sm:flex items-center gap-6 h-full">
             <li>
               <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
                 About
@@ -85,7 +88,7 @@ const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
         )}
 
         {type === "authed" && (
-          <ul className="flex items-center gap-6 h-full">
+          <ul className="hidden sm:flex items-center gap-6 h-full">
             <AuthenticatedHeaderItem
               icon={
                 <GridIcon
@@ -139,7 +142,7 @@ const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
       </nav>
 
       {type === "unauthed" && (
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 ">
           <Link href={"/login"}>
             <PrimaryButton className=" bg-transparent text-pretty text-primary p-0">
               Login

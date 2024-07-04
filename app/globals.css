@@ -1,4 +1,11 @@
 @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
-  
+@tailwind components;
+@tailwind utilities;
+
+
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  html,body,*{
+    scroll-behavior: smooth;
+  }
+}

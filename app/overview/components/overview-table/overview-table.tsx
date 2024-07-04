@@ -18,9 +18,9 @@ const TableRowItem = ({
   );
 };
 
-const TableHeaderItem = ({ children }: { children: React.ReactNode }) => {
+const TableHeaderItem = ({ children,className }: { children: React.ReactNode;className?:string; }) => {
   return (
-    <div className="first:pl-8 pl-6 pr-6 py-3 last:pr-8" id="overview-th-item">
+    <div className={cn("first:pl-8 pl-6 pr-6 py-3 last:pr-8",className)} id="overview-th-item">
       {children}
     </div>
   );
@@ -28,15 +28,17 @@ const TableHeaderItem = ({ children }: { children: React.ReactNode }) => {
 const TableDetailItem = ({
   children,
   type = "text",
+  className
 }: {
   children: React.ReactNode;
   type?: "action" | "text";
+  className?:string;
 }) => {
   return (
     <>
       {type === "text" ? (
         <div
-          className="first:pl-8 pl-6 pr-6 py-4 truncate  last:pr-8 cursor-default text-left text-base/4 font-medium tracking-[1%] "
+          className={cn("first:pl-8 pl-6 pr-6 py-4 truncate  last:pr-8 cursor-default text-left text-base/4 font-medium tracking-[1%]",className)}
           id="overview-td-item"
         >
           {children}
@@ -44,7 +46,7 @@ const TableDetailItem = ({
       ) : (
         <div
           // role="button"
-          className=" first:pl-8 pl-6 pr-6 py-4 truncate text-primary last:pr-8 cursor-pointer text-left text-base/4 font-semibold tracking-[1%] select-none"
+          className={cn(" first:pl-8 pl-6 pr-6 py-4 truncate text-primary last:pr-8 cursor-pointer text-left text-base/4 font-semibold tracking-[1%] select-none",className)}
           id="overview-td-item"
         >
           {children}
@@ -54,11 +56,11 @@ const TableDetailItem = ({
   );
 };
 
-const OverviewTable = ({ children }: { children: React.ReactNode }) => {
+const OverviewTable = ({ children,className }: { children: React.ReactNode,className?:string; }) => {
   return (
     <>
       <div
-        className="w-full mt-4 flex flex-col items-center gap-4 justify-between"
+        className={cn("w-full mt-4 flex flex-col items-center gap-4 justify-between",className)}
         // role="table"
       >
         {children}

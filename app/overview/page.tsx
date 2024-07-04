@@ -7,17 +7,19 @@ import {
   InformationCircleContainedIcon,
 } from "@/components/icons";
 import Spacer from "@/components/spacer/spacer";
-import { OverviewActivities } from "@/data";
+import { overviewActivities } from "@/data";
 import OverviewTable from "./components/overview-table/overview-table";
 import OverviewSummaryCard from "./components/overview-summary-card/overview-summary-card";
+import OverviewItem from "./components/overview-item/overview-item";
+import { OverviewActivity } from "@/lib/types";
 
 
 const Overview = () => {
   return (
     <section className="bg-grey-10 w-full h-full min-h-screen">
       <Header type="authed" />
-      <main className="w-full mx-auto pt-[4rem] px-[7.5rem]">
-        <div className="w-full bg-white border-2 border-[#0074FF1A] border-solid rounded-3xl grid grid-cols-4  gap-6 p-4 h-44">
+      <main className="w-full mx-auto  px-6 py-4 md:pt-[4rem] md:px-[7.5rem]">
+        <div className="w-full bg-white border-2 border-[#0074FF1A] border-solid rounded-3xl grid grid-cols-1 md:grid-cols-4  gap-6 p-4 md:h-44">
           <OverviewSummaryCard
             title="Approved&nbsp;Requests"
             value={12}
@@ -42,8 +44,8 @@ const Overview = () => {
 
         <Spacer size={32} />
 
-        <section className="w-full  h-[400px] grid grid-cols-[2fr_1fr] grid-rows-1 gap-8">
-          <div className="w-full h-full bg-white border-[#0074FF1A] border-2 border-solid p-6  rounded-3xl">
+        <section className="w-full h-fit  md:h-[25rem] grid grid-cols-1 md:grid-cols-[2fr_1fr]  md:grid-rows-1 gap-8">
+          <div className="w-full hidden md:block h-fit md:h-full bg-white border-[#0074FF1A] border-2 border-solid p-6  rounded-3xl">
             <div className="flex items-center justify-between">
               <h2 className="text-secondary-black text-base/4 font-semibold  tracking-[1%]">
                 Recents Activities
@@ -70,7 +72,7 @@ const Overview = () => {
               </OverviewTable.TableRow>
 
               <div className="w-full">
-                {OverviewActivities.map((overviewItem, index) => {
+                {overviewActivities.map((overviewItem:OverviewActivity, index:number) => {
                   return (
                     <OverviewTable.TableRow
                       key={index}
@@ -89,7 +91,33 @@ const Overview = () => {
             </OverviewTable>
           </div>
 
-          <main className="w-full h-full bg-white border-[#0074FF1A] border-2 border-solid p-6  rounded-3xl">
+          <section className=" md:hidden block w-full">
+          <div className="flex items-center justify-between">
+              <h2 className="text-secondary-black text-base/4 font-semibold  tracking-[1%]">
+                Recents Activities
+              </h2>
+              <button className=" text-primary  text-base/4 font-semibold  tracking-[1%] outline-none border-none focus:outline-none">
+                View All Activities
+              </button>
+            </div>
+
+            <Spacer size={32} />
+
+            <div className="flex flex-col items-center gap-4 w-full h-96 overflow-auto">
+              <OverviewItem/>
+              <OverviewItem/>
+              <OverviewItem/>
+              <OverviewItem/>
+              <OverviewItem/>
+              <OverviewItem/>
+              <OverviewItem/>
+              <OverviewItem/>
+              <OverviewItem/>
+              <OverviewItem/>
+            </div>
+          </section>
+
+          <main className="w-full h-fit md:h-full bg-white border-[#0074FF1A] border-2 border-solid p-6  rounded-3xl">
             <h2 className="capitalize text-base/4 font-semibold tracking-[1%] text-secondary-black">
               Review&nbsp;Requests
             </h2>

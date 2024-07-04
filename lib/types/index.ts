@@ -15,3 +15,10 @@ export type OverviewActivity = {
   activity:string;
   date:string;
 }
+
+export type ConnectedApplication  = {
+  company_name?:string;
+  connected_date?:string;
+  data_access?:string;
+  last_accessed?:string;
+}
