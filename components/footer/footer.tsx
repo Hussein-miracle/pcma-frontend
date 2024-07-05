@@ -160,7 +160,7 @@ const Footer = () => {
                     id="where"
                     name="where"
                     className={cn(
-                      "block w-full appearance-none h-full border-none outline-none",
+                      "block w-full appearance-none h-full border-none outline-none bg-transparent",
                       `${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`
                       // "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25",
                       // Make the text of each option black on Windows

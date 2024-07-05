@@ -47,7 +47,7 @@ const PersonalPiiCard = () => {
         </p>
       </div>
 
-      <div className="flex flex-col items-center w-full gap-4">
+      <div className="flex flex-col items-center w-full gap-4   h-[32.2rem] custom-scroller overflow-auto">
         <Controller
           name="fullname"
           control={control}

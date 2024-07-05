@@ -101,7 +101,7 @@ const ProfilePage = () => {
               className=" w-full "
               onSubmit={handleSubmit(handleSubmitPersonalInformation)}
             >
-              <div className="grid grid-cols-2 grid-rows-4 gap-4 w-full">
+              <div className="grid grid-cols-1 grid-rows-8 md:grid-cols-2 md:grid-rows-4 gap-4 w-full">
                 <Controller
                   name="fullname"
                   control={control}

@@ -22,3 +22,19 @@ export type ConnectedApplication  = {
   data_access?:string;
   last_accessed?:string;
 }
+
+export type AuditTrail = {
+  application?:string;
+  date_and_time?:string;
+  action_type?:string;
+}
+
+export  interface INotification {
+  message?: string;
+  title?: string;
+  date?:string;
+}
+export  interface IDateNotification {
+  date:string;
+  notifications:Array<INotification>;
+}

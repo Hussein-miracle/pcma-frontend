@@ -45,7 +45,7 @@ const TableDetailItem = ({
         </div>
       ) : (
         <div
-          // role="button"
+          
           className={cn(" first:pl-8 pl-6 pr-6 py-4 truncate text-primary last:pr-8 cursor-pointer text-left text-base/4 font-semibold tracking-[1%] select-none",className)}
           id="overview-td-item"
         >

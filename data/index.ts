@@ -1,4 +1,4 @@
-import { ConnectedApplication, OverviewActivity } from "@/lib/types";
+import { AuditTrail, ConnectedApplication, OverviewActivity } from "@/lib/types";
 
 export const overviewActivities: Array<OverviewActivity> = [
   {
@@ -44,5 +44,128 @@ export const connectedApplications:Array<ConnectedApplication> = [
     connected_date:"April 15, 2024",
     data_access:"Profile Info, Connections",
     last_accessed:"June 8, 2024"
+  },
+]
+
+export const auditTrails:Array<AuditTrail> = [
+  {
+    application:"Google",
+    date_and_time:"June 1, 2024",
+    action_type:"Consent Given"
+  },
+  {
+    application:"Facebook",
+    date_and_time:"May 20, 2024",
+    action_type:"Data Accessed"
+  },
+  {
+    application:"LinkedIn",
+    date_and_time:"April 15, 2024",
+    action_type:"Permission Revoked"
+  },
+  {
+    application:"Google",
+    date_and_time:"June 1, 2024",
+    action_type:"Consent Given"
+  },
+  {
+    application:"Facebook",
+    date_and_time:"May 20, 2024",
+    action_type:"Data Accessed"
+  },
+  {
+    application:"LinkedIn",
+    date_and_time:"April 15, 2024",
+    action_type:"Permission Revoked"
+  },
+  {
+    application:"Google",
+    date_and_time:"June 1, 2024",
+    action_type:"Consent Given"
+  },
+  {
+    application:"Facebook",
+    date_and_time:"May 20, 2024",
+    action_type:"Data Accessed"
+  },
+  {
+    application:"LinkedIn",
+    date_and_time:"April 15, 2024",
+    action_type:"Permission Revoked"
+  },
+  {
+    application:"Google",
+    date_and_time:"June 1, 2024",
+    action_type:"Consent Given"
+  },
+  {
+    application:"Facebook",
+    date_and_time:"May 20, 2024",
+    action_type:"Data Accessed"
+  },
+  {
+    application:"LinkedIn",
+    date_and_time:"April 15, 2024",
+    action_type:"Permission Revoked"
+  },
+  {
+    application:"Google",
+    date_and_time:"June 1, 2024",
+    action_type:"Consent Given"
+  },
+  {
+    application:"Facebook",
+    date_and_time:"May 20, 2024",
+    action_type:"Data Accessed"
+  },
+  {
+    application:"LinkedIn",
+    date_and_time:"April 15, 2024",
+    action_type:"Permission Revoked"
+  },
+  {
+    application:"Google",
+    date_and_time:"June 1, 2024",
+    action_type:"Consent Given"
+  },
+  {
+    application:"Facebook",
+    date_and_time:"May 20, 2024",
+    action_type:"Data Accessed"
+  },
+  {
+    application:"LinkedIn",
+    date_and_time:"April 15, 2024",
+    action_type:"Permission Revoked"
+  },
+  {
+    application:"Google",
+    date_and_time:"June 1, 2024",
+    action_type:"Consent Given"
+  },
+  {
+    application:"Facebook",
+    date_and_time:"May 20, 2024",
+    action_type:"Data Accessed"
+  },
+  {
+    application:"LinkedIn",
+    date_and_time:"April 15, 2024",
+    action_type:"Permission Revoked"
+  },
+  {
+    application:"Google",
+    date_and_time:"June 1, 2024",
+    action_type:"Consent Given"
+  },
+  {
+    application:"Facebook",
+    date_and_time:"May 20, 2024",
+    action_type:"Data Accessed"
+  },
+  {
+    application:"LinkedIn",
+    date_and_time:"April 15, 2024",
+    action_type:"Permission Revoked"
   },
 ]
