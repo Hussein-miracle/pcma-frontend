@@ -141,7 +141,7 @@ const AuditTrailPage = () => {
                         <AuditTrailTable.TableDetail className=" whitespace-break-spaces">
                           <span>{audit_trail.action_type}</span>
                         </AuditTrailTable.TableDetail>
-                        <AuditTrailTable.TableDetail>
+                        <AuditTrailTable.TableDetail className=" pl-6">
                           <Popover>
                             <PopoverTrigger>
                               {" "}

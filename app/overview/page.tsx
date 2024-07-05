@@ -21,7 +21,7 @@ import { overviewActivities } from "@/data";
 import { cn } from "@/lib/utils";
 
 const Overview = () => {
-  const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle(true);
+  const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
 
   const handleViewActivity = (activity: OverviewActivity) => {
     console.log({ activity });
