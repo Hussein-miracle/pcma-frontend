@@ -18,39 +18,58 @@ const TableRowItem = ({
   );
 };
 
-const TableHeaderItem = ({ children,className }: { children: React.ReactNode;className?:string; }) => {
+const TableHeaderItem = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
-    <div className={cn("first:pl-6 pl-4 pr-4 py-3 last:pr-6",className)} id="profile-th-item">
+    <div
+      className={cn("first:pl-6 pl-4 pr-4 py-3 last:pr-6", className)}
+      id="profile-th-item"
+    >
       {children}
     </div>
   );
 };
 const TableDetailItem = ({
   children,
-  className
+  className,
 }: {
   children: React.ReactNode;
-  className?:string;
+  className?: string;
 }) => {
   return (
     <>
-   
-        <div
-          className={cn("first:pl-6 pl-4 pr-4 py-3 truncate  last:pr-6 cursor-default text-left text-base/4 font-medium tracking-[1%]",className)}
-          id="profile-td-item"
-        >
-          {children}
-        </div>
-
+      <div
+        className={cn(
+          "first:pl-6 pl-4 pr-4 py-3 truncate  last:pr-6 cursor-default text-left text-base/4 font-medium tracking-[1%]",
+          className
+        )}
+        id="profile-td-item"
+      >
+        {children}
+      </div>
     </>
   );
 };
 
-const ProfileTable = ({ children,className }: { children: React.ReactNode,className?:string; }) => {
+const ProfileTable = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   return (
     <>
       <div
-        className={cn("w-full mt-4 flex flex-col items-center gap-4 justify-between",className)}
+        className={cn(
+          "w-full mt-4 flex flex-col items-center gap-4 justify-between",
+          className
+        )}
         // role="table"
       >
         {children}

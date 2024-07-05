@@ -2,10 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @media screen and (prefers-reduced-motion: no-preference) {
-  html,body,*{
+  html,
+  body,
+  * {
     scroll-behavior: smooth;
+  }
+}
+
+.custom-scroller {
+  --scrollbar-color-thumb: #dae6ff;
+  --scrollbar-color-track: #f7f9fd;
+  --scrollbar-width: thin;
+  --scrollbar-width-legacy: 6px;
+}
+
+/* Modern browsers with `scrollbar-*` support */
+
+/* @supports (scrollbar-width: auto) {
+  .custom-scroller {
+    scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
+    scrollbar-width: var(--scrollbar-width);
+    scrollbar-arrow-color: transparent;
+  }
+
+  .custom-scroller::-webkit-scrollbar-thumb {
+    border-radius: 1000px;
+  }
+  .custom-scroller::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+  .custom-scroller::-webkit-scrollbar-track {
+    border-radius: 1000px;
+  }
+  .custom-scroller::-webkit-scrollbar {
+    border-radius: 1000px;
+  }
+} */
+
+/* Legacy browsers with `::-webkit-scrollbar-*` support */
+@supports selector(::-webkit-scrollbar) {
+  .custom-scroller::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color-thumb);
+    border-radius: 1000px;
+  }
+  .custom-scroller::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+  .custom-scroller::-webkit-scrollbar-track {
+    background: var(--scrollbar-color-track);
+    border-radius: 1000px;
+    width: var(--scrollbar-width-legacy);
+    /* height: var(--scrollbar-width-legacy); */
+  }
+  .custom-scroller::-webkit-scrollbar {
+    border-radius: 1000px;
+    max-width: var(--scrollbar-width-legacy);
+    /* max-height: var(--scrollbar-width-legacy); */
   }
 }

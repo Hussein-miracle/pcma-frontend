@@ -14,7 +14,6 @@ import {
 import React, { Fragment, useState } from "react";
 import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
 import { format as formatDate } from "date-fns";
-import { Matcher } from "react-day-picker";
 import FileInput from "@/components/file-input/file-input";
 import ProfileTable from "./components/profile-table/profile-table";
 import { connectedApplications } from "@/data";
@@ -27,6 +26,8 @@ import {
   Transition,
 } from "@headlessui/react";
 import useToggle from "@/lib/hooks/client/use-toggle";
+import DataAccessItem from "./components/data-access-item/data-access-item";
+import DataAccessCheckItem from "./components/data-access-check-item/data-access-check-item";
 
 interface PersonalInformationForm {
   fullname: string;
@@ -40,8 +41,11 @@ interface PersonalInformationForm {
 }
 
 const ProfilePage = () => {
-  const [date, setDate] = useState<Date>();
-  const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle(true);
+  const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
+  const { toggle: togglePermissionDialog, toggleState: showPermissionDialog } =
+    useToggle();
+  const { toggle: toggleDisconnectDialog, toggleState: showDisconnectDialog } =
+    useToggle();
 
   const {
     control,
@@ -74,6 +78,14 @@ const ProfilePage = () => {
     toggleVdDialog();
   };
 
+  const handleManagePermissions = () => {
+    togglePermissionDialog();
+  };
+
+  const handleDisconnect = () => {
+    toggleDisconnectDialog();
+  };
+
   return (
     <>
       <section className=" bg-grey-10  w-full h-full min-h-screen">
@@ -100,6 +112,7 @@ const ProfilePage = () => {
                         fieldName="Full Name"
                         value={value}
                         onChange={onChange}
+                        error={errors?.fullname?.message ?? ""}
                       />
                     );
                   }}
@@ -116,6 +129,7 @@ const ProfilePage = () => {
                           fieldName="Home Address"
                           value={value}
                           onChange={onChange}
+                          error={errors?.home_address?.message ?? ""}
                         />
                       </>
                     );
@@ -133,6 +147,7 @@ const ProfilePage = () => {
                           fieldName="Email Address"
                           value={value}
                           onChange={onChange}
+                          error={errors?.email?.message ?? ""}
                         />
                       </>
                     );
@@ -166,6 +181,7 @@ const ProfilePage = () => {
                           fieldId="phone_number"
                           fieldName="Phone Number"
                           value={value}
+                          error={errors?.country?.message ?? ""}
                           onChange={onChange}
                         />
                       </>
@@ -184,6 +200,7 @@ const ProfilePage = () => {
                           fieldName="Occupation"
                           value={value}
                           onChange={onChange}
+                          error={errors?.occupation?.message ?? ""}
                         />
                       </>
                     );
@@ -202,12 +219,13 @@ const ProfilePage = () => {
                             fieldName="Date of Birth"
                             value={values.date_of_birth as string}
                             onChange={() => {}}
+                            error={errors?.date_of_birth?.message ?? ""}
                             placeholder="Choose Date"
                             icon={
                               <PopoverTrigger asChild>
-                                <button type="button">
+                                <div>
                                   <CalenderIcon />
-                                </button>
+                                </div>
                               </PopoverTrigger>
                             }
                           />
@@ -243,11 +261,11 @@ const ProfilePage = () => {
                       <FileInput
                         fieldId="id_card"
                         fieldName="National ID/Passport:"
-                        // value={value?.name ?? ''}
                         selectedFileName={v}
                         placeholder="Upload Document"
+                        error={errors?.id_card?.message ?? ""}
                         onFileSelect={(files) => {
-                          console.log({ files });
+                          // console.log({ files });
                           if (!!files) {
                             const file = files[0];
                             onChange(file);
@@ -315,13 +333,13 @@ const ProfilePage = () => {
                             <Popover>
                               <PopoverTrigger>
                                 {" "}
-                                <button type="button">
+                                <div className=" cursor-pointer">
                                   <MoreIcon />
-                                </button>
+                                </div>
                               </PopoverTrigger>
-                              <PopoverContent className=" w-fit h-fit py-1 bg-white border-2  border-[#0074FF0D]">
+                              <PopoverContent className=" w-fit h-fit py-1 px-2 bg-white border-2  border-[#0074FF0D]">
                                 <button
-                                  className=" text-left  py-2 px-2.5 block"
+                                  className=" text-left  py-2 px-2.5 block  hover:bg-grey-30 rounded-md w-full"
                                   onClick={() => {
                                     handleViewDetails();
                                   }}
@@ -330,13 +348,23 @@ const ProfilePage = () => {
                                     View&nbsp;Details
                                   </span>
                                 </button>
-                                <button className=" text-left  py-2 px-2.5 block">
+                                <button
+                                  className=" text-left  py-2 px-2.5 block hover:bg-grey-30 rounded-md  w-full"
+                                  onClick={() => {
+                                    handleManagePermissions();
+                                  }}
+                                >
                                   <span className=" text-secondary-black font-medium text-sm/3  truncate">
                                     Manage&nbsp;Permission
                                   </span>
                                 </button>
-                                <button className=" text-left  py-2 px-2.5 block">
-                                  <span className=" text-[#D60B0B] font-medium text-sm/3 ">
+                                <button
+                                  className=" text-left  py-2 px-2.5 block  rounded-md hover:bg-danger-2 text-[#D60B0B] hover:text-black transition-colors ease-in-out duration-100  w-full"
+                                  onClick={() => {
+                                    handleDisconnect();
+                                  }}
+                                >
+                                  <span className="   font-medium text-sm/3 ">
                                     Disconnect
                                   </span>
                                 </button>
@@ -353,6 +381,200 @@ const ProfilePage = () => {
           </section>
         </main>
       </section>
+
+      <Dialog
+        open={showVdDialog}
+        as="div"
+        className="relative z-10 focus:outline-none"
+        onClose={toggleVdDialog}
+      >
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
+          <div className="flex min-h-full items-center justify-center">
+            <DialogPanel
+              // @ts-ignore
+              transition={true}
+              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
+            >
+              <DialogTitle
+                as="h3"
+                className="text-2xl/6 font-bold text-secondary-black tracking-[1%]"
+              >
+                Application Details
+              </DialogTitle>
+
+              <Spacer size={24} />
+
+              <section className=" w-full flex flex-col justify-between h-max">
+                <main className="flex flex-col gap-4 h-fit ">
+                  <div className="flex w-full items-center justify-between">
+                    <span className=" font-normal text-[#4C689E] text-sm/[14px] tracking-[1%]">
+                      Application&nbsp;Name
+                    </span>
+                    <span className=" text-sm/[14px] font-medium tracking-[1%]">
+                      Google
+                    </span>
+                  </div>
+                  <div className="flex w-full items-center justify-between">
+                    <span className=" font-normal text-[#4C689E] text-sm/[14px] tracking-[1%]">
+                      Connected Date
+                    </span>
+                    <span className=" text-sm/[14px] font-medium tracking-[1%]">
+                      June 1, 2024
+                    </span>
+                  </div>
+                  {/* ACCESS PERMISSIONS */}
+                  <div className="flex w-full items-start justify-between">
+                    <span className=" font-normal text-[#4C689E] text-sm/[14px] tracking-[1%]">
+                      Data Access Permissions
+                    </span>
+                    <div className="flex flex-col items-end gap-2 max-h-32 overflow-auto custom-scroller">
+                      <DataAccessItem>Read your email</DataAccessItem>
+                      <DataAccessItem>Access your contacts</DataAccessItem>
+                      <DataAccessItem>View your calendar</DataAccessItem>
+                    </div>
+                  </div>
+
+                  <div className="flex w-full items-start justify-between gap-4">
+                    <span className=" font-normal text-[#4C689E] text-sm/[14px] tracking-[1%] block whitespace-nowrap">
+                      Purpose of Access
+                    </span>
+                    <DataAccessItem className="text-right">
+                      To sync your contacts and calendar events
+                    </DataAccessItem>
+                  </div>
+                </main>
+
+                <Spacer size={32} />
+                <div className="mt-4 flex items-center justify-between gap-4 w-full">
+                  <button
+                    className="inline-flex items-center gap-2.5 rounded-xl bg-[#0074FF0D] py-1.5 px-3 text-sm/6 font-semibold text-primary shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-[#0074FF0D]/10 data-[focus]:outline-1 data-[focus]:outline-white data-[open]:bg-[#0074FF0D]"
+                    // onClick={close}
+                  >
+                    Manage&nbsp;Permissions
+                  </button>
+                  <button className="inline-flex items-center gap-2.5 rounded-xl bg-danger-1 py-1.5 px-3 text-sm/6 font-semibold text-danger-2 shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-danger-1/10 data-[focus]:outline-1 data-[focus]:outline-white data-[open]:bg-danger-1">
+                    Disconnect
+                  </button>
+                </div>
+              </section>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
+      <Dialog
+        open={showPermissionDialog}
+        as="div"
+        className="relative z-10 focus:outline-none"
+        onClose={togglePermissionDialog}
+      >
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
+          <div className="flex min-h-full items-center justify-center">
+            <DialogPanel
+              // @ts-ignore
+              transition={true}
+              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
+            >
+              <DialogTitle
+                as="h3"
+                className="text-2xl/6 font-bold text-secondary-black tracking-[1%]"
+              >
+                Manage Permissions
+              </DialogTitle>
+
+              <Spacer size={24} />
+
+              <section className=" w-full flex flex-col justify-between h-max">
+                <main className="flex flex-col gap-4 h-fit ">
+                  {/* ACCESS PERMISSIONS */}
+                  <div className="flex w-full items-start justify-between">
+                    <span className=" font-normal text-[#4C689E] text-sm/[14px] tracking-[1%]">
+                      Current Permissions
+                    </span>
+                    <div className="flex flex-col items-end gap-2 max-h-32 overflow-auto custom-scroller">
+                      <DataAccessItem>Read your email</DataAccessItem>
+                      <DataAccessItem>Access your contacts</DataAccessItem>
+                      <DataAccessItem>View your calendar</DataAccessItem>
+                    </div>
+                  </div>
+                  <div className="flex w-full items-center justify-between">
+                    <span className=" font-normal text-[#4C689E] text-sm/[14px] tracking-[1%]">
+                      Modify Permissions
+                    </span>
+                    <span className=" text-sm/[14px] font-medium tracking-[1%]">
+                      Google
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-start  gap-2 max-h-32 overflow-auto custom-scroller">
+                    <DataAccessCheckItem>Read your email</DataAccessCheckItem>
+                    <DataAccessCheckItem checked>
+                      Access your contacts
+                    </DataAccessCheckItem>
+                    <DataAccessCheckItem checked>
+                      View your calendar
+                    </DataAccessCheckItem>
+                  </div>
+                </main>
+
+                <Spacer size={32} />
+                <div className="mt-4 flex items-center justify-center gap-4 w-full">
+                  <button
+                    className="inline-flex items-center gap-2.5 rounded-xl bg-[#0074FF0D] py-1.5 px-3 text-sm/6 font-semibold text-primary shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-[#0074FF0D]/10 data-[focus]:outline-1 data-[focus]:outline-white data-[open]:bg-[#0074FF0D]"
+                    // onClick={close}
+                  >
+                    Save&nbsp;Changes
+                  </button>
+                </div>
+              </section>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
+      {/* DISCONNECT DIALOG */}
+      <Dialog
+        open={showDisconnectDialog}
+        as="div"
+        className="relative z-10 focus:outline-none"
+        onClose={toggleDisconnectDialog}
+      >
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
+          <div className="flex min-h-full items-center justify-center">
+            <DialogPanel
+              // @ts-ignore
+              transition={true}
+              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-fit"
+            >
+              <DialogTitle
+                as="h3"
+                className="text-2xl/9 font-bold text-secondary-black tracking-[1%]"
+              >
+                Are you sure you want to disconnect Google
+              </DialogTitle>
+
+              <Spacer size={24} />
+
+              <section className=" w-full flex flex-col justify-between h-max">
+                <p className=" font-normal text-[#4C689E] text-base/6 tracking-[1%]">
+                  This will revoke all access and permissions.
+                </p>
+
+                <Spacer size={24} />
+                <div className="flex items-center justify-between gap-4 w-full">
+                  <button
+                    className="inline-flex items-center gap-2.5 rounded-xl bg-[#0074FF0D] py-1.5 px-3 text-sm/6 font-semibold text-primary shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-[#0074FF0D]/10 data-[focus]:outline-1 data-[focus]:outline-white data-[open]:bg-[#0074FF0D]"
+                    // onClick={close}
+                  >
+                    Manage&nbsp;Permissions
+                  </button>
+                  <button className="inline-flex items-center gap-2.5 rounded-xl bg-danger-1 py-1.5 px-3 text-sm/6 font-semibold text-danger-2 shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-danger-1/10 data-[focus]:outline-1 data-[focus]:outline-white data-[open]:bg-danger-1">
+                    Disconnect
+                  </button>
+                </div>
+              </section>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </>
   );
 };

@@ -258,7 +258,7 @@ export default function Home() {
           </div>
           
 
-          <div className="bg-white h-full w-full rounded-3xl sm:col-start-2 sm:col-span-2 sm:row-start-2 sm:row-span-1 border border-[#0074FF33] border-solid pl-6 pt-6 sm:pr-0 pr-6 flex  sm:flex-row flex-col justify-between items-start  gap-4">
+          <div className="bg-white h-full w-full rounded-3xl sm:col-start-2 sm:col-span-2 sm:row-start-2 sm:row-span-1 border border-[#0074FF33] border-solid pl-6 pt-6 sm:pr-0 pr-6 flex  sm:flex-row flex-col justify-between items-start  gap-4 overflow-hidden">
             <div className="flex flex-col gap-4">
               <h2 className=" text-primary  font-extrabold text-xl leading-6 tracking-[1%] text-left ">
                 Audit Trail:

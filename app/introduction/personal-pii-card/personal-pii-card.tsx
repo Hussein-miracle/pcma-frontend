@@ -3,6 +3,10 @@ import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import TextInput from "@/components/text-input/text-input";
 import PrimaryButton from "@/components/primary-button/primary-button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format as formatDate } from "date-fns";
+import { CalenderIcon } from "@/components/icons";
 
 interface PersonalPiiForm {
   fullname: string;
@@ -11,7 +15,7 @@ interface PersonalPiiForm {
   home_address:string;
   country:string;
   occupation:string;
-  date_of_birth:string;
+  date_of_birth: Date | string;
 }
 
 const PersonalPiiCard = () => {
@@ -20,6 +24,7 @@ const PersonalPiiCard = () => {
     formState: { errors },
     setValue,
     handleSubmit,
+    watch
   } = useForm<PersonalPiiForm>({
     defaultValues: {
       email: "",
@@ -30,6 +35,7 @@ const PersonalPiiCard = () => {
     },
   });
 
+  const values = watch();
   return (
     <form className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl">
       <div className="flex flex-col items-center gap-2">
@@ -53,6 +59,7 @@ const PersonalPiiCard = () => {
                 
                 value={value}
                 onChange={onChange}
+                error={errors?.fullname?.message ?? ''}
               />
             );
           }}
@@ -69,6 +76,7 @@ const PersonalPiiCard = () => {
                   fieldName="Email Address"
                   value={value}
                   onChange={onChange}
+                  error={errors?.email?.message ?? ''}
                 />
               </>
             );
@@ -86,28 +94,54 @@ const PersonalPiiCard = () => {
                   fieldName="Phone Number"
                   value={value}
                   onChange={onChange}
+                  error={errors?.phone_number?.message ?? ''}
                 />
               </>
             );
           }}
         />
-        <Controller
-          name="date_of_birth"
-          control={control}
-          render={({ field: { onChange, value } }) => {
-            return (
-              <>
-                <TextInput
-                  fieldId="date_of_birth"
-                  fieldName="Date of Birth"
-                  value={value}
-                  
-                  onChange={onChange}
+                <Controller
+                  name="date_of_birth"
+                  control={control}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <>
+                        <Popover>
+                          <TextInput
+                            fieldId="date_of_birth"
+                            fieldName="Date of Birth"
+                            value={values.date_of_birth as string}
+                            onChange={() => {}}
+                            placeholder="Choose Date"
+                            error={errors?.date_of_birth?.message ?? ''}
+                            icon={
+                              <PopoverTrigger asChild>
+                                <div>
+                                  <CalenderIcon />
+                                </div>
+                              </PopoverTrigger>
+                            }
+                          />
+
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={values.date_of_birth as Date}
+                              onSelect={(date_value) => {
+                                console.log({ date_value }, "date");
+                                if (!!date_value) {
+                                  const date = formatDate(date_value, "PPP");
+                                  setValue("date_of_birth", date);
+                                }
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </>
+                    );
+                  }}
                 />
-              </>
-            );
-          }}
-        />
         <Controller
           name="home_address"
           control={control}
@@ -119,6 +153,8 @@ const PersonalPiiCard = () => {
                   fieldName="Home Address"
                   value={value}
                   onChange={onChange}
+
+                  error={errors?.home_address?.message ?? ''}
                 />
          
               </>
@@ -136,6 +172,8 @@ const PersonalPiiCard = () => {
                   fieldName="Country"
                   value={value}
                   onChange={onChange}
+                  
+                  error={errors?.country?.message ?? ''}
                 />
          
               </>
@@ -153,6 +191,8 @@ const PersonalPiiCard = () => {
                   fieldName="Occupation"
                   value={value}
                   onChange={onChange}
+                  
+                  error={errors?.occupation?.message ?? ''}
                 />
          
               </>

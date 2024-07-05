@@ -3,6 +3,58 @@ import { SVGAttributes } from "react";
 
 interface ReactSVGProps extends SVGAttributes<SVGSVGElement> {}
 
+export const CheckboxEmptyIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="16"
+      height="17"
+      viewBox="0 0 16 17"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <rect x="1" y="1.5" width="14" height="14" rx="3" fill="white" />
+      <rect
+        x="1"
+        y="1.5"
+        width="14"
+        height="14"
+        rx="3"
+        stroke="#0074FF"
+        stroke-width="2"
+      />
+    </svg>
+  );
+};
+export const CheckboxIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="16"
+      height="17"
+      viewBox="0 0 16 17"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g clip-path="url(#clip0_204_1827)">
+        <rect y="0.5" width="16" height="16" rx="4" fill="#0074FF" />
+        <path
+          d="M12.8002 4.90002L5.64068 12.1L3.2002 9.64574"
+          stroke="white"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_204_1827">
+          <rect y="0.5" width="16" height="16" rx="4" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
 export const MoreIcon = (props: ReactSVGProps) => {
   return (
     <svg

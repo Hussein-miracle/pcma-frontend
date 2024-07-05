@@ -48,6 +48,8 @@ const BasicPiiCard = () => {
                 
                 value={value}
                 onChange={onChange}
+                
+                error={errors?.firstname?.message ?? ''}
               />
             );
           }}
@@ -62,6 +64,8 @@ const BasicPiiCard = () => {
                 fieldName="Last Name"
                 value={value}
                 onChange={onChange}
+                
+                error={errors?.lastname?.message ?? ''}
               />
             );
           }}
@@ -78,6 +82,8 @@ const BasicPiiCard = () => {
                   fieldName="Email Address"
                   value={value}
                   onChange={onChange}
+                  
+                  error={errors?.email?.message ?? ''}
                 />
                 <p className=" text-sm/5  font-normal text-secondary-black text-left self-start -mt-2">
                   NOTE: Your Basic PII is accessible to registered enterprises
