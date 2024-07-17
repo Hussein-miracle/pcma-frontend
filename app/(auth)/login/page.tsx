@@ -1,12 +1,7 @@
 "use client";
-import ErrorMessage from "@/components/error-message/error-message";
-import Header from "@/components/header/header";
-import { CheckIcon, ChevronDownIcon } from "@/components/icons";
-import PrimaryButton from "@/components/primary-button/primary-button";
-import TextInput from "@/components/text-input/text-input";
-import { USER_LOGIN_TYPES } from "@/lib/constant";
-import { SelectItem, UserLoginType } from "@/lib/types";
-import { cn, pxToRem } from "@/lib/utils";
+import React, { Fragment, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Listbox,
   ListboxButton,
@@ -14,43 +9,98 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
-import React, { Fragment, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 
-interface LoginForm {
-  email: string;
-  password: string;
-  login_type: SelectItem<UserLoginType> | null;
-}
+import ErrorMessage from "@/components/error-message/error-message";
+import Header from "@/components/header/header";
+import PrimaryButton from "@/components/primary-button/primary-button";
+import TextInput from "@/components/text-input/text-input";
+import { CheckIcon, ChevronDownIcon } from "@/components/icons";
+import { USER_LOGIN_TYPES, VALIDATION_ERROR_MESSAGES } from "@/lib/constants";
+import { InferredLoginForm, LoginForm } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { loginSchema } from "@/lib/validations";
+import { z } from "zod";
+import { usePostIndividualLogin, usePostServiceProviderLogin } from "@/lib/hooks/api/mutations";
+import useToastCustom from "@/lib/hooks/client/use-toast-custom";
+import { useAppRouter } from "@/lib/hooks/client/use-app-router";
+import { useDispatch } from "react-redux";
+import { setAccessToken, setRefreshToken } from "@/rtk/features/auth-slice/auth-slice";
 
 const Login = () => {
-  const [selectedLoginType, setSelectedLoginType] = useState(
-    USER_LOGIN_TYPES[0]
-  );
-
+  const dispatch = useDispatch();
+  const {successToast,errorToast} = useToastCustom();
+  const router = useAppRouter();
   const {
     control,
-    formState: { errors },
+    // formState: { isValid },
     setValue,
-    handleSubmit
+    handleSubmit,
+    watch
   } = useForm<LoginForm>({
-    defaultValues: {
-      login_type: null,
-      email: "",
-      password: "",
+    defaultValues:{
+      login_type: {    ...USER_LOGIN_TYPES[0]},
+      email:"",
+      password:""
     },
+    resolver: zodResolver(loginSchema),
+    mode:"all",
+    reValidateMode:"onChange"
   });
 
 
-  const handleLogin = async (values:LoginForm) => {
-    // console.log({values});
-  }
+  const loginType = watch('login_type');
+
+  // console.log({errors});
+
+  const {isPending:isPendingServiceProvider , mutateAsync:loginServiceProvider} = usePostServiceProviderLogin();
+  const {isPending:isPendingIndividual , mutateAsync:loginIndividual} = usePostIndividualLogin();
+
+  const handleLogin = async (values: InferredLoginForm) => {
+   // console.log({loginValues: values });
+
+    try {
+      if (loginType.value === "individual") {
+       const individualLoginResponse =  await loginIndividual({
+          email: values.email,
+          password: values.password,
+        });
+
+        console.log({individualLoginResponse})
+        const token = individualLoginResponse?.token;
+        dispatch(setAccessToken(token.access_token));
+        dispatch(setRefreshToken(token.refresh_token));
+        successToast(individualLoginResponse?.message ?? "Login Successful")
+        // window.history.replaceState(null, "", "/");
+        router.push("/overview");        
+      } else {
+        const spLoginResponse = await loginServiceProvider({
+          email: values.email,
+          password: values.password,
+        });
+
+        const token = spLoginResponse?.token;
+        dispatch(setAccessToken(token.access_token));
+        dispatch(setRefreshToken(token.refresh_token));
+        // console.log({spLoginResponse})
+        successToast(spLoginResponse?.message ?? "Login Successful")
+        router.push("/applications");     
+      }
+    } catch (error:any) {
+      // console.log({errorLogin:error})
+      const errorMsg = error?.response?.data?.message ?? "An error occurred";
+      // console.log({errorMsg})
+      errorToast(errorMsg)
+    }
+  };
 
   return (
     <section className="bg-grey-10 w-full h-full min-h-screen">
       <Header />
       <main className="w-full mx-auto pt-[4rem]">
-        <form onSubmit={handleSubmit(handleLogin)} className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl">
+        <form
+          onSubmit={handleSubmit(handleLogin)}
+          className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl"
+        >
           <div className="flex flex-col items-center gap-2">
             <h2 className=" font-bold  text-secondary-black text-2xl/[2.75rem] text-center ">
               Login
@@ -72,16 +122,18 @@ const Login = () => {
               <Controller
                 name="login_type"
                 control={control}
-                render={({ field, fieldState }) => {
+               // rules={{ required: true }}
+                render={({ field:{value}, fieldState:{error}}) => {
                   // console.log({ field, fieldState });
                   return (
                     <Listbox
-                    as={'div'}
-                    role="select"
-                      value={selectedLoginType}
-                      onChange={(v) => {
-                        setValue("login_type", v);
-                        setSelectedLoginType(v);
+                      as={"div"}
+                      role="select"
+                      value={value}
+                      onChange={(currentValue) => {
+                        console.log({currentValue})
+                        setValue("login_type", currentValue);
+                        // setSelectedLoginType(v);
                       }}
                     >
                       <div className="w-full relative z-10">
@@ -90,7 +142,7 @@ const Login = () => {
                             return (
                               <>
                                 <span className="block truncate">
-                                  {selectedLoginType?.label}
+                                  {value?.label}
                                 </span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                   <ChevronDownIcon
@@ -107,8 +159,10 @@ const Login = () => {
                           }}
                         </ListboxButton>
 
-                        {errors.login_type?.message && (
-                          <ErrorMessage text={errors?.login_type?.message} />
+
+
+                        {!!error?.message && (
+                          <ErrorMessage text={error?.message} />
                         )}
 
                         <Transition
@@ -137,7 +191,7 @@ const Login = () => {
                                         selected ? "font-medium" : "font-normal"
                                       }`}
                                     >
-                                      {loginType.label}
+                                      {loginType?.label}
                                     </span>
                                     {selected ? (
                                       <span className="absolute inset-y-0 left-0 flex items-center pl-3 stroke-white">
@@ -164,13 +218,16 @@ const Login = () => {
             <Controller
               name="email"
               control={control}
-              render={({ field: { onChange, value } }) => {
+              // rules={{ required: true }}
+              render={({ field: { onChange, value,onBlur } ,fieldState:{error}}) => {
                 return (
                   <TextInput
-                    fieldId="email-address"
+                    fieldId="email"
                     fieldName="Email Address"
                     value={value}
+                    onBlur={onBlur}
                     onChange={onChange}
+                    error={error?.message ?? ""}
                   />
                 );
               }}
@@ -178,21 +235,25 @@ const Login = () => {
             <Controller
               name="password"
               control={control}
-              render={({ field: { onChange, value } }) => {
+              // rules={{ required: VALIDATION_ERROR_MESSAGES.PASSWORD }}
+              // rules={{ required: true }}
+              render={({ field: { onChange, value ,onBlur},fieldState:{error} }) => {
                 return (
                   <TextInput
                     fieldId="password"
                     fieldName="Password"
-                    secureTextEntry
                     value={value}
+                    onBlur={onBlur}
+                    secureTextEntry
                     onChange={onChange}
+                    error={error?.message ?? ""}
                   />
                 );
               }}
             />
           </div>
 
-          <PrimaryButton variant="secondary" className="w-full" type="submit">
+          <PrimaryButton variant="secondary" className="w-full" type="submit"  disabled={isPendingIndividual || isPendingServiceProvider} loading={isPendingIndividual || isPendingServiceProvider}>
             Login
           </PrimaryButton>
         </form>

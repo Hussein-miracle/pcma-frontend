@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
 import { format as formatDate } from "date-fns";
 import FileInput from "@/components/file-input/file-input";
@@ -28,17 +28,22 @@ import {
 import useToggle from "@/lib/hooks/client/use-toggle";
 import DataAccessItem from "./components/data-access-item/data-access-item";
 import DataAccessCheckItem from "./components/data-access-check-item/data-access-check-item";
+import { useGetIndividualProfile } from "@/lib/hooks/api/queries";
 
 interface PersonalInformationForm {
-  fullname: string;
+  fullname?: string;
+  firstname?:string;
+  lastname?:string;
   email: string;
   phone_number: string;
   home_address: string;
   country: string;
   occupation: string;
-  date_of_birth: Date | string;
-  id_card: File | string;
+  date_of_birth?: Date | string;
+  id_card?: File | string;
 }
+
+
 
 const ProfilePage = () => {
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
@@ -46,6 +51,10 @@ const ProfilePage = () => {
     useToggle();
   const { toggle: toggleDisconnectDialog, toggleState: showDisconnectDialog } =
     useToggle();
+
+  const {isLoading:isLoadingIndividual,data:individualProfile} = useGetIndividualProfile();
+  const individualProfileData: Partial<PersonalInformationForm> | null = individualProfile?.data ?? null;
+  console.log({isLoadingIndividual,individualProfileData});
 
   const {
     control,
@@ -57,6 +66,8 @@ const ProfilePage = () => {
   } = useForm<PersonalInformationForm>({
     defaultValues: {
       email: "",
+      firstname: "",
+      lastname: "",
       fullname: "",
       phone_number: "",
       home_address: "",
@@ -66,7 +77,23 @@ const ProfilePage = () => {
     },
   });
 
-  const values = watch();
+  const formValues = watch();
+
+  console.log({formValues});
+
+
+
+  useEffect(() => {
+    if(!!individualProfileData){
+      for(const key in individualProfileData){
+        if(key in formValues){
+          setValue(key as unknown as keyof PersonalInformationForm, individualProfileData[key as unknown as keyof PersonalInformationForm]);
+        }
+      }
+    }
+  },[individualProfileData])
+
+  
 
   const handleSubmitPersonalInformation = async (
     values: PersonalInformationForm
@@ -102,6 +129,36 @@ const ProfilePage = () => {
               onSubmit={handleSubmit(handleSubmitPersonalInformation)}
             >
               <div className="grid grid-cols-1 grid-rows-8 md:grid-cols-2 md:grid-rows-4 gap-4 w-full">
+                <Controller
+                  name="firstname"
+                  control={control}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <TextInput
+                        fieldId="firstname"
+                        fieldName="First Name"
+                        value={value}
+                        onChange={onChange}
+                        error={errors?.fullname?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  name="lastname"
+                  control={control}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <TextInput
+                        fieldId="lastname"
+                        fieldName="Last Name"
+                        value={value}
+                        onChange={onChange}
+                        error={errors?.fullname?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
                 <Controller
                   name="fullname"
                   control={control}
@@ -217,7 +274,7 @@ const ProfilePage = () => {
                           <TextInput
                             fieldId="date_of_birth"
                             fieldName="Date of Birth"
-                            value={values.date_of_birth as string}
+                            value={formValues.date_of_birth as string}
                             onChange={() => {}}
                             error={errors?.date_of_birth?.message ?? ""}
                             placeholder="Choose Date"
@@ -233,7 +290,7 @@ const ProfilePage = () => {
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               mode="single"
-                              selected={values.date_of_birth as Date}
+                              selected={formValues.date_of_birth as Date}
                               onSelect={(date_value) => {
                                 console.log({ date_value }, "date");
                                 if (!!date_value) {
@@ -379,7 +436,9 @@ const ProfilePage = () => {
               </ProfileTable>
             </div>
           </section>
+          <Spacer size={16} />
         </main>
+        <Spacer size={32} />
       </section>
 
       <Dialog
@@ -391,8 +450,6 @@ const ProfilePage = () => {
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
             <DialogPanel
-              // @ts-ignore
-              transition={true}
               className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
             >
               <DialogTitle
@@ -470,8 +527,6 @@ const ProfilePage = () => {
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
             <DialogPanel
-              // @ts-ignore
-              transition={true}
               className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
             >
               <DialogTitle
@@ -540,8 +595,6 @@ const ProfilePage = () => {
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
             <DialogPanel
-              // @ts-ignore
-              transition={true}
               className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-fit"
             >
               <DialogTitle

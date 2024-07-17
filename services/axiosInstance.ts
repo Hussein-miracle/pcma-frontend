@@ -1,4 +1,6 @@
+import { store } from '@/rtk/app/store';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -9,10 +11,22 @@ const axiosInstance = axios.create({
 })
 
 
+const handleRefreshToken = async () => {
+  const refreshToken = store.getState().auth.refresh_token;
+  try {
+    const data = await axiosInstance.get(`/auth/token/refresh`);
+
+    console.log({ data });
+
+  } catch (error) {
+    console.error({ error })
+  }
+}
+
 // Add a request interceptor
 const _axiosRequestInterceptor = axiosInstance.interceptors.request.use(
   (config) => {
-    const storedToken = '';
+    const storedToken = store.getState().auth.access_token;
     // console.log({ storedToken })
     if (storedToken) {
       config.headers['Authorization'] = `Bearer ${storedToken}`;
@@ -34,7 +48,7 @@ const _axiosResponseInterceptor = axiosInstance.interceptors.response.use(
     // console.log({ responseInResponseINTERCEPTOR: response})
     // You can modify the response data here, e.g., handling pagination
     // if (response.status === 401 && window.location.pathname !== '/login') {
-  
+
     //   window.location.href = '/login';
     //   // window.history.replaceState(null, '', `${window.location.origin}/login`);
 
@@ -61,13 +75,34 @@ const _axiosResponseInterceptor = axiosInstance.interceptors.response.use(
 
     if (errorConfig && !!errorResponse) {
       // console.log('errorConfig', errorConfig);
+      const errorUrl = errorConfig?.url;
+
+      console.log({ errorUrl });
       // console.log('INTERCEPTOR errorResponse', errorResponse);
       if (
         errorResponse?.status === 401 &&
-        !errorConfig._retry) {
+        !errorConfig._retry && errorUrl !== '/auth/token/refresh') {
         errorConfig._retry = true;
+        if (retryCount < 3) {
+          retryCount += 1;
+          await handleRefreshToken();
+        } else {
+          toast.error("Session expired.")
+          window.location.href = '/';
+          retryCount = 0;
+          return;
+        }
+        // toast.error("401 error in INSTANCE",{
 
-      } 
+        // })
+
+      } else if (errorResponse?.status === 401 && errorUrl === '/auth/token/refresh') {
+        toast.error("Session expired.")
+        window.location.href = '/';
+
+        retryCount = 0;
+        return;
+      }
 
       // console.log({ errorResponse }, '500');
     }

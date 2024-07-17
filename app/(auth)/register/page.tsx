@@ -13,51 +13,95 @@ import PrimaryButton from "@/components/primary-button/primary-button";
 import TextInput from "@/components/text-input/text-input";
 import ErrorMessage from "@/components/error-message/error-message";
 import { ChevronDownIcon, CheckIcon } from "@/components/icons";
-import { USER_LOGIN_TYPES } from "@/lib/constant";
+import { USER_LOGIN_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { SelectItem, UserLoginType } from "@/lib/types";
+import { SelectItem, LoginType, RegistrationForm, InferredRegistrationForm } from "@/lib/types";
 import Spacer from "@/components/spacer/spacer";
-
-interface RegisterForm {
-  email: string;
-  password: string;
-  confirm_password: string;
-  register_type: SelectItem<UserLoginType> | null;
-  lastname:string;
-  firstname:string;
-}
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registrationSchema } from "@/lib/validations";
+import FormContentContainer from "@/components/form-content-container/form-content-container";
+import { usePostServiceProviderRegistration, usePostIndividualLogin, usePostIndividualRegistration } from "@/lib/hooks/api/mutations";
+import ButtonLoader from "@/components/button-loader/button-loader";
+import useToastCustom from "@/lib/hooks/client/use-toast-custom";
 
 const Register = () => {
-  const [selectedRegisterType, setSelectedRegisterType] = useState(
-    USER_LOGIN_TYPES[0]
-  );
-
+  const {successToast,errorToast} = useToastCustom();
   const {
     control,
-    formState: { errors },
     setValue,
     handleSubmit,
-  } = useForm<RegisterForm>({
+    // formState: { isValid },
+    watch,
+  } = useForm<InferredRegistrationForm>({
     defaultValues: {
-      register_type: null,
+      registrationType: USER_LOGIN_TYPES[0],
       email: "",
       password: "",
-      confirm_password: "",
-      lastname:"",
-      firstname:"",
+      confirmPassword: "",
+      lastName: "",
+      firstName: "",
+      companyName: "",
+      fullName: "",
+      companyAddress: "",
+      phoneNumber: "",
+      registrationNumber: "",
     },
+    resolver: zodResolver(registrationSchema),
+    mode: "all",
+    reValidateMode: "onChange",
   });
+  
+  const registrationType = watch("registrationType");
 
-  const handleRegister = async (values:RegisterForm) => {
-    console.log({registerValues:values});
-  }
+  const {isPending:isPendingServiceProvider , mutateAsync:registerServiceProvider} = usePostServiceProviderRegistration();
 
+  const {isPending:isPendingIndividual , mutateAsync:registerIndividual} = usePostIndividualRegistration();
+
+
+  // successToast("Registration Successful")
+  const handleRegister = async (values: InferredRegistrationForm) => {
+    console.log({ registerValues: values });
+
+    try {
+      if (registrationType.value === "individual") {
+       const individualResponse =  await registerIndividual({
+          email: values.email,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+          firstName: values.firstName!,
+          lastName: values.lastName!,
+        });
+
+        console.log({individualResponse})
+
+        successToast(individualResponse?.message ?? "Registration Successful")
+      
+      } else {
+        const spResponse = await registerServiceProvider({
+          email: values.email,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+          firstName: values.firstName,
+          lastName: values.lastName,
+        });
+
+        console.log({spResponse})
+      }
+    } catch (error:any) {
+      const errorMsg = error?.response?.data?.message ?? "An error occurred";
+      // console.log({errorMsg})
+      errorToast(errorMsg)
+    }
+  };
 
   return (
     <section className="bg-grey-10 w-full h-full min-h-screen">
       <Header />
       <main className="w-full mx-auto pt-[4rem]">
-        <form onSubmit={handleSubmit(handleRegister)} className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl">
+        <form
+          onSubmit={handleSubmit(handleRegister)}
+          className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl"
+        >
           <div className="flex flex-col items-center gap-2">
             <h2 className=" font-bold  text-secondary-black text-2xl/[2.75rem] text-center ">
               Register
@@ -67,7 +111,7 @@ const Register = () => {
               managing your consents
             </p>
           </div>
-          <main className="flex flex-col items-center w-full gap-4">
+          <FormContentContainer className="flex flex-col items-center w-full gap-4 ">
             <div className="w-full">
               <label
                 htmlFor={"login-type"}
@@ -77,18 +121,17 @@ const Register = () => {
               </label>
 
               <Controller
-                name="register_type"
+                name="registrationType"
                 control={control}
-                render={({ field, fieldState }) => {
+                render={({ field: { value }, fieldState: { error } }) => {
                   // console.log({ field, fieldState });
                   return (
                     <Listbox
                       as={"div"}
                       role="select"
-                      value={selectedRegisterType}
-                      onChange={(v) => {
-                        setValue("register_type", v);
-                        setSelectedRegisterType(v);
+                      value={value}
+                      onChange={(currentValue) => {
+                        setValue("registrationType", currentValue);
                       }}
                     >
                       <div className="w-full relative z-10">
@@ -97,7 +140,7 @@ const Register = () => {
                             return (
                               <>
                                 <span className="block truncate">
-                                  {selectedRegisterType?.label}
+                                  {value?.label}
                                 </span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                   <ChevronDownIcon
@@ -114,8 +157,8 @@ const Register = () => {
                           }}
                         </ListboxButton>
 
-                        {errors.register_type?.message && (
-                          <ErrorMessage text={errors?.register_type?.message} />
+                        {!!error?.message && (
+                          <ErrorMessage text={error?.message} />
                         )}
 
                         <Transition
@@ -137,16 +180,16 @@ const Register = () => {
                                 }
                                 value={loginType}
                               >
-                                {({ selected }) => (
+                                {({  selectedOption}) => (
                                   <>
                                     <span
                                       className={`block truncate ${
-                                        selected ? "font-medium" : "font-normal"
+                                        selectedOption ? "font-medium" : "font-normal"
                                       }`}
                                     >
                                       {loginType.label}
                                     </span>
-                                    {selected ? (
+                                    {selectedOption ? (
                                       <span className="absolute inset-y-0 left-0 flex items-center pl-3 stroke-white">
                                         <CheckIcon
                                           className="h-5 w-5"
@@ -171,88 +214,214 @@ const Register = () => {
             <Controller
               name="email"
               control={control}
-              render={({ field: { onChange, value } }) => {
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => {
                 return (
                   <TextInput
-                    fieldId="email_address"
+                    onBlur={onBlur}
+                    fieldId="email"
                     fieldName="Email Address"
                     value={value}
                     onChange={onChange}
+                    error={error?.message ?? ""}
                   />
                 );
               }}
             />
 
-            <Controller
-              name="firstname"
-              control={control}
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <TextInput
-                    fieldId="firstname"
-                    fieldName="First Name"
-                    
-                    value={value}
-                    onChange={onChange}
-                  />
-                );
-              }}
-            />
-            <Controller
-              name="lastname"
-              control={control}
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <TextInput
-                    fieldId="lastname"
-                    fieldName="Last Name"
-                    value={value}
-                    onChange={onChange}
-                  />
-                );
-              }}
-            />
-
+            {registrationType.value === "individual" && (
+              <>
+                <Controller
+                  name="firstName"
+                  control={control}
+                  render={({
+                    field: { onChange, value, onBlur },
+                    fieldState: { error },
+                  }) => {
+                    return (
+                      <TextInput
+                        onBlur={onBlur}
+                        fieldId="firstName"
+                        fieldName="First Name"
+                        value={value}
+                        onChange={onChange}
+                        error={error?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  name="lastName"
+                  control={control}
+                  render={({
+                    field: { onChange, value, onBlur },
+                    fieldState: { error },
+                  }) => {
+                    return (
+                      <TextInput
+                        onBlur={onBlur}
+                        fieldId="lastName"
+                        fieldName="Last Name"
+                        value={value}
+                        onChange={onChange}
+                        error={error?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+              </>
+            )}
+            {registrationType.value !== "individual" && (
+              <>
+              <Controller
+                name="fullName"
+                control={control}
+                render={({
+                  field: { onChange, value, onBlur },
+                  fieldState: { error },
+                }) => {
+                  return (
+                    <TextInput
+                      onBlur={onBlur}
+                      fieldId="fullName"
+                      fieldName="Full Name"
+                      value={value}
+                      onChange={onChange}
+                      error={error?.message ?? ""}
+                    />
+                  );
+                }}
+              />
+              <Controller
+                name="companyName"
+                control={control}
+                render={({
+                  field: { onChange, value, onBlur },
+                  fieldState: { error },
+                }) => {
+                  return (
+                    <TextInput
+                      onBlur={onBlur}
+                      fieldId="companyName"
+                      fieldName="Company Name"
+                      value={value}
+                      onChange={onChange}
+                      error={error?.message ?? ""}
+                    />
+                  );
+                }}
+              />
+              <Controller
+                name="companyAddress"
+                control={control}
+                render={({
+                  field: { onChange, value, onBlur },
+                  fieldState: { error },
+                }) => {
+                  return (
+                    <TextInput
+                      onBlur={onBlur}
+                      fieldId="companyAddress"
+                      fieldName="Company Address"
+                      value={value}
+                      onChange={onChange}
+                      error={error?.message ?? ""}
+                    />
+                  );
+                }}
+              />
+              <Controller
+                name="registrationNumber"
+                control={control}
+                render={({
+                  field: { onChange, value, onBlur },
+                  fieldState: { error },
+                }) => {
+                  return (
+                    <TextInput
+                      onBlur={onBlur}
+                      fieldId="registrationNumber"
+                      fieldName="Registration Number"
+                      value={value}
+                      onChange={onChange}
+                      error={error?.message ?? ""}
+                    />
+                  );
+                }}
+              />
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({
+                  field: { onChange, value, onBlur },
+                  fieldState: { error },
+                }) => {
+                  return (
+                    <TextInput
+                      onBlur={onBlur}
+                      fieldId="phoneNumber"
+                      fieldName="Phone Number"
+                      value={value}
+                      onChange={onChange}
+                      error={error?.message ?? ""}
+                    />
+                  );
+                }}
+              />
+                </>
+            )}
             <Controller
               name="password"
               control={control}
-              render={({ field: { onChange, value } }) => {
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => {
                 return (
                   <TextInput
                     fieldId="password"
                     fieldName="Password"
+                    onBlur={onBlur}
                     secureTextEntry
                     value={value}
                     onChange={onChange}
+                    error={error?.message ?? ""}
                   />
                 );
               }}
             />
 
             <Controller
-              name="confirm_password"
+              name="confirmPassword"
               control={control}
-              render={({ field: { onChange, value } }) => {
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => {
                 return (
                   <TextInput
-                    fieldId="confirm_password"
+                    onBlur={onBlur}
+                    fieldId="confirmPassword"
                     fieldName="Confirm Password"
                     secureTextEntry
                     value={value}
                     onChange={onChange}
+                    error={error?.message ?? ""}
                   />
                 );
               }}
             />
-          </main>
+          </FormContentContainer>
 
-          <PrimaryButton variant="secondary" className="w-full">
-            Create&nbsp;Account
+          <PrimaryButton variant="secondary" className="w-full" type="submit" disabled={isPendingIndividual || isPendingServiceProvider}>
+            {(isPendingIndividual || isPendingServiceProvider) ? <ButtonLoader/>  : <span>Create&nbsp;Account</span>}
           </PrimaryButton>
         </form>
       </main>
 
-      <Spacer size={108}/>
+      <Spacer size={108} />
     </section>
   );
 };

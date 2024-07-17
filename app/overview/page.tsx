@@ -19,13 +19,17 @@ import useToggle from "@/lib/hooks/client/use-toggle";
 import { OverviewActivity } from "@/lib/types";
 import { overviewActivities } from "@/data";
 import { cn } from "@/lib/utils";
+import { useGetIndividualOverview } from "@/lib/hooks/api/queries";
 
 const Overview = () => {
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
 
-  const handleViewActivity = (activity: OverviewActivity) => {
-    console.log({ activity });
+  const { data: overviewData, isLoading: isLoadingOverview } = useGetIndividualOverview();
 
+  console.log({ overviewData, isLoadingOverview });
+
+  const handleViewActivity = (activity: OverviewActivity) => {
+    //  console.log({ activity });
     toggleVdDialog();
   };
 
@@ -37,22 +41,26 @@ const Overview = () => {
           <div className="w-full bg-white border-2 border-[#0074FF1A] border-solid rounded-3xl grid grid-cols-1 md:grid-cols-4  gap-6 p-4 md:h-44">
             <OverviewSummaryCard
               title="Approved&nbsp;Requests"
-              value={12}
+              loading={isLoadingOverview}
+              value={overviewData?.data?.request?.approved ?? 0}
               icon={<CheckSquareBrokenIcon stroke="#01F971" />}
             />
             <OverviewSummaryCard
               title="Pending&nbsp;requests"
-              value={3}
+              loading={isLoadingOverview}
+              value={overviewData?.data?.request?.pending ?? 0}
               icon={<CheckSquareBrokenIcon stroke="#F9B401" />}
             />
             <OverviewSummaryCard
               title="Rejected&nbsp;requests"
-              value={1}
+              loading={isLoadingOverview}
+              value={overviewData?.data?.request?.revoked ?? 0}
               icon={<CheckSquareBrokenIcon stroke="#F90101" />}
             />
             <OverviewSummaryCard
               title="Data&nbsp;Leaks"
-              value={0}
+              loading={isLoadingOverview}
+              value={overviewData?.data?.request?.data_leaks ?? 0}
               icon={<InformationCircleContainedIcon />}
             />
           </div>
@@ -87,36 +95,79 @@ const Overview = () => {
                 </OverviewTable.TableRow>
 
                 <div className="w-full">
-                  {overviewActivities.map(
-                    (overviewItem: OverviewActivity, index: number) => {
-                      return (
-                        <OverviewTable.TableRow
-                          key={index}
-                          className="border-b-2 border-b-[#0074FF0D] w-full"
-                        >
-                          <OverviewTable.TableDetail>
-                            {overviewItem.name}
-                          </OverviewTable.TableDetail>
-                          <OverviewTable.TableDetail>
-                            {overviewItem.date}
-                          </OverviewTable.TableDetail>
-                          <OverviewTable.TableDetail>
-                            {overviewItem.activity}
-                          </OverviewTable.TableDetail>
-                          <OverviewTable.TableDetail type="action">
-                            <button
-                              className=" outline-none border-none focus:outline-none bg-transparent "
-                              onClick={() => {
-                                handleViewActivity(overviewItem);
-                              }}
+                  {!!overviewData?.data?.activities?.data &&
+                  overviewData?.data?.activities?.data.length > 0 &&
+                  isLoadingOverview === false
+                    ? overviewActivities.map(
+                        (overviewItem: OverviewActivity, index: number) => {
+                          return (
+                            <OverviewTable.TableRow
+                              key={index}
+                              className="border-b-2 border-b-[#0074FF0D] w-full"
                             >
-                              <span className="!text-primary">View</span>
-                            </button>
-                          </OverviewTable.TableDetail>
-                        </OverviewTable.TableRow>
-                      );
-                    }
-                  )}
+                              <OverviewTable.TableDetail>
+                                {overviewItem.name}
+                              </OverviewTable.TableDetail>
+                              <OverviewTable.TableDetail>
+                                {overviewItem.date}
+                              </OverviewTable.TableDetail>
+                              <OverviewTable.TableDetail>
+                                {overviewItem.activity}
+                              </OverviewTable.TableDetail>
+                              <OverviewTable.TableDetail type="action">
+                                <button
+                                  className=" outline-none border-none focus:outline-none bg-transparent "
+                                  onClick={() => {
+                                    handleViewActivity(overviewItem);
+                                  }}
+                                >
+                                  <span className="!text-primary">View</span>
+                                </button>
+                              </OverviewTable.TableDetail>
+                            </OverviewTable.TableRow>
+                          );
+                        }
+                      )
+                    : null}
+
+                  {isLoadingOverview ? (
+                    <>
+                      <OverviewTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full">
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                      </OverviewTable.TableRow>
+                      <OverviewTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full">
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                      </OverviewTable.TableRow>
+                      <OverviewTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full">
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                      </OverviewTable.TableRow>
+                      <OverviewTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full">
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                        <OverviewTable.TableDetailLoaderItem />
+                      </OverviewTable.TableRow>
+                    </>
+                  ) : null}
+
+                  {!!overviewData?.data?.activities?.data &&
+                  overviewData?.data?.activities?.data.length <= 0 &&
+                  isLoadingOverview === false ? (
+                    <div className="w-full flex items-center justify-center min-h-32">
+                      <p className=" text-secondary-black  font-bold text-lg">
+                        You have no activities at the moment.
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
               </OverviewTable>
             </div>
@@ -133,7 +184,7 @@ const Overview = () => {
 
               <Spacer size={32} />
 
-              <div className="flex flex-col items-center gap-4 w-full h-96 overflow-auto">
+              <div className="flex flex-col items-center gap-4 w-full h-96 overflow-auto custom-scroller">
                 <OverviewItem />
                 <OverviewItem />
                 <OverviewItem />
@@ -218,9 +269,6 @@ const Overview = () => {
                     <div className="flex flex-wrap items-center justify-end gap-2 custom-scroller max-h-[10rem] h-fit overflow-auto">
                       <DataAccessItem>Email</DataAccessItem>
                       <DataAccessItem>Contacts</DataAccessItem>
-        
-   
-                
                     </div>
                   </div>
 

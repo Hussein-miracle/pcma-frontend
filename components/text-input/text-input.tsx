@@ -8,9 +8,11 @@ import React, {
 import { EyeCloseIcon, EyeIcon, EyeOpenIcon } from "../icons";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import ErrorMessage from "../error-message/error-message";
+import { cn } from "@/lib/utils";
 
 interface TextInputProps extends HTMLAttributes<HTMLInputElement> {
   secureTextEntry?: boolean;
+  secureTextEntryIcon?: ReactNode;
   fieldName?: string;
   fieldId?: string;
   error?: string;
@@ -18,7 +20,10 @@ interface TextInputProps extends HTMLAttributes<HTMLInputElement> {
   type?: string;
   icon?: ReactNode;
   iconPosition?: "right" | "left";
-  placeholder?:string;
+  placeholder?: string;
+  ref?: any;
+  required?: boolean;
+  className?: string;
 }
 
 const TextInput = ({
@@ -31,6 +36,9 @@ const TextInput = ({
   iconPosition = "right",
   icon,
   placeholder,
+  required,
+  secureTextEntryIcon = null,
+  className,
   ...props
 }: TextInputProps) => {
   const { toggle, toggleState } = useToggle(false);
@@ -53,13 +61,16 @@ const TextInput = ({
       </label>
       <div className="w-full relative h-fit">
         <input
+          ref={props.ref ?? undefined}
           type={textType}
           name={fieldId}
           id={fieldId}
-          placeholder={placeholder}
           {...props}
+          placeholder={placeholder}
+          autoComplete="off"
+          required={required ?? undefined}
           value={value}
-          className="border border-grey-30 border-solid w-full p-2 rounded outline-none transition ease-in-out duration-100 focus:border-secondary-blue placeholder:text-grey-90 placeholder:text-base placeholder:font-normal "
+          className={cn("border border-grey-30 border-solid w-full p-2 rounded outline-none transition ease-in-out duration-100 focus:border-secondary-blue placeholder:text-grey-90 placeholder:text-base placeholder:font-normal ",className)}
         />
 
         {secureTextEntry && (
@@ -68,11 +79,15 @@ const TextInput = ({
             className="absolute top-2 right-4"
             onClick={toggle}
           >
-            {!toggleState ? (
-              <EyeCloseIcon className="!stroke-primary " />
-            ) : (
-              <EyeIcon className="w-6 h-6 stroke-primary block" />
-            )}
+            <>
+              {secureTextEntryIcon ? (
+                secureTextEntryIcon
+              ) : !toggleState ? (
+                <EyeCloseIcon className="!stroke-primary " />
+              ) : (
+                <EyeIcon className="w-6 h-6 stroke-primary block" />
+              )}
+            </>
           </button>
         )}
 

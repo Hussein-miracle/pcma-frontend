@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format as formatDate } from "date-fns";
 import { CalenderIcon } from "@/components/icons";
+import FormContentContainer from "@/components/form-content-container/form-content-container";
 
 interface PersonalPiiForm {
   fullname: string;
@@ -47,7 +48,7 @@ const PersonalPiiCard = () => {
         </p>
       </div>
 
-      <div className="flex flex-col items-center w-full gap-4   h-[32.2rem] custom-scroller overflow-auto">
+      <FormContentContainer className="flex flex-col items-center w-full gap-4">
         <Controller
           name="fullname"
           control={control}
@@ -199,7 +200,7 @@ const PersonalPiiCard = () => {
             );
           }}
         />
-      </div>
+      </FormContentContainer>
 
       <PrimaryButton variant="secondary">Save</PrimaryButton>
     </form>

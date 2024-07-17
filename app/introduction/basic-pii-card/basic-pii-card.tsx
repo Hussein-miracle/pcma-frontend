@@ -3,6 +3,7 @@ import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import TextInput from "@/components/text-input/text-input";
 import PrimaryButton from "@/components/primary-button/primary-button";
+import FormContentContainer from "@/components/form-content-container/form-content-container";
 
 interface BasicPiiForm {
   lastname: string;
@@ -36,7 +37,7 @@ const BasicPiiCard = () => {
         </p>
       </div>
 
-      <div className="flex flex-col items-center w-full gap-4">
+      <FormContentContainer className="flex flex-col items-center w-full gap-4">
         <Controller
           name="firstname"
           control={control}
@@ -92,7 +93,7 @@ const BasicPiiCard = () => {
             );
           }}
         />
-      </div>
+      </FormContentContainer>
 
       <PrimaryButton variant="secondary">Save</PrimaryButton>
     </form>

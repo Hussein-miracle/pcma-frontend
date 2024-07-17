@@ -14,7 +14,7 @@ import {
 import PrimaryButton from "../primary-button/primary-button";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { IDateNotification, INotification } from "@/lib/types";
+import { IDateNotification, INotification, LoginType } from "@/lib/types";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import Spacer from "../spacer/spacer";
@@ -23,7 +23,11 @@ interface HeaderProps {
   variant?: "white" | "grey";
   // NOTE:the property below would be removed
   type?: "unauthed" | "authed";
+  userType?:LoginType;
 }
+
+interface IndividualHeaderProps extends HeaderProps {}
+interface ServiceProviderHeaderProps extends HeaderProps {}
 
 type AuthenticatedHeaderItemProps = {
   icon?: React.ReactNode;
@@ -53,7 +57,7 @@ const AuthenticatedHeaderItem = ({
         <Link href={href}>
           <li
             className={cn(
-              "w-fit h-fit cursor-pointer py-1 px-2 flex items-center gap-2 bg-[#0074FF0D] rounded-[10px]",
+              "w-fit h-fit cursor-pointer py-1 px-2 flex items-center gap-2 bg-[#0074FF0D] rounded-[10px] whitespace-nowrap",
               !href && " cursor-not-allowed ",
               className
             )}
@@ -67,7 +71,7 @@ const AuthenticatedHeaderItem = ({
       ) : (
         <li
           className={cn(
-            "w-fit h-fit cursor-pointer py-1 px-2 flex items-center gap-2 bg-[#0074FF0D] rounded-[10px]",
+            "w-fit h-fit cursor-pointer py-1 px-2 flex items-center gap-2 bg-[#0074FF0D] rounded-[10px] whitespace-nowrap",
             !href && " cursor-not-allowed ",
             className
           )}
@@ -135,7 +139,7 @@ const NotificationEmpty = () => {
   return (
     <div className=" w-full">
       <div className=" mx-auto flex h-52 w-64 items-center justify-center">
-        <PCMANotificationEmptyIcon/>
+        <PCMANotificationEmptyIcon />
       </div>
 
       <h2 className=" mx-auto mb-4 text-center text-2xl font-semibold leading-normal tracking-[0.4px] text-grey-60">
@@ -148,11 +152,14 @@ const NotificationEmpty = () => {
     </div>
   );
 };
-const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
+
+const InvidualHeader = ({
+  variant = "white",
+  type = "unauthed",
+}: IndividualHeaderProps) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { toggle: toggleNotiDialog, toggleState: showNotiDialog } =
-    useToggle();
+  const { toggle: toggleNotiDialog, toggleState: showNotiDialog } = useToggle();
 
   // console.log({ pathname }, "PN");
 
@@ -166,14 +173,11 @@ const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
           variant === "white" ? "bg-neutral-white" : "bg-grey-10"
         )}
       >
-        <div
-          className="cursor-pointer"
-          onClick={() => {
-            router.push("/");
-          }}
+        <Link
+          href={'/'}
         >
           <PCMALogo />
-        </div>
+        </Link>
 
         <nav className="w-fit h-full">
           {type === "unauthed" && (
@@ -294,8 +298,7 @@ const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center w-full">
             <DialogPanel
-              // @ts-ignore
-              transition={true}
+             
               className="w-full max-w-[32rem] rounded-3xl bg-[#F7F9FD] border border-grey-30 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-[33rem] overflow-hidden"
             >
               <DialogTitle
@@ -332,5 +335,192 @@ const Header = ({ variant = "white", type = "unauthed" }: HeaderProps) => {
     </Fragment>
   );
 };
+
+const ServiceProviderHeader = ({
+  variant = "white",
+  type = "unauthed",
+}: ServiceProviderHeaderProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { toggle: toggleNotiDialog, toggleState: showNotiDialog } = useToggle();
+
+  // console.log({ pathname }, "PN");
+
+  const notifications: Array<any> = [];
+
+  return (
+    <Fragment>
+      <header
+        className={cn(
+          "border-b border-b-grey-30 w-full py-4 px-6 sm:px-[7.5rem] flex items-center justify-between gap-[10px] h-full z-10",
+          variant === "white" ? "bg-neutral-white" : "bg-grey-10"
+        )}
+      >
+        <Link
+          href={'/'}
+        >
+          <PCMALogo />
+        </Link>
+
+        <nav className="w-fit h-full">
+          {type === "unauthed" && (
+            <ul className="hidden sm:flex items-center gap-6 h-full">
+              <li>
+                <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
+                  About
+                </span>
+              </li>
+              <li>
+                <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
+                  Features
+                </span>
+              </li>
+              <li>
+                <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
+                  Contact
+                </span>
+              </li>
+            </ul>
+          )}
+
+          {type === "authed" && (
+            <ul className="hidden sm:flex items-center gap-6 h-full">
+              <AuthenticatedHeaderItem
+                href="/applications"
+                icon={
+                  <GridIcon
+                    stroke={pathname.startsWith("/applications") ? "#fff" : undefined}
+                  />
+                }
+                className={cn(pathname.startsWith("/applications") && `bg-primary`)}
+              >
+                <span className={cn(pathname.startsWith("/applications") && `text-white`)}>
+                  Applications
+                </span>
+              </AuthenticatedHeaderItem>
+              <AuthenticatedHeaderItem
+                href={"/profile"}
+                icon={
+                  <UserProfileIcon
+                    stroke={pathname === "/profile" ? "#fff" : undefined}
+                  />
+                }
+                className={cn(pathname === "/profile" && `bg-primary`)}
+              >
+                <span className={cn(pathname === "/profile" && `text-white`)}>
+                  Profile
+                </span>
+              </AuthenticatedHeaderItem>
+              <AuthenticatedHeaderItem
+                href="/audit-trail"
+                icon={
+                  <ColorSwatchIcon
+                    stroke={pathname === "/audit-trail" ? "#fff" : undefined}
+                  />
+                }
+                className={cn(pathname === "/audit-trail" && `bg-primary`)}
+              >
+                <span
+                  className={cn(pathname === "/audit-trail" && `text-white`)}
+                >
+                  Audit Trail
+                </span>
+              </AuthenticatedHeaderItem>
+            </ul>
+          )}
+        </nav>
+
+        {type === "unauthed" && (
+          <div className="flex items-center gap-5 ">
+            <Link href={"/login"}>
+              <PrimaryButton className=" bg-transparent text-pretty text-primary p-0">
+                Login
+              </PrimaryButton>
+            </Link>
+            <Link href={"/register"}>
+              <PrimaryButton>
+                <span>Register</span>
+              </PrimaryButton>
+            </Link>
+          </div>
+        )}
+
+        {type === "authed" && (
+          <div
+            role="button"
+            className="relative flex items-center justify-center"
+            onClick={toggleNotiDialog}
+          >
+            <PCMABellIcon />
+
+            <div className="w-4 h-4 absolute -top-1.5 -right-1.5 rounded-full bg-red-500 flex items-center justify-center border border-white p-2">
+              <span className=" text-white font-semibold text-xs/3">1</span>
+            </div>
+          </div>
+        )}
+      </header>
+
+      <Dialog
+        open={showNotiDialog}
+        as="div"
+        className="relative z-10 focus:outline-none"
+        onClose={toggleNotiDialog}
+      >
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
+          <div className="flex min-h-full items-center justify-center w-full">
+            <DialogPanel
+            
+              className="w-full max-w-[32rem] rounded-3xl bg-[#F7F9FD] border border-grey-30 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-[33rem] overflow-hidden"
+            >
+              <DialogTitle
+                as="div"
+                className="text-xl/6 font-semibold text-grey-60 tracking-[2%] text-center  w-full relative"
+              >
+                <span> Notifications</span>
+
+                <button
+                  className="absolute right-0 top-0 outline-none border-none focus:outline-none  justify-self-end "
+                  onClick={toggleNotiDialog}
+                >
+                  <CloseIcon />
+                </button>
+              </DialogTitle>
+
+              <Spacer size={24} />
+
+              {notifications?.length > 0 ? (
+                <div className="h-[27rem] w-full overflow-hidden">
+                  <div className="w-full custom-scroller  h-full overflow-auto flex flex-col gap-4">
+                    {notifications?.map((n, idx) => {
+                      return <NotificationDateItem key={idx} />;
+                    })}
+                  </div>
+                </div>
+              ) : null}
+
+              {notifications.length <= 0 && <NotificationEmpty />}
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
+    </Fragment>
+  );
+};
+
+const Header = ({ variant = "white", type = "unauthed" ,userType}: HeaderProps) => {
+  const loggedInUserRole:LoginType =  userType ?? "individual";
+  return (
+    <Fragment>
+      {loggedInUserRole === "individual" ? (
+        <InvidualHeader variant={variant} type={type} />
+      ) : (
+        <ServiceProviderHeader variant={variant} type={type} />
+      )}
+    </Fragment>
+  );
+};
+
+Header.Individual = InvidualHeader;
+Header.ServiceProvider = ServiceProviderHeader;
 
 export default Header;

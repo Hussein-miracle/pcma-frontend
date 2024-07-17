@@ -25,6 +25,13 @@ export function cn(...inputs: ClassValue[]) {
 
 
 
+export const dynamicRequiredErrorMsg = (errKey:string) => {
+  return  `${errKey?.toLowerCase()} is required!.`;
+}
+
+
+
+
 export const pxToRemCalc = <P extends string | number>(pixels: DynPixel<P>):CountNumber<number>  => {
   if (typeof pixels === 'string') {
     const parsedValue = parseInt(pixels, 10);
@@ -44,3 +51,5 @@ export const pxToRem = <P extends string | number>(pixels: DynPixel<P>):string =
 
   return px + 'rem';
 }
+
+let p = pxToRem(32);

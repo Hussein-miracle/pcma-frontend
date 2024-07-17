@@ -3,7 +3,65 @@ import { SVGAttributes } from "react";
 
 interface ReactSVGProps extends SVGAttributes<SVGSVGElement> {}
 
-
+export const CopyIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M5 15H4C3.46957 15 2.96086 14.7893 2.58579 14.4142C2.21071 14.0391 2 13.5304 2 13V4C2 3.46957 2.21071 2.96086 2.58579 2.58579C2.96086 2.21071 3.46957 2 4 2H13C13.5304 2 14.0391 2.21071 14.4142 2.58579C14.7893 2.96086 15 3.46957 15 4V5M11 9H20C21.1046 9 22 9.89543 22 11V20C22 21.1046 21.1046 22 20 22H11C9.89543 22 9 21.1046 9 20V11C9 9.89543 9.89543 9 11 9Z"
+        stroke="#0074FF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const ArrowLeftIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M8.375 12.2813L5.25 9M5.25 9L8.375 5.71875M5.25 9H12.75"
+        stroke="#0074FF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+export const PlusIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M12.5 6L12.5 18M18.5 12L6.5 12"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
 
 export const SearchIcon = (props: ReactSVGProps) => {
   return (
@@ -1092,41 +1150,29 @@ export const EyeCloseIcon = (props: ReactSVGProps) => {
   );
 };
 
-function EyeIconD({ title = "", titleId = "", ...props }, svgRef: any) {
-  return /*#__PURE__*/ React.createElement(
-    "svg",
-    Object.assign(
-      {
-        xmlns: "http://www.w3.org/2000/svg",
-        fill: "none",
-        viewBox: "0 0 24 24",
-        strokeWidth: 1.5,
-        stroke: "currentColor",
-        "aria-hidden": "true",
-        ref: svgRef,
-        ariaLabelledby: titleId,
-      },
-      props
-    ),
-    title
-      ? /*#__PURE__*/ React.createElement(
-          "title",
-          {
-            id: titleId,
-          },
-          title
-        )
-      : null,
-    /*#__PURE__*/ React.createElement("path", {
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      d: "M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z",
-    }),
-    /*#__PURE__*/ React.createElement("path", {
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      d: "M15 12a3 3 0 11-6 0 3 3 0 016 0z",
-    })
+export const EyeIcon = (props: ReactSVGProps) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      // ariaHidden={true}
+      {...props}
+    >
+      <path
+        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
-}
-export const EyeIcon = React.forwardRef(EyeIconD);
+};

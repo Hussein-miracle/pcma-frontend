@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`bg-neutral-white ${plusJakartaSans.className}`}>
+      <body className={`bg-neutral-white ${plusJakartaSans.className} custom-scroller`}>
         <RootClientLayout>
 
         {children}
