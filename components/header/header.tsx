@@ -169,7 +169,7 @@ const InvidualHeader = ({
     <Fragment>
       <header
         className={cn(
-          "border-b border-b-grey-30 w-full py-4 px-6 sm:px-[7.5rem] flex items-center justify-between gap-[10px] h-full z-10",
+          "border-b border-b-grey-30 w-full py-4 px-6 sm:px-[7.5rem] flex items-center justify-between gap-[10px] h-full z-20",
           variant === "white" ? "bg-neutral-white" : "bg-grey-10"
         )}
       >
@@ -352,7 +352,7 @@ const ServiceProviderHeader = ({
     <Fragment>
       <header
         className={cn(
-          "border-b border-b-grey-30 w-full py-4 px-6 sm:px-[7.5rem] flex items-center justify-between gap-[10px] h-full z-10",
+          "border-b border-b-grey-30 w-full py-4 px-6 sm:px-[7.5rem] flex items-center justify-between gap-[10px] h-full z-20",
           variant === "white" ? "bg-neutral-white" : "bg-grey-10"
         )}
       >

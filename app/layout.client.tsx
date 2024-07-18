@@ -4,11 +4,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import React, { Fragment } from "react";
+import { ToastContainer } from 'react-toastify';
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
 import TopLoader from "@/components/top-loader/top-loader";
 import { store, persistedStore } from "@/rtk/app/store";
-import { PersistGate } from "redux-persist/integration/react";
-import { Provider } from "react-redux";
+import 'react-toastify/dist/ReactToastify.css';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +39,11 @@ const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
             // template='<div class="w-full bg-skin-secondary bar" role="bar"></div>'
             zIndex={1600}
             showAtBottom={false}
+          />
+          <ToastContainer
+          
+          
+          
           />
 
           {children}

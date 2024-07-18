@@ -1,6 +1,14 @@
 import { SelectItem, LoginType } from "../types";
 import { dynamicRequiredErrorMsg } from "../utils";
 
+
+export enum ApplicationFlowEnum {
+  VIEW_APPLICATIONS = "VIEW_APPLICATIONS",
+  CREATE_APPLICATION = "CREATE_APPLICATION",
+  CONFIRM_APPLICATION = "CONFIRM_APPLICATION",
+}
+
+
 export const USER_LOGIN_TYPES : SelectItem<LoginType>[] = [
   {
     label:"Individual",

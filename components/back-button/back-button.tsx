@@ -3,9 +3,21 @@ import React from 'react'
 import { ArrowLeftIcon } from '../icons';
 import { useRouter } from 'next/navigation';
 
-const BackButton = () => {
+
+interface BackButtonProps {
+  onClick?: () => void;
+}
+
+
+const BackButton = ({onClick}:BackButtonProps) => {
   const router = useRouter();
+
   const handleBack = () => {
+    if(onClick) {
+      onClick();
+      return;
+    }
+    
     router.back();
   }
   return (

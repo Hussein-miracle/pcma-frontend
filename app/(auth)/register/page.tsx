@@ -8,24 +8,29 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+
 import Header from "@/components/header/header";
 import PrimaryButton from "@/components/primary-button/primary-button";
 import TextInput from "@/components/text-input/text-input";
 import ErrorMessage from "@/components/error-message/error-message";
-import { ChevronDownIcon, CheckIcon } from "@/components/icons";
-import { USER_LOGIN_TYPES } from "@/lib/constants";
-import { cn } from "@/lib/utils";
-import { SelectItem, LoginType, RegistrationForm, InferredRegistrationForm } from "@/lib/types";
-import Spacer from "@/components/spacer/spacer";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { registrationSchema } from "@/lib/validations";
-import FormContentContainer from "@/components/form-content-container/form-content-container";
-import { usePostServiceProviderRegistration, usePostIndividualLogin, usePostIndividualRegistration } from "@/lib/hooks/api/mutations";
 import ButtonLoader from "@/components/button-loader/button-loader";
+import FormContentContainer from "@/components/form-content-container/form-content-container";
+import Spacer from "@/components/spacer/spacer";
+import { ChevronDownIcon, CheckIcon } from "@/components/icons";
+
+import { USER_LOGIN_TYPES } from "@/lib/constants";
+import { cn, handleErrorGlobal, sleep, successToast } from "@/lib/utils";
+import { registrationSchema } from "@/lib/validations";
+import {InferredRegistrationForm } from "@/lib/types";
+import { usePostServiceProviderRegistration, usePostIndividualRegistration } from "@/lib/hooks/api/mutations";
 import useToastCustom from "@/lib/hooks/client/use-toast-custom";
 
 const Register = () => {
-  const {successToast,errorToast} = useToastCustom();
+  const router = useRouter();
+  // const {successToast} = useToastCustom();
+
   const {
     control,
     setValue,
@@ -60,7 +65,7 @@ const Register = () => {
 
   // successToast("Registration Successful")
   const handleRegister = async (values: InferredRegistrationForm) => {
-    console.log({ registerValues: values });
+    // console.log({ registerValues: values });
 
     try {
       if (registrationType.value === "individual") {
@@ -72,25 +77,39 @@ const Register = () => {
           lastName: values.lastName!,
         });
 
-        console.log({individualResponse})
+        // console.log({individualResponse})
 
         successToast(individualResponse?.message ?? "Registration Successful")
+        await sleep(3000);
+        successToast("You're being redirected to login.")
+        await sleep(2000);
+        router.push('/login')
       
       } else {
         const spResponse = await registerServiceProvider({
           email: values.email,
           password: values.password,
           confirmPassword: values.confirmPassword,
-          firstName: values.firstName,
-          lastName: values.lastName,
+          // firstName: values.firstName,
+          // lastName: values.lastName,
+          fullName:values.fullName!,
+          companyName:values.companyName!,
+          companyAddress:values.companyAddress!,
+          phoneNumber:values.phoneNumber!,
+          registrationNumber:values.registrationNumber!
         });
 
-        console.log({spResponse})
+        // console.log({spResponse})
+        successToast(spResponse?.message ?? "Registration Successful")
+        await sleep(3000);
+        successToast("You're being redirected to login.")
+        await sleep(2000);
+        router.push('/login')
       }
     } catch (error:any) {
       const errorMsg = error?.response?.data?.message ?? "An error occurred";
       // console.log({errorMsg})
-      errorToast(errorMsg)
+      handleErrorGlobal(errorMsg)
     }
   };
 

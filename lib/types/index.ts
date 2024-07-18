@@ -30,9 +30,13 @@ export interface SPRegistrationDetails {
   email: string;
   password: string;
   confirmPassword: string;
-  firstName: string;
-  lastName: string;
-  companyName?: string;
+  firstName?: string;
+  lastName?: string;
+  companyName: string;
+  companyAddress: string;
+  phoneNumber: string;
+  registrationNumber: string;
+  fullName: string;
 }
 export interface RegistrationForm {
   email: string;
@@ -98,14 +102,18 @@ export interface IDateNotification {
 
 //start
 
+export interface LoginDetails{
+  email:string;
+  password:string;
+}
 
 
-interface Response{
+export interface ApiResponse{
   status?:number;
   message?: string; 
 }
 
-export interface IndividualProfileResponse extends Response{
+export interface IndividualProfileResponse extends ApiResponse{
   data:{
     firstName:string;
     lastName:string;
@@ -114,7 +122,7 @@ export interface IndividualProfileResponse extends Response{
   }
 
 }
-export interface IndividualOverviewResponse extends Response{
+export interface IndividualOverviewResponse extends ApiResponse{
   data:{
     activities:{
       data:Array<any>;
@@ -129,10 +137,10 @@ export interface IndividualOverviewResponse extends Response{
   }
 
 }
-export interface IndividualLoginResponse extends Response { 
+export interface IndividualLoginResponse extends ApiResponse { 
   token: { access_token: string; refresh_token: string; } 
 }
-export interface SPLoginResponse extends Response { 
+export interface SPLoginResponse extends ApiResponse { 
   token: { access_token: string; refresh_token: string; } ;
 }
 

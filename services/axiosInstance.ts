@@ -14,7 +14,11 @@ const axiosInstance = axios.create({
 const handleRefreshToken = async () => {
   const refreshToken = store.getState().auth.refresh_token;
   try {
-    const data = await axiosInstance.get(`/auth/token/refresh`);
+    const data = await axiosInstance.get(`/auth/token/refresh`,{
+      headers: {
+        Authorization: `Bearer ${refreshToken}`
+      }
+    });
 
     console.log({ data });
 

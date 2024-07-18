@@ -53,7 +53,9 @@ const ProfilePage = () => {
     useToggle();
 
   const {isLoading:isLoadingIndividual,data:individualProfile} = useGetIndividualProfile();
+  
   const individualProfileData: Partial<PersonalInformationForm> | null = individualProfile?.data ?? null;
+
   console.log({isLoadingIndividual,individualProfileData});
 
   const {

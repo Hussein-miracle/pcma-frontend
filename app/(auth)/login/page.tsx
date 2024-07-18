@@ -17,7 +17,7 @@ import TextInput from "@/components/text-input/text-input";
 import { CheckIcon, ChevronDownIcon } from "@/components/icons";
 import { USER_LOGIN_TYPES, VALIDATION_ERROR_MESSAGES } from "@/lib/constants";
 import { InferredLoginForm, LoginForm } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, handleErrorGlobal, successToast } from "@/lib/utils";
 import { loginSchema } from "@/lib/validations";
 import { z } from "zod";
 import { usePostIndividualLogin, usePostServiceProviderLogin } from "@/lib/hooks/api/mutations";
@@ -28,7 +28,7 @@ import { setAccessToken, setRefreshToken } from "@/rtk/features/auth-slice/auth-
 
 const Login = () => {
   const dispatch = useDispatch();
-  const {successToast,errorToast} = useToastCustom();
+  // const {successToast,errorToast} = useToastCustom();
   const router = useAppRouter();
   const {
     control,
@@ -78,10 +78,10 @@ const Login = () => {
           password: values.password,
         });
 
+        console.log({spLoginResponse})
         const token = spLoginResponse?.token;
         dispatch(setAccessToken(token.access_token));
         dispatch(setRefreshToken(token.refresh_token));
-        // console.log({spLoginResponse})
         successToast(spLoginResponse?.message ?? "Login Successful")
         router.push("/applications");     
       }
@@ -89,7 +89,7 @@ const Login = () => {
       // console.log({errorLogin:error})
       const errorMsg = error?.response?.data?.message ?? "An error occurred";
       // console.log({errorMsg})
-      errorToast(errorMsg)
+      handleErrorGlobal(errorMsg)
     }
   };
 

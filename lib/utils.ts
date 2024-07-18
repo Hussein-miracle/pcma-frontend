@@ -2,7 +2,8 @@ import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { CountNumber, DynPixel } from './types';
-
+import toast from "react-hot-toast";
+import { ToastOptions, toast as rtToast } from 'react-toastify';
 
 
 
@@ -30,6 +31,14 @@ export const dynamicRequiredErrorMsg = (errKey:string) => {
 }
 
 
+export const successToast = (msg: string,options:ToastOptions = {}) => {
+  rtToast.success(msg,{...options});
+};
+
+export const errorToast = (msg: string,options:ToastOptions = {}) => {
+  rtToast.error(msg,{...options});
+};
+
 
 
 export const pxToRemCalc = <P extends string | number>(pixels: DynPixel<P>):CountNumber<number>  => {
@@ -52,4 +61,32 @@ export const pxToRem = <P extends string | number>(pixels: DynPixel<P>):string =
   return px + 'rem';
 }
 
-let p = pxToRem(32);
+// let p = pxToRem(32);
+
+
+/**
+ * A function to sleep for a given time (milliseconds)
+ *
+ * @param {number} ms - The time to sleep in milliseconds
+ * @returns {void}
+ */
+export const sleep = async (ms:number):Promise<void> => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export const handleErrorGlobal = (message:string |  Array<string>) => {
+  // let message
+  if(typeof message === 'string'){
+    errorToast(message)
+  }else if(Array.isArray(message)){
+    let errMsg = '';
+
+    for(const msg of message){
+      errMsg += ` ${msg}    .`; 
+    }
+
+
+    errorToast(errMsg);
+  }
+}
+

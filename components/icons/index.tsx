@@ -217,7 +217,7 @@ export const CheckboxIcon = (props: ReactSVGProps) => {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clip-path="url(#clip0_204_1827)">
+      <g clipPath="url(#clip0_204_1827)">
         <rect y="0.5" width="16" height="16" rx="4" fill="#0074FF" />
         <path
           d="M12.8002 4.90002L5.64068 12.1L3.2002 9.64574"
