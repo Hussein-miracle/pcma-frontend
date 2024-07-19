@@ -36,7 +36,7 @@ const Overview = () => {
   return (
     <Fragment>
       <section className="bg-grey-10 w-full h-full min-h-screen">
-        <Header type="authed" />
+        <Header type="authed" roleType="user"  />
         <main className="w-full mx-auto  px-6 py-4 md:pt-[4rem] md:px-[7.5rem]">
           <div className="w-full bg-white border-2 border-[#0074FF1A] border-solid rounded-3xl grid grid-cols-1 md:grid-cols-4  gap-6 p-4 md:h-44">
             <OverviewSummaryCard

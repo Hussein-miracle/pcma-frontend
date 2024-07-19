@@ -15,7 +15,7 @@ import { CopyIcon, PlusIcon } from "@/components/icons";
 
 import { ApplicationFlowContext } from "@/contexts/application-context/application-context";
 
-import { ApplicationCreationForm } from "@/lib/types";
+import { ApplicationCreationData } from "@/lib/types";
 import { useGetApplications } from "@/lib/hooks/api/queries";
 import { ApplicationFlowEnum } from "@/lib/constants";
 import { sleep } from "@/lib/utils";
@@ -142,7 +142,7 @@ const ConfirmApplicationDetails = () => {
 const ApplicationCreationForm = () => {
   const { handleSetApplicationFlowState } = useContext(ApplicationFlowContext);
 
-  const { control, handleSubmit } = useForm<ApplicationCreationForm>({
+  const { control, handleSubmit } = useForm<ApplicationCreationData>({
     defaultValues: {
       applicationName: "",
       website_url: "",
@@ -155,7 +155,7 @@ const ApplicationCreationForm = () => {
     },
   });
 
-  const handleCreateApplication = async (data: ApplicationCreationForm) => {
+  const handleCreateApplication = async (data: ApplicationCreationData) => {
     console.log({ data });
     //await sleep(500);
     handleSetApplicationFlowState(ApplicationFlowEnum.CONFIRM_APPLICATION);

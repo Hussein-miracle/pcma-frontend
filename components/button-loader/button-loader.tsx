@@ -13,7 +13,7 @@ const ButtonLoader = ({ className ,inverted = false,wrapperClassName}: ButtonLoa
     <>
       <div
         role="status"
-        className={cn("mx-auto h-[1.15rem] w-[1.15rem] p-0 my-0 rounded-full overflow-hidden",wrapperClassName)}
+        className={cn("mx-auto h-[1.05rem] w-[1.05rem] p-0 my-0 rounded-full overflow-hidden",wrapperClassName)}
       >
         <svg
           aria-hidden="true"

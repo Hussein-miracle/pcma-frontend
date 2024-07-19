@@ -14,7 +14,7 @@ import {
 import PrimaryButton from "../primary-button/primary-button";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-import { IDateNotification, INotification, LoginType } from "@/lib/types";
+import { IDateNotification, INotification, LoginType, Role } from "@/lib/types";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import Spacer from "../spacer/spacer";
@@ -23,7 +23,7 @@ interface HeaderProps {
   variant?: "white" | "grey";
   // NOTE:the property below would be removed
   type?: "unauthed" | "authed";
-  userType?:LoginType;
+  roleType?:Role;
 }
 
 interface IndividualHeaderProps extends HeaderProps {}
@@ -216,36 +216,36 @@ const InvidualHeader = ({
                 </span>
               </AuthenticatedHeaderItem>
               <AuthenticatedHeaderItem
-                href={"/profile"}
+                href={"/profile/user"}
                 icon={
                   <UserProfileIcon
-                    stroke={pathname === "/profile" ? "#fff" : undefined}
+                    stroke={pathname === "/profile/user" ? "#fff" : undefined}
                   />
                 }
-                className={cn(pathname === "/profile" && `bg-primary`)}
+                className={cn(pathname === "/profile/user" && `bg-primary`)}
               >
-                <span className={cn(pathname === "/profile" && `text-white`)}>
+                <span className={cn(pathname === "/profile/user" && `text-white`)}>
                   Profile
                 </span>
               </AuthenticatedHeaderItem>
               <AuthenticatedHeaderItem
-                href="/audit-trail"
+                href="/audit-trail/user"
                 icon={
                   <ColorSwatchIcon
-                    stroke={pathname === "/audit-trail" ? "#fff" : undefined}
+                    stroke={pathname === "/audit-trail/user" ? "#fff" : undefined}
                   />
                 }
-                className={cn(pathname === "/audit-trail" && `bg-primary`)}
+                className={cn(pathname === "/audit-trail/user" && `bg-primary`)}
               >
                 <span
-                  className={cn(pathname === "/audit-trail" && `text-white`)}
+                  className={cn(pathname === "/audit-trail/user" && `text-white`)}
                 >
                   Audit Trail
                 </span>
               </AuthenticatedHeaderItem>
               <AuthenticatedHeaderItem
                 icon={<ShieldCheckIcon />}
-                className="border border-[#ADD1FE] pl-4 pr-1 py-1 rounded-3xl"
+                className="border border-[#ADD1FE] pl-4 pr-1 py-1 rounded-3xl cursor-wait"
               >
                 <div className="flex items-center gap-2">
                   <span>Data-Leak </span>
@@ -399,29 +399,29 @@ const ServiceProviderHeader = ({
                 </span>
               </AuthenticatedHeaderItem>
               <AuthenticatedHeaderItem
-                href={"/profile"}
+                href={"/profile/service-provider"}
                 icon={
                   <UserProfileIcon
-                    stroke={pathname === "/profile" ? "#fff" : undefined}
+                    stroke={pathname === "/profile/service-provider" ? "#fff" : undefined}
                   />
                 }
-                className={cn(pathname === "/profile" && `bg-primary`)}
+                className={cn(pathname === "/profile/service-provider" && `bg-primary`)}
               >
-                <span className={cn(pathname === "/profile" && `text-white`)}>
+                <span className={cn(pathname === "/profile/service-provider" && `text-white`)}>
                   Profile
                 </span>
               </AuthenticatedHeaderItem>
               <AuthenticatedHeaderItem
-                href="/audit-trail"
+                href="/audit-trail/service-provider"
                 icon={
                   <ColorSwatchIcon
-                    stroke={pathname === "/audit-trail" ? "#fff" : undefined}
+                    stroke={pathname === "/audit-trail/service-provider" ? "#fff" : undefined}
                   />
                 }
-                className={cn(pathname === "/audit-trail" && `bg-primary`)}
+                className={cn(pathname === "/audit-trail/service-provider" && `bg-primary`)}
               >
                 <span
-                  className={cn(pathname === "/audit-trail" && `text-white`)}
+                  className={cn(pathname === "/audit-trail/service-provider" && `text-white`)}
                 >
                   Audit Trail
                 </span>
@@ -507,11 +507,11 @@ const ServiceProviderHeader = ({
   );
 };
 
-const Header = ({ variant = "white", type = "unauthed" ,userType}: HeaderProps) => {
-  const loggedInUserRole:LoginType =  userType ?? "individual";
+const Header = ({ variant = "white", type = "unauthed" ,roleType}: HeaderProps) => {
+  const loggedInRole:Role =  roleType ?? "user";
   return (
     <Fragment>
-      {loggedInUserRole === "individual" ? (
+      {loggedInRole === "user" ? (
         <InvidualHeader variant={variant} type={type} />
       ) : (
         <ServiceProviderHeader variant={variant} type={type} />

@@ -1,16 +1,16 @@
-import { LoginType } from "@/lib/types";
+import { LoginType, Role } from "@/lib/types";
 import { createSlice } from "@reduxjs/toolkit";
 
 type AuthState = {
   refresh_token: string | null;
   access_token: string | null;
-  user_role: LoginType | null;
+  role: Role | null;
 };
 
 const initialState: AuthState = {
   access_token: null,
   refresh_token:null,
-  user_role: null,
+  role: null,
 };
 
 export const authSlice = createSlice({
@@ -24,7 +24,7 @@ export const authSlice = createSlice({
       state.refresh_token = action.payload;
     },
     setRole: (state, action) => {
-      state.user_role = action.payload;
+      state.role = action.payload;
     },
   },
 });

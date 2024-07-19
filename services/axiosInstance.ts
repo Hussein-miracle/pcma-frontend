@@ -1,4 +1,7 @@
+import { RefreshTokenApiResponse } from '@/lib/types';
+import { errorToast } from '@/lib/utils';
 import { store } from '@/rtk/app/store';
+import { setAccessToken, setRefreshToken } from '@/rtk/features/auth-slice/auth-slice';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -12,18 +15,36 @@ const axiosInstance = axios.create({
 
 
 const handleRefreshToken = async () => {
-  const refreshToken = store.getState().auth.refresh_token;
+  const refresh_token = store.getState().auth.refresh_token;
+  const access_token = store.getState().auth.access_token;
+
+  const body = {
+    refresh_token:refresh_token!
+  }
+
   try {
-    const data = await axiosInstance.get(`/auth/token/refresh`,{
+    const response = await axiosInstance.post<unknown,RefreshTokenApiResponse,Omit<RefreshTokenApiResponse,'access_token'>>(`/auth/token/refresh`,body,{
       headers: {
-        Authorization: `Bearer ${refreshToken}`
+        Authorization: `Bearer ${access_token}`
       }
     });
 
-    console.log({ data });
+    // console.log({ responseRefresh:response });
 
-  } catch (error) {
+    const newAccessToken = response.access_token;
+    const newRereshToken = response.refresh_token;
+
+
+    store.dispatch(setAccessToken(newAccessToken));
+    store.dispatch(setRefreshToken(newRereshToken))
+
+    return newAccessToken;
+  } catch (error:any) {
     console.error({ error })
+    store.dispatch(setAccessToken(null));
+    store.dispatch(setRefreshToken(null));
+    errorToast(error?.message ??  "Session expired.")
+    window.location.href = '/';
   }
 }
 
@@ -89,9 +110,14 @@ const _axiosResponseInterceptor = axiosInstance.interceptors.response.use(
         errorConfig._retry = true;
         if (retryCount < 3) {
           retryCount += 1;
-          await handleRefreshToken();
+          const new_token = await handleRefreshToken();
+
+          if (new_token) {
+            errorConfig.headers['Authorization'] = `Bearer ${new_token}`;
+            return axiosInstance(errorConfig);  
+          }
         } else {
-          toast.error("Session expired.")
+          errorToast("Session expired.")
           window.location.href = '/';
           retryCount = 0;
           return;

@@ -24,7 +24,7 @@ import { usePostIndividualLogin, usePostServiceProviderLogin } from "@/lib/hooks
 import useToastCustom from "@/lib/hooks/client/use-toast-custom";
 import { useAppRouter } from "@/lib/hooks/client/use-app-router";
 import { useDispatch } from "react-redux";
-import { setAccessToken, setRefreshToken } from "@/rtk/features/auth-slice/auth-slice";
+import { setAccessToken, setRefreshToken, setRole } from "@/rtk/features/auth-slice/auth-slice";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -52,37 +52,54 @@ const Login = () => {
 
   // console.log({errors});
 
-  const {isPending:isPendingServiceProvider , mutateAsync:loginServiceProvider} = usePostServiceProviderLogin();
-  const {isPending:isPendingIndividual , mutateAsync:loginIndividual} = usePostIndividualLogin();
+  const {isPending:isPendingServiceProvider,mutateAsync:loginServiceProvider} = usePostServiceProviderLogin();
+
+  const {isPending:isPendingIndividual,mutateAsync:loginIndividual} = usePostIndividualLogin();
+
 
   const handleLogin = async (values: InferredLoginForm) => {
    // console.log({loginValues: values });
-
     try {
       if (loginType.value === "individual") {
+
        const individualLoginResponse =  await loginIndividual({
           email: values.email,
           password: values.password,
         });
 
         console.log({individualLoginResponse})
+
+        const role = individualLoginResponse?.role;
         const token = individualLoginResponse?.token;
+
+
         dispatch(setAccessToken(token.access_token));
+
         dispatch(setRefreshToken(token.refresh_token));
+
+        dispatch(setRole(role));
+
         successToast(individualLoginResponse?.message ?? "Login Successful")
-        // window.history.replaceState(null, "", "/");
-        router.push("/overview");        
+   
+        // router.push("/overview"); 
+
       } else {
+
         const spLoginResponse = await loginServiceProvider({
           email: values.email,
           password: values.password,
         });
 
-        console.log({spLoginResponse})
+        console.log({spLoginResponse});
+
         const token = spLoginResponse?.token;
+        const role = spLoginResponse?.role;
+        dispatch(setRole(role));  
         dispatch(setAccessToken(token.access_token));
         dispatch(setRefreshToken(token.refresh_token));
-        successToast(spLoginResponse?.message ?? "Login Successful")
+
+        successToast(spLoginResponse?.message ?? "Login Successful");
+
         router.push("/applications");     
       }
     } catch (error:any) {

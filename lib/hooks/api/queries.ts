@@ -25,10 +25,21 @@ export const useGetIndividualProfile = () => {
    return response;
 }
 
+export const useGetServiceProviderProfile = () => {
+   const response = useQuery({
+      queryKey: ["get-sp-profile"],
+      queryFn: async ():Promise<IndividualProfileResponse> => {
+        return axiosInstance.get("/tp/profile")
+      }
+   })
+
+   return response;
+}
+
 
 export const useGetApplications = () => {
    const response = useQuery({
-      queryKey: ["get-applications"],
+      queryKey: ["get-sp-applications"],
       queryFn: async () => {
         return axiosInstance.get("/tp/application")
       }

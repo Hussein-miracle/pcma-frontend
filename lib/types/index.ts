@@ -8,6 +8,7 @@ export type DynPixel<P> = P extends `${infer T}px` ? T : P;
 
 export type LoginType = 'individual' | 'company' | 'service-provider';
 
+
 export interface LoginForm {
   email: string;
   password: string;
@@ -25,6 +26,11 @@ export interface IndividualRegistrationDetails {
   firstName: string;
   lastName: string;
   companyName?: string;
+}
+
+export type RefreshTokenApiResponse = {
+  access_token:string;
+  refresh_token:string;
 }
 export interface SPRegistrationDetails {
   email: string;
@@ -71,7 +77,7 @@ export type ConnectedApplication = {
 }
 
 
-export type ApplicationCreationForm = {
+export type ApplicationCreationData = {
   applicationName: string;
   website_url: string;
   upload_logo: string | File | null;
@@ -100,8 +106,9 @@ export interface IDateNotification {
 
 
 
-//start
+//start API types
 
+export type Role = 'user' | 'transaction_party';
 export interface LoginDetails{
   email:string;
   password:string;
@@ -139,8 +146,11 @@ export interface IndividualOverviewResponse extends ApiResponse{
 }
 export interface IndividualLoginResponse extends ApiResponse { 
   token: { access_token: string; refresh_token: string; } 
+  role:Role;
 }
+
 export interface SPLoginResponse extends ApiResponse { 
   token: { access_token: string; refresh_token: string; } ;
+  role:Role;
 }
 

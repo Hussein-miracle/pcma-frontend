@@ -17,8 +17,8 @@ import {
 } from "@headlessui/react";
 import Header from "@/components/header/header";
 import Spacer from "@/components/spacer/spacer";
-import AuditTrailTable from "./components/audit-trail-table/audit-trail-table";
-import DataAccessItem from "../profile/components/data-access-item/data-access-item";
+import AuditTrailTable from "../components/audit-trail-table/audit-trail-table";
+import DataAccessItem from "../../profile/components/data-access-item/data-access-item";
 import { CheckIcon, FilterIcon, MoreIcon, SearchIcon } from "@/components/icons";
 import { auditTrails } from "@/data";
 import { AuditTrail } from "@/lib/types";

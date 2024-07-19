@@ -2,6 +2,11 @@ import { SelectItem, LoginType } from "../types";
 import { dynamicRequiredErrorMsg } from "../utils";
 
 
+export enum RoleEnum{
+  USER = "USER",
+  TRANSACTION_PARTY = "TRANSACTION_PARTY", 
+}
+
 export enum ApplicationFlowEnum {
   VIEW_APPLICATIONS = "VIEW_APPLICATIONS",
   CREATE_APPLICATION = "CREATE_APPLICATION",

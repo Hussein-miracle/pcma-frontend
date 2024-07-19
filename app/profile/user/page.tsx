@@ -15,7 +15,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
 import { format as formatDate } from "date-fns";
 import FileInput from "@/components/file-input/file-input";
-import ProfileTable from "./components/profile-table/profile-table";
+import ProfileTable from "../components/profile-table/profile-table";
 import { connectedApplications } from "@/data";
 import { ConnectedApplication } from "@/lib/types";
 import {
@@ -26,9 +26,13 @@ import {
   Transition,
 } from "@headlessui/react";
 import useToggle from "@/lib/hooks/client/use-toggle";
-import DataAccessItem from "./components/data-access-item/data-access-item";
-import DataAccessCheckItem from "./components/data-access-check-item/data-access-check-item";
+import DataAccessItem from "../components/data-access-item/data-access-item";
+import DataAccessCheckItem from "../components/data-access-check-item/data-access-check-item";
 import { useGetIndividualProfile } from "@/lib/hooks/api/queries";
+import { RoleEnum } from "@/lib/constants";
+import { AppRootState } from "@/rtk/app/store";
+import { redirect } from "next/navigation";
+import { useSelector } from "react-redux";
 
 interface PersonalInformationForm {
   fullname?: string;
@@ -51,7 +55,9 @@ const ProfilePage = () => {
     useToggle();
   const { toggle: toggleDisconnectDialog, toggleState: showDisconnectDialog } =
     useToggle();
+    const role = useSelector((state:AppRootState) => state.auth.role);
 
+    
   const {isLoading:isLoadingIndividual,data:individualProfile} = useGetIndividualProfile();
   
   const individualProfileData: Partial<PersonalInformationForm> | null = individualProfile?.data ?? null;
@@ -115,10 +121,15 @@ const ProfilePage = () => {
     toggleDisconnectDialog();
   };
 
+  
+  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
+    return redirect('/');
+  }
+
   return (
     <>
       <section className=" bg-grey-10  w-full h-full min-h-screen">
-        <Header type="authed" />
+        <Header type="authed" roleType="user"  />
         <Spacer size={24} />
         <main className=" mx-auto  max-w-[54rem] w-full">
           <section className="w-full ">
@@ -418,7 +429,7 @@ const ProfilePage = () => {
                                   </span>
                                 </button>
                                 <button
-                                  className=" text-left  py-2 px-2.5 block  rounded-md hover:bg-danger-2 text-[#D60B0B] hover:text-black transition-colors ease-in-out duration-100  w-full"
+                                  className=" text-left  py-2 px-2.5 block  rounded-md hover:bg-danger-1 text-[#D60B0B] transition-colors ease-in-out duration-100  w-full"
                                   onClick={() => {
                                     handleDisconnect();
                                   }}
