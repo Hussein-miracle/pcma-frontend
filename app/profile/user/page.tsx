@@ -33,6 +33,7 @@ import { RoleEnum } from "@/lib/constants";
 import { AppRootState } from "@/rtk/app/store";
 import { redirect } from "next/navigation";
 import { useSelector } from "react-redux";
+import { usePatchIndividualProfile } from "@/lib/hooks/api/mutations";
 
 interface PersonalInformationForm {
   fullname?: string;
@@ -59,6 +60,8 @@ const ProfilePage = () => {
 
     
   const {isLoading:isLoadingIndividual,data:individualProfile} = useGetIndividualProfile();
+
+  const {isPending:isPatchingIndividual,mutateAsync:patchIndividual} = usePatchIndividualProfile();
   
   const individualProfileData: Partial<PersonalInformationForm> | null = individualProfile?.data ?? null;
 
@@ -122,8 +125,8 @@ const ProfilePage = () => {
   };
 
   
-  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
-    return redirect('/');
+  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase() && role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase() ){
+    return redirect('/profile/service-provider');
   }
 
   return (

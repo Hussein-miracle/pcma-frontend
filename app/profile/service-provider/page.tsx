@@ -28,11 +28,12 @@ import {
 import useToggle from "@/lib/hooks/client/use-toggle";
 import DataAccessItem from "../components/data-access-item/data-access-item";
 import DataAccessCheckItem from "../components/data-access-check-item/data-access-check-item";
-import { useGetIndividualProfile } from "@/lib/hooks/api/queries";
+import { useGetServiceProviderProfile } from "@/lib/hooks/api/queries";
 import { RoleEnum } from "@/lib/constants";
 import { redirect } from "next/navigation";
 import { AppRootState } from "@/rtk/app/store";
 import { useSelector } from "react-redux";
+import { usePatchServiceProviderProfile } from "@/lib/hooks/api/mutations";
 
 interface PersonalInformationForm {
   fullname?: string;
@@ -57,11 +58,12 @@ const ProfilePage = () => {
     useToggle();
   const role = useSelector((state:AppRootState) => state.auth.role);
 
-  const {isLoading:isLoadingIndividual,data:individualProfile} = useGetIndividualProfile();
+  const {isLoading:isLoadingSpProfile,data:serviceProviderProfile} = useGetServiceProviderProfile();
+  const {isPending:isPatchingSP,mutateAsync:patchServiceProvider} = usePatchServiceProviderProfile();
   
-  const individualProfileData: Partial<PersonalInformationForm> | null = individualProfile?.data ?? null;
+  const spProfile: Partial<PersonalInformationForm> | null = serviceProviderProfile?.data ?? null;
 
-  console.log({isLoadingIndividual,individualProfileData});
+  console.log({isLoadingSpProfile,spProfile});
 
   const {
     control,
@@ -91,14 +93,14 @@ const ProfilePage = () => {
 
 
   useEffect(() => {
-    if(!!individualProfileData){
-      for(const key in individualProfileData){
+    if(!!spProfile){
+      for(const key in spProfile){
         if(key in formValues){
-          setValue(key as unknown as keyof PersonalInformationForm, individualProfileData[key as unknown as keyof PersonalInformationForm]);
+          setValue(key as unknown as keyof PersonalInformationForm, spProfile[key as unknown as keyof PersonalInformationForm]);
         }
       }
     }
-  },[individualProfileData])
+  },[spProfile])
 
   
 
@@ -121,8 +123,8 @@ const ProfilePage = () => {
   };
 
 
-  if(role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()){
-    return redirect('/');
+  if(role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() && role?.toLowerCase() === RoleEnum.USER.toLowerCase()){
+    return redirect('/profile/user');
   }
 
   return (

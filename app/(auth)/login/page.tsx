@@ -81,7 +81,7 @@ const Login = () => {
 
         successToast(individualLoginResponse?.message ?? "Login Successful")
    
-        // router.push("/overview"); 
+        router.push("/overview"); 
 
       } else {
 

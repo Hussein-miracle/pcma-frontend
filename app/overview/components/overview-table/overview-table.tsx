@@ -45,7 +45,7 @@ const TableHeaderItem = ({ children,className }: { children: React.ReactNode;cla
 const TableDetailLoaderItem = ({className,skeletonClassName}: {className?:string;skeletonClassName?:string;}) => {
   return (
     <div className={cn("first:pl-8 pl-6 pr-6 py-4 truncate  last:pr-8 cursor-default text-left text-base/4 font-medium tracking-[1%] ",className)} role="status">
-      <span className={cn("bg-[#eee] block min-w-10 min-h-2 w-16 h-4 rounded-md ",skeletonClassName)}>&nbsp;</span>
+      <span className={cn("bg-[#eee] block min-w-10 min-h-2 w-16 h-4 rounded-md animate-pulse",skeletonClassName)}>&nbsp;</span>
     </div>
   )
 }
