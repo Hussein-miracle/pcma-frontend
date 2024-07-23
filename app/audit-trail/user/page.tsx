@@ -41,18 +41,13 @@ const people = [
 const AuditTrailPage = () => {
   const role = useSelector((state:AppRootState) => state.auth.role);
   
-  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase() && role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase()){
-    return redirect("/audit-trail/service-provider");
-  }else if (role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
-    return redirect("/");
-  }
-
-
-  
-
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
   const [selected, setSelected] = useState(people[1]);
   const [query, setQuery] = useState<string>("");
+
+
+
+  
 
 
   const {data:auditTrailData,isLoading:isLoadingAuditTrail}  = useGetIndividualAuditTrailDashboard();
@@ -65,6 +60,15 @@ const AuditTrailPage = () => {
 
     toggleVdDialog();
   };
+
+
+    
+  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase() && role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase()){
+    return redirect("/audit-trail/service-provider");
+  }else if (role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
+    return redirect("/");
+  }
+
   return (
     <Fragment>
       <section className="bg-grey-10 w-full h-full min-h-screen">

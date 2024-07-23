@@ -20,8 +20,14 @@ import { OverviewActivity } from "@/lib/types";
 import { overviewActivities } from "@/data";
 import { cn } from "@/lib/utils";
 import { useGetIndividualOverview } from "@/lib/hooks/api/queries";
+import { RoleEnum } from "@/lib/constants";
+import { AppRootState } from "@/rtk/app/store";
+import { redirect } from "next/navigation";
+import { useSelector } from "react-redux";
 
 const Overview = () => {
+  const role = useSelector((state: AppRootState) => state.auth.role);
+
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
 
   const { data: overviewData, isLoading: isLoadingOverview } = useGetIndividualOverview();
@@ -32,6 +38,18 @@ const Overview = () => {
     //  console.log({ activity });
     toggleVdDialog();
   };
+
+  
+
+
+  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase() && role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase() ){
+    return redirect('/applications');
+  }else if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
+    return redirect('/');
+  }
+
+
+
 
   return (
     <Fragment>

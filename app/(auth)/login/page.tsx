@@ -68,6 +68,8 @@ const Login = () => {
     }else{
       setValue("login_type", {...USER_LOGIN_TYPES[0]});
     }
+
+
   },[url_login_type])
 
 

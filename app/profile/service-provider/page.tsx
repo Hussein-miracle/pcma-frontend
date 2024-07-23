@@ -51,14 +51,7 @@ interface PersonalInformationForm {
 const ProfilePage = () => {
   const role = useSelector((state: AppRootState) => state.auth.role);
 
-  if (
-    role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() &&
-    role?.toLowerCase() === RoleEnum.USER.toLowerCase()
-  ) {
-    return redirect("/profile/user");
-  } else if (role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()) {
-    return redirect("/");
-  }
+
 
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
   const { toggle: togglePermissionDialog, toggleState: showPermissionDialog } =
@@ -131,6 +124,15 @@ const ProfilePage = () => {
   const handleDisconnect = () => {
     toggleDisconnectDialog();
   };
+
+  if (
+    role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() &&
+    role?.toLowerCase() === RoleEnum.USER.toLowerCase()
+  ) {
+    return redirect("/profile/user");
+  } else if (role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()) {
+    return redirect("/");
+  }
 
   return (
     <>
