@@ -223,8 +223,7 @@ const Overview = () => {
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
             <DialogPanel
-              // @ts-ignore
-              transition={true}
+           
               className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
             >
               <DialogTitle

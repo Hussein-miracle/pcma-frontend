@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Fragment, useState } from "react";
+import { redirect } from "next/navigation";
 import {
   Popover,
   PopoverContent,
@@ -24,6 +25,10 @@ import { auditTrails } from "@/data";
 import { AuditTrail } from "@/lib/types";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import { cn } from "@/lib/utils";
+import { useGetServiceProviderAuditTrailDashboard } from "@/lib/hooks/api/queries";
+import { useSelector } from "react-redux";
+import { AppRootState } from "@/rtk/app/store";
+import { RoleEnum } from "@/lib/constants";
 
 const people = [
   { id: 1, name: "Tom Cook" },
@@ -34,15 +39,37 @@ const people = [
 ];
 
 const AuditTrailPage = () => {
+  const role = useSelector((state:AppRootState) => state.auth.role);
+
+
+
+  if(role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() && role?.toLowerCase() === RoleEnum.USER.toLowerCase()){
+    return redirect("/audit-trail/user");
+  }else if (role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()){
+    return redirect("/");
+  }
+
+
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
   const [selected, setSelected] = useState(people[1]);
   const [query, setQuery] = useState<string>("");
+
+
+  const {data:auditTrailData,isLoading:isLoadingAuditTrail}  = useGetServiceProviderAuditTrailDashboard();
+
+  console.log({auditTrailData,isLoadingAuditTrail});
 
   const handleViewTrail = (trail: AuditTrail) => {
     console.log({ trail });
 
     toggleVdDialog();
   };
+
+
+
+
+
+
   return (
     <Fragment>
       <section className="bg-grey-10 w-full h-full min-h-screen">
@@ -205,8 +232,7 @@ const AuditTrailPage = () => {
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
             <DialogPanel
-              // @ts-ignore
-              transition={true}
+             
               className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
             >
               <DialogTitle

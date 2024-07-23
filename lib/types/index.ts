@@ -147,10 +147,12 @@ export interface IndividualOverviewResponse extends ApiResponse{
 export interface IndividualLoginResponse extends ApiResponse { 
   token: { access_token: string; refresh_token: string; } 
   role:Role;
+  firstLogin:boolean;
 }
 
 export interface SPLoginResponse extends ApiResponse { 
   token: { access_token: string; refresh_token: string; } ;
   role:Role;
+  firstLogin:boolean;
 }
 

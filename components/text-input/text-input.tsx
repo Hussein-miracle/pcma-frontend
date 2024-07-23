@@ -35,7 +35,7 @@ const TextInput = ({
   type = "text",
   iconPosition = "right",
   icon,
-  placeholder,
+  placeholder = fieldName ,
   required,
   secureTextEntryIcon = null,
   className,

@@ -83,7 +83,7 @@ const Register = () => {
         await sleep(3000);
         successToast("You're being redirected to login.")
         await sleep(2000);
-        router.push('/login')
+        router.push('/login?loginType=user')
       
       } else {
         const spResponse = await registerServiceProvider({
@@ -104,7 +104,7 @@ const Register = () => {
         await sleep(3000);
         successToast("You're being redirected to login.")
         await sleep(2000);
-        router.push('/login')
+        router.push('/login?loginType=service-provider')
       }
     } catch (error:any) {
       const errorMsg = error?.response?.data?.message ?? "An error occurred";

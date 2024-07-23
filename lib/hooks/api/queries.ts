@@ -47,3 +47,26 @@ export const useGetApplications = () => {
 
    return response;
 }
+
+
+export const useGetServiceProviderAuditTrailDashboard = () => {
+   const response = useQuery({
+      queryKey: ["get-sp-audit-trail-dashboard"],
+      queryFn: async () => {
+        return axiosInstance.get("/tp/dashboard")
+      }
+   })
+
+   return response;
+}
+
+export const useGetIndividualAuditTrailDashboard = () => {
+   const response = useQuery({
+      queryKey: ["get-individual-audit-trail-dashboard"],
+      queryFn: async () => {
+        return axiosInstance.get("/user/dashboard")
+      }
+   })
+
+   return response;
+}

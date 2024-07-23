@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -18,16 +18,14 @@ import { ApplicationFlowContext } from "@/contexts/application-context/applicati
 import { ApplicationCreationData } from "@/lib/types";
 import { useGetApplications } from "@/lib/hooks/api/queries";
 import { ApplicationFlowEnum } from "@/lib/constants";
-import { sleep } from "@/lib/utils";
+import { cn, sleep } from "@/lib/utils";
 
 const ConfirmApplicationDetails = () => {
-  const { handleSetApplicationFlowState } = useContext(
-    ApplicationFlowContext
-  );
+  const { handleSetApplicationFlowState } = useContext(ApplicationFlowContext);
 
   const handleBack = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.CREATE_APPLICATION);
-  }
+  };
   return (
     <motion.section
       className="w-full max-w-[31.625rem] mx-auto"
@@ -140,9 +138,10 @@ const ConfirmApplicationDetails = () => {
   );
 };
 const ApplicationCreationForm = () => {
-  const { handleSetApplicationFlowState } = useContext(ApplicationFlowContext);
+  const { handleSetApplicationFlowState ,applicationFlowState} = useContext(ApplicationFlowContext);
 
-  const { control, handleSubmit } = useForm<ApplicationCreationData>({
+
+  const {control,watch,handleSubmit} = useForm<Partial<ApplicationCreationData>>({
     defaultValues: {
       applicationName: "",
       website_url: "",
@@ -155,27 +154,32 @@ const ApplicationCreationForm = () => {
     },
   });
 
-  const handleCreateApplication = async (data: ApplicationCreationData) => {
-    console.log({ data });
-    //await sleep(500);
+  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.CREATE_APPLICATION ? 0 : 2, [applicationFlowState]);
+
+  console.log({screenDelay})
+
+
+
+  const handleCreateApplication = async (values:Partial<ApplicationCreationData>) => {
+    console.log({ values });
+    await sleep(500);
     handleSetApplicationFlowState(ApplicationFlowEnum.CONFIRM_APPLICATION);
   };
 
-
   const handleBack = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.VIEW_APPLICATIONS);
-  }
+  };
 
   return (
     <motion.section
       key={ApplicationFlowEnum.CREATE_APPLICATION}
       className="w-fit h-fit mx-auto"
-      initial={{ x: "-50vw", opacity: 0 }}
+      initial={{ x: "50vw", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-50vw", opacity: 0 }}
-      transition={{ duration: 1, ease: "linear" }}
+      transition={{ duration: 1, ease: "linear",delay:screenDelay }}
     >
-      <BackButton onClick={handleBack}/>
+      <BackButton onClick={handleBack} />
       <Spacer size={24} />
       <form
         onSubmit={handleSubmit(handleCreateApplication)}
@@ -303,7 +307,7 @@ const ApplicationCreationForm = () => {
 };
 
 const ApplicationListPage = () => {
-  const { handleSetApplicationFlowState } = useContext(ApplicationFlowContext);
+  const { handleSetApplicationFlowState,applicationFlowState } = useContext(ApplicationFlowContext);
 
   const { isLoading, data } = useGetApplications();
 
@@ -313,49 +317,57 @@ const ApplicationListPage = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.CREATE_APPLICATION);
   };
 
+  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.VIEW_APPLICATIONS ? 0 : 2, [applicationFlowState]);
+
+  console.log({screenDelay})
+
   return (
     <motion.section
-      key={ApplicationFlowEnum.VIEW_APPLICATIONS}
-      className="w-full grid grid-cols-2 grid-flow-row gap-4  max-w-[48.75rem] mx-auto"
-      initial={{ x: "50vw", opacity: 0 }}
+      // key={ApplicationFlowEnum.VIEW_APPLICATIONS}
+      className={cn("w-full grid grid-cols-2 grid-flow-row gap-4  max-w-[48.75rem] mx-auto")}
+      initial={false}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-50vw", opacity: 0 }}
-      transition={{ duration: 1, ease: "linear" }}
+      transition={{ duration: 1, ease: "linear",delay:screenDelay }}
     >
       <div
         role="button"
-        className="w-96 bg-primary h-[5rem] rounded-xl p-3 text-white flex items-center justify-center gap-2"
+        className="w-96 bg-primary h-[5rem] rounded-xl p-3 text-white flex items-center justify-center gap-2 mx-auto"
         onClick={handleCreateApplication}
       >
         <PlusIcon /> <span>Create Application</span>
       </div>
+      {/* <ApplicationCard />
       <ApplicationCard />
       <ApplicationCard />
       <ApplicationCard />
       <ApplicationCard />
       <ApplicationCard />
-      <ApplicationCard />
-      <ApplicationCard />
+      <ApplicationCard /> */}
     </motion.section>
   );
 };
 
 const ApplicationPage = () => {
-  const { applicationFlowState} = useContext(ApplicationFlowContext);
+  const { applicationFlowState } = useContext(ApplicationFlowContext);
 
   return (
     <section className="w-full">
-      <AnimatePresence initial={false} >
+      <AnimatePresence initial={false}>
         {applicationFlowState === ApplicationFlowEnum.VIEW_APPLICATIONS && (
           <ApplicationListPage key={ApplicationFlowEnum.VIEW_APPLICATIONS} />
         )}
 
         {applicationFlowState === ApplicationFlowEnum.CREATE_APPLICATION && (
-          <ApplicationCreationForm key={ApplicationFlowEnum.CREATE_APPLICATION} />
+          <ApplicationCreationForm
+            key={ApplicationFlowEnum.CREATE_APPLICATION}
+          />
         )}
 
         {applicationFlowState === ApplicationFlowEnum.CONFIRM_APPLICATION && (
-          <ConfirmApplicationDetails key={ApplicationFlowEnum.CONFIRM_APPLICATION } />
+          <ConfirmApplicationDetails
+            key={ApplicationFlowEnum.CONFIRM_APPLICATION}
+          />
         )}
       </AnimatePresence>
     </section>

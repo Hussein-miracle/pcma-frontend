@@ -1,5 +1,5 @@
 "use client";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,6 +9,9 @@ import {
   ListboxOption,
   ListboxOptions,
 } from "@headlessui/react";
+import { useSearchParams } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { z } from "zod";
 
 import ErrorMessage from "@/components/error-message/error-message";
 import Header from "@/components/header/header";
@@ -19,17 +22,19 @@ import { USER_LOGIN_TYPES, VALIDATION_ERROR_MESSAGES } from "@/lib/constants";
 import { InferredLoginForm, LoginForm } from "@/lib/types";
 import { cn, handleErrorGlobal, successToast } from "@/lib/utils";
 import { loginSchema } from "@/lib/validations";
-import { z } from "zod";
 import { usePostIndividualLogin, usePostServiceProviderLogin } from "@/lib/hooks/api/mutations";
 import useToastCustom from "@/lib/hooks/client/use-toast-custom";
 import { useAppRouter } from "@/lib/hooks/client/use-app-router";
-import { useDispatch } from "react-redux";
-import { setAccessToken, setRefreshToken, setRole } from "@/rtk/features/auth-slice/auth-slice";
+import { setAccessToken, setFirstLogin, setRefreshToken, setRole } from "@/rtk/features/auth-slice/auth-slice";
 
 const Login = () => {
-  const dispatch = useDispatch();
-  // const {successToast,errorToast} = useToastCustom();
   const router = useAppRouter();
+  const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  console.log({searchParams},'search params')
+  const url_login_type = searchParams.get("loginType");
+  console.log({url_login_type},'url_login_type')
+
   const {
     control,
     // formState: { isValid },
@@ -57,6 +62,15 @@ const Login = () => {
   const {isPending:isPendingIndividual,mutateAsync:loginIndividual} = usePostIndividualLogin();
 
 
+  useEffect(() => {
+    if(url_login_type === 'service-provider'){
+      setValue("login_type", {...USER_LOGIN_TYPES[1]});
+    }else{
+      setValue("login_type", {...USER_LOGIN_TYPES[0]});
+    }
+  },[url_login_type])
+
+
   const handleLogin = async (values: InferredLoginForm) => {
    // console.log({loginValues: values });
     try {
@@ -71,6 +85,7 @@ const Login = () => {
 
         const role = individualLoginResponse?.role;
         const token = individualLoginResponse?.token;
+        const first_login = individualLoginResponse?.firstLogin;
 
 
         dispatch(setAccessToken(token.access_token));
@@ -78,8 +93,16 @@ const Login = () => {
         dispatch(setRefreshToken(token.refresh_token));
 
         dispatch(setRole(role));
+        dispatch(setFirstLogin(first_login ?? false));
 
-        successToast(individualLoginResponse?.message ?? "Login Successful")
+        successToast(individualLoginResponse?.message ?? "Login Successful");
+
+        
+        if(first_login){
+          router.push("/onboarding/user");
+          return;
+        }
+
    
         router.push("/overview"); 
 
@@ -94,11 +117,20 @@ const Login = () => {
 
         const token = spLoginResponse?.token;
         const role = spLoginResponse?.role;
-        dispatch(setRole(role));  
+        const first_login = spLoginResponse?.firstLogin;
+
         dispatch(setAccessToken(token.access_token));
         dispatch(setRefreshToken(token.refresh_token));
+        dispatch(setRole(role));  
+        dispatch(setFirstLogin(first_login ?? false));
+
 
         successToast(spLoginResponse?.message ?? "Login Successful");
+
+        if(first_login){
+          router.push("/onboarding/service-provider");
+          return;
+        }
 
         router.push("/applications");     
       }

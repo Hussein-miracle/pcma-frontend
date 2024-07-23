@@ -18,6 +18,7 @@ import {
 } from "@/components/icons";
 import PrimaryButton from "@/components/primary-button/primary-button";
 import Spacer from "@/components/spacer/spacer";
+import { useAppRouter } from "@/lib/hooks/client/use-app-router";
 import useMedia from "@/lib/hooks/client/use-media";
 import { Role } from "@/lib/types";
 import { cn, pxToRem } from "@/lib/utils";
@@ -81,7 +82,7 @@ const HomeStackedCard = ({
 };
 
 export default function Home() {
-  const router = useRouter();
+  const router = useAppRouter();
   const role = useSelector((state:AppRootState) => state.auth.role);
   const isMobile = useMedia("(max-width:640px)");
   // const pixelVal = pxToRem(17);

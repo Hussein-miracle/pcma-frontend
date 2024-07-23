@@ -37,8 +37,8 @@ import { usePatchServiceProviderProfile } from "@/lib/hooks/api/mutations";
 
 interface PersonalInformationForm {
   fullname?: string;
-  firstname?:string;
-  lastname?:string;
+  firstname?: string;
+  lastname?: string;
   email: string;
   phone_number: string;
   home_address: string;
@@ -48,22 +48,33 @@ interface PersonalInformationForm {
   id_card?: File | string;
 }
 
-
-
 const ProfilePage = () => {
+  const role = useSelector((state: AppRootState) => state.auth.role);
+
+  if (
+    role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() &&
+    role?.toLowerCase() === RoleEnum.USER.toLowerCase()
+  ) {
+    return redirect("/profile/user");
+  } else if (role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()) {
+    return redirect("/");
+  }
+
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
   const { toggle: togglePermissionDialog, toggleState: showPermissionDialog } =
     useToggle();
   const { toggle: toggleDisconnectDialog, toggleState: showDisconnectDialog } =
     useToggle();
-  const role = useSelector((state:AppRootState) => state.auth.role);
 
-  const {isLoading:isLoadingSpProfile,data:serviceProviderProfile} = useGetServiceProviderProfile();
-  const {isPending:isPatchingSP,mutateAsync:patchServiceProvider} = usePatchServiceProviderProfile();
-  
-  const spProfile: Partial<PersonalInformationForm> | null = serviceProviderProfile?.data ?? null;
+  const { isLoading: isLoadingSpProfile, data: serviceProviderProfile } =
+    useGetServiceProviderProfile();
+  const { isPending: isPatchingSP, mutateAsync: patchServiceProvider } =
+    usePatchServiceProviderProfile();
 
-  console.log({isLoadingSpProfile,spProfile});
+  const spProfile: Partial<PersonalInformationForm> | null =
+    serviceProviderProfile?.data ?? null;
+
+  console.log({ isLoadingSpProfile, spProfile });
 
   const {
     control,
@@ -88,21 +99,20 @@ const ProfilePage = () => {
 
   const formValues = watch();
 
-  console.log({formValues});
-
-
+  console.log({ formValues });
 
   useEffect(() => {
-    if(!!spProfile){
-      for(const key in spProfile){
-        if(key in formValues){
-          setValue(key as unknown as keyof PersonalInformationForm, spProfile[key as unknown as keyof PersonalInformationForm]);
+    if (!!spProfile) {
+      for (const key in spProfile) {
+        if (key in formValues) {
+          setValue(
+            key as unknown as keyof PersonalInformationForm,
+            spProfile[key as unknown as keyof PersonalInformationForm]
+          );
         }
       }
     }
-  },[spProfile])
-
-  
+  }, [spProfile]);
 
   const handleSubmitPersonalInformation = async (
     values: PersonalInformationForm
@@ -122,15 +132,10 @@ const ProfilePage = () => {
     toggleDisconnectDialog();
   };
 
-
-  if(role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() && role?.toLowerCase() === RoleEnum.USER.toLowerCase()){
-    return redirect('/profile/user');
-  }
-
   return (
     <>
       <section className=" bg-grey-10  w-full h-full min-h-screen">
-        <Header type="authed" roleType="transaction_party"  />
+        <Header type="authed" roleType="transaction_party" />
         <Spacer size={24} />
         <main className=" mx-auto  max-w-[54rem] w-full">
           <section className="w-full ">
@@ -463,9 +468,7 @@ const ProfilePage = () => {
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
-            <DialogPanel
-              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
-            >
+            <DialogPanel className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]">
               <DialogTitle
                 as="h3"
                 className="text-2xl/6 font-bold text-secondary-black tracking-[1%]"
@@ -540,9 +543,7 @@ const ProfilePage = () => {
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
-            <DialogPanel
-              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
-            >
+            <DialogPanel className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]">
               <DialogTitle
                 as="h3"
                 className="text-2xl/6 font-bold text-secondary-black tracking-[1%]"
@@ -608,9 +609,7 @@ const ProfilePage = () => {
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
-            <DialogPanel
-              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-fit"
-            >
+            <DialogPanel className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-fit">
               <DialogTitle
                 as="h3"
                 className="text-2xl/9 font-bold text-secondary-black tracking-[1%]"

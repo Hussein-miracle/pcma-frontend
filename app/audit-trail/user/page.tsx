@@ -24,6 +24,11 @@ import { auditTrails } from "@/data";
 import { AuditTrail } from "@/lib/types";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import { cn } from "@/lib/utils";
+import { useGetIndividualAuditTrailDashboard } from "@/lib/hooks/api/queries";
+import { RoleEnum } from "@/lib/constants";
+import { AppRootState } from "@/rtk/app/store";
+import { redirect } from "next/navigation";
+import { useSelector } from "react-redux";
 
 const people = [
   { id: 1, name: "Tom Cook" },
@@ -34,9 +39,26 @@ const people = [
 ];
 
 const AuditTrailPage = () => {
+  const role = useSelector((state:AppRootState) => state.auth.role);
+  
+  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase() && role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase()){
+    return redirect("/audit-trail/service-provider");
+  }else if (role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
+    return redirect("/");
+  }
+
+
+  
+
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
   const [selected, setSelected] = useState(people[1]);
   const [query, setQuery] = useState<string>("");
+
+
+  const {data:auditTrailData,isLoading:isLoadingAuditTrail}  = useGetIndividualAuditTrailDashboard();
+
+  console.log({auditTrailData,isLoadingAuditTrail});
+
 
   const handleViewTrail = (trail: AuditTrail) => {
     console.log({ trail });
@@ -205,8 +227,7 @@ const AuditTrailPage = () => {
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
             <DialogPanel
-              // @ts-ignore
-              transition={true}
+            
               className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
             >
               <DialogTitle

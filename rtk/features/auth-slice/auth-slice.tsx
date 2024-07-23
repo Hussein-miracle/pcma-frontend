@@ -5,12 +5,14 @@ type AuthState = {
   refresh_token: string | null;
   access_token: string | null;
   role: Role | null;
+  first_login: boolean;
 };
 
 const initialState: AuthState = {
   access_token: null,
   refresh_token:null,
   role: null,
+  first_login: false,
 };
 
 export const authSlice = createSlice({
@@ -26,8 +28,12 @@ export const authSlice = createSlice({
     setRole: (state, action) => {
       state.role = action.payload;
     },
+    setFirstLogin: (state, action) => {
+      state.first_login = action.payload
+    },
+    setLogout: (_state) => initialState,
   },
 });
 
-export const { setAccessToken, setRole,setRefreshToken } = authSlice.actions;
+export const { setAccessToken, setRole,setRefreshToken,setLogout ,setFirstLogin} = authSlice.actions;
 export default authSlice.reducer;

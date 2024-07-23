@@ -1,3 +1,4 @@
+"use client";
 import React, { HTMLAttributes } from "react";
 import { Field, Select, Label } from "@headlessui/react";
 import {
@@ -15,59 +16,37 @@ import {
 import PrimaryButton from "../primary-button/primary-button";
 import { cn, montserrat, pxToRem } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import FooterFormField from "../footer-form-field/footer-form-field";
+import { Controller, useForm } from "react-hook-form";
 
-interface FooterFormFieldProps extends HTMLAttributes<HTMLInputElement> {
-  fieldName: string;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  value?: string;
-  type?: "email" | "text" | "tel";
-  autocomplete?: string | "off";
-  endFieldNameWithAsterisk?: boolean;
+interface ContactForm {
+  where: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
 }
-
-const FooterFormField = ({
-  type = "text",
-  autocomplete = "off",
-  fieldName,
-  endFieldNameWithAsterisk = false,
-  ...otherProps
-}: FooterFormFieldProps) => {
-  return (
-    <label
-      className="w-full rounded-xl border border-[#D4DAF0] border-solid px-5 py-3 flex items-center gap-2 h-fit"
-      htmlFor={fieldName}
-    >
-      <label
-        className={cn(
-          "flex items-center gap-1 whitespace-nowrap",
-          `${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`
-        )}
-        htmlFor={fieldName}
-      >
-        <span>{fieldName}</span>
-        {endFieldNameWithAsterisk && <span className="text-primary">*</span>}
-      </label>
-
-      <input
-        autoComplete={autocomplete}
-        type={type}
-        required={endFieldNameWithAsterisk}
-        onChange={otherProps?.onChange}
-        value={otherProps?.value}
-        className={cn(
-          "h-full w-full outline-none border-none focus:outline-none",
-          `${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`
-        )}
-      />
-    </label>
-  );
-};
 
 const Footer = () => {
   const router = useRouter();
   // const px = pxToRem(491);
 
   // console.log({px})
+
+  const { control, handleSubmit,watch ,setValue} = useForm<ContactForm>({
+    defaultValues: {
+      where: "",
+      name: "",
+      email: "",
+      phoneNumber: "",
+    },
+  });
+
+  const formValues = watch();
+
+  const handleSubmitContactDetails = (data: ContactForm) => {
+    console.log({ data });
+  };
+
   return (
     <footer className="w-full h-fit">
       <section className="px-6 sm:px-[7.5rem] pb-10 pt-6 sm:py-[5rem] flex sm:flex-row flex-col items-center justify-between gap-6">
@@ -104,7 +83,6 @@ const Footer = () => {
             </div>
           </div>
 
-
           <div className=" h-28 relative  bottom-0 right-0 flex items-start justify-end translate-y-24 translate-x-6">
             <div className="bg-[#0074FF1A] absolute right-0 w-[9rem] h-[9rem] rounded-full inline-block -translate-x-14" />
             <div className="bg-[#0074FF1A] absolute right-0 translate-x-28 w-[17rem] h-[17rem] rounded-full inline-block translate-y-6" />
@@ -112,7 +90,7 @@ const Footer = () => {
         </main>
 
         <main className="pr-0 h-fit sm:h-full sm:pr-8">
-          <form className="h-full w-full max-w-[545px] flex flex-col items-start gap-10">
+          <form className="h-full w-full max-w-[545px] flex flex-col items-start gap-10"     onSubmit={handleSubmit(handleSubmitContactDetails)}>
             <div className="w-full">
               <h2 className=" text-[32px] sm:text-[54px] font-extrabold text-secondary-black">
                 Get in <span className=" text-primary">Touch</span>{" "}
@@ -123,21 +101,55 @@ const Footer = () => {
               </p>
             </div>
 
-            <main className="flex flex-col items-center w-full gap-5">
-              <FooterFormField
-                fieldName="Name"
-                endFieldNameWithAsterisk
-                autocomplete="given-name"
+            <main
+             
+              className="flex flex-col items-center w-full gap-5"
+          
+            >
+              <Controller
+                name="name"
+                control={control}
+                render={({  field:{ref,...fields}, fieldState: { error } }) => (
+                  <FooterFormField
+                    fieldName="Name"
+                    endFieldNameWithAsterisk
+                    autocomplete="given-name"
+                    {...fields}
+                    error={error?.message}
+                  />
+                )}
               />
-              <FooterFormField
-                fieldName="Email"
-                type="email"
-                autocomplete={"on"}
+
+              <Controller
+                control={control}
+                name="email"
+                render={({  field:{ref,...fields}, fieldState: { error } }) => {
+                  return (
+                    <FooterFormField
+                      fieldName="Email"
+                      endFieldNameWithAsterisk
+                      type="email"
+                      autocomplete={"on"}
+                      {...fields}
+                      error={error?.message}
+                    />
+                  );
+                }}
               />
-              <FooterFormField
-                fieldName="Phone Number"
-                type="tel"
-                endFieldNameWithAsterisk
+              <Controller
+                control={control}
+                name="phoneNumber"
+                render={({ field:{ref,...fields}, fieldState: { error } }) => {
+                  return (
+                    <FooterFormField
+                      fieldName="Phone Number"
+                      type="tel"
+                      endFieldNameWithAsterisk
+                      {...fields}
+                      error={error?.message}
+                    />
+                  );
+                }}
               />
 
               {/* <div > */}
@@ -159,6 +171,14 @@ const Footer = () => {
                   <Select
                     id="where"
                     name="where"
+                    value={formValues.where}
+                    onChange={(e) => {
+                      const where = e.target.value;
+                      // console.log(e.target.value);
+                      setValue("where", where);
+
+
+                    }}
                     className={cn(
                       "block w-full appearance-none h-full border-none outline-none bg-transparent",
                       `${montserrat.className} text-sm/6 text-secondary-black tracking-[1%]`
@@ -167,7 +187,7 @@ const Footer = () => {
                       // "*:text-black"
                     )}
                   >
-                    <option value="" selected disabled></option>
+                    <option defaultValue={""} disabled></option>
                     <option value="active">Active</option>
                     <option value="paused">Paused</option>
                     <option value="delayed">Delayed</option>
@@ -181,12 +201,10 @@ const Footer = () => {
                 </div>
               </label>
             </main>
-            <PrimaryButton className="w-full">SEND</PrimaryButton>
+            <PrimaryButton className="w-full" type="submit">SEND</PrimaryButton>
           </form>
         </main>
       </section>
-
-
 
       <main className="w-full bg-[#1C1A39] px-6 sm:px-[7.5rem] py-10 sm:py-[5rem] sm:h-96 flex sm:flex-row flex-col items-center justify-between sm:gap-auto gap-10">
         <div className="flex items-start justify-between h-full flex-col sm:w-auto w-full">

@@ -1,29 +1,42 @@
 "use client";
 import Link from "next/link";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { useDispatch, useSelector } from "react-redux";
 import React, { Fragment } from "react";
+import { usePathname} from "next/navigation";
+
 import {
   CloseIcon,
   ColorSwatchIcon,
   GridIcon,
+  LogoutIcon,
   PCMABellIcon,
   PCMALogo,
   PCMANotificationEmptyIcon,
   ShieldCheckIcon,
   UserProfileIcon,
 } from "../icons";
+import {
+  Tooltip,
+  TooltipArrow,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import PrimaryButton from "../primary-button/primary-button";
 import { cn } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
 import { IDateNotification, INotification, LoginType, Role } from "@/lib/types";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import Spacer from "../spacer/spacer";
+import { setLogout } from "@/rtk/features/auth-slice/auth-slice";
+import { AppRootState } from "@/rtk/app/store";
+import { useAppRouter } from "@/lib/hooks/client/use-app-router";
 
 interface HeaderProps {
   variant?: "white" | "grey";
   // NOTE:the property below would be removed
   type?: "unauthed" | "authed";
-  roleType?:Role;
+  roleType?: Role;
 }
 
 interface IndividualHeaderProps extends HeaderProps {}
@@ -157,13 +170,36 @@ const InvidualHeader = ({
   variant = "white",
   type = "unauthed",
 }: IndividualHeaderProps) => {
-  const router = useRouter();
+  const router = useAppRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
+  const accessToken = useSelector(
+    (state: AppRootState) =>
+      state.auth.access_token 
+  );
+  const refreshToken = useSelector(
+    (state: AppRootState) =>
+      state.auth.refresh_token
+  );
+
+  const role = useSelector((state: AppRootState) => state.auth.role);
+
+  const isAuthed = accessToken && refreshToken && role;  
+
+
+
   const { toggle: toggleNotiDialog, toggleState: showNotiDialog } = useToggle();
 
   // console.log({ pathname }, "PN");
 
+  console.log({ isAuthed }, "isAuthed");
+
   const notifications: Array<any> = [];
+
+  const handleLogout = () => {
+    dispatch(setLogout());
+    router.push("/login");
+  };
 
   return (
     <Fragment>
@@ -173,14 +209,12 @@ const InvidualHeader = ({
           variant === "white" ? "bg-neutral-white" : "bg-grey-10"
         )}
       >
-        <Link
-          href={'/'}
-        >
+        <Link href={"/"}>
           <PCMALogo />
         </Link>
 
         <nav className="w-fit h-full">
-          {type === "unauthed" && (
+          {!isAuthed && (
             <ul className="hidden sm:flex items-center gap-6 h-full">
               <li>
                 <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
@@ -200,7 +234,7 @@ const InvidualHeader = ({
             </ul>
           )}
 
-          {type === "authed" && (
+          {isAuthed && (
             <ul className="hidden sm:flex items-center gap-6 h-full">
               <AuthenticatedHeaderItem
                 href="/overview"
@@ -224,7 +258,9 @@ const InvidualHeader = ({
                 }
                 className={cn(pathname === "/profile/user" && `bg-primary`)}
               >
-                <span className={cn(pathname === "/profile/user" && `text-white`)}>
+                <span
+                  className={cn(pathname === "/profile/user" && `text-white`)}
+                >
                   Profile
                 </span>
               </AuthenticatedHeaderItem>
@@ -232,13 +268,17 @@ const InvidualHeader = ({
                 href="/audit-trail/user"
                 icon={
                   <ColorSwatchIcon
-                    stroke={pathname === "/audit-trail/user" ? "#fff" : undefined}
+                    stroke={
+                      pathname === "/audit-trail/user" ? "#fff" : undefined
+                    }
                   />
                 }
                 className={cn(pathname === "/audit-trail/user" && `bg-primary`)}
               >
                 <span
-                  className={cn(pathname === "/audit-trail/user" && `text-white`)}
+                  className={cn(
+                    pathname === "/audit-trail/user" && `text-white`
+                  )}
                 >
                   Audit Trail
                 </span>
@@ -259,7 +299,7 @@ const InvidualHeader = ({
           )}
         </nav>
 
-        {type === "unauthed" && (
+        {!isAuthed && (
           <div className="flex items-center gap-5 ">
             <Link href={"/login"}>
               <PrimaryButton className=" bg-transparent text-pretty text-primary p-0">
@@ -274,18 +314,51 @@ const InvidualHeader = ({
           </div>
         )}
 
-        {type === "authed" && (
-          <div
-            role="button"
-            className="relative flex items-center justify-center"
-            onClick={toggleNotiDialog}
-          >
-            <PCMABellIcon />
+        {isAuthed && (
+          <TooltipProvider>
+            <div className="flex items-center gap-4 justify-between">
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    role="button"
+                    className="relative flex items-center justify-center"
+                    onClick={toggleNotiDialog}
+                  >
+                    <PCMABellIcon />
 
-            <div className="w-4 h-4 absolute -top-1.5 -right-1.5 rounded-full bg-red-500 flex items-center justify-center border border-white p-2">
-              <span className=" text-white font-semibold text-xs/3">1</span>
+                    <div className="w-4 h-4 absolute -top-1.5 -right-1.5 rounded-full bg-red-500 flex items-center justify-center border border-white p-2">
+                      <span className=" text-white font-semibold text-xs/3">
+                        0
+                      </span>
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className=" select-none">
+                  <span className="text-secondary-black font-bold">
+                    Notifications
+                  </span>
+                  <TooltipArrow className="fill-secondary-blue" />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger>
+                  {" "}
+                  <div
+                    role="button"
+                    className="relative flex items-center justify-center  rounded-full p-2 rotate-180 "
+                    onClick={handleLogout}
+                  >
+                    <LogoutIcon stroke="#D60B0B" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className=" select-none">
+                  <span className="text-secondary-black font-bold">Logout</span>
+                  <TooltipArrow className="fill-secondary-blue" />
+                </TooltipContent>
+              </Tooltip>
             </div>
-          </div>
+          </TooltipProvider>
         )}
       </header>
 
@@ -297,10 +370,7 @@ const InvidualHeader = ({
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center w-full">
-            <DialogPanel
-             
-              className="w-full max-w-[32rem] rounded-3xl bg-[#F7F9FD] border border-grey-30 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-[33rem] overflow-hidden"
-            >
+            <DialogPanel className="w-full max-w-[32rem] rounded-3xl bg-[#F7F9FD] border border-grey-30 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-[33rem] overflow-hidden">
               <DialogTitle
                 as="div"
                 className="text-xl/6 font-semibold text-grey-60 tracking-[2%] text-center  w-full relative"
@@ -338,15 +408,39 @@ const InvidualHeader = ({
 
 const ServiceProviderHeader = ({
   variant = "white",
-  type = "unauthed",
-}: ServiceProviderHeaderProps) => {
-  const router = useRouter();
+}: // type = "unauthed",
+ServiceProviderHeaderProps) => {
+  const router = useAppRouter();
   const pathname = usePathname();
+  const dispatch = useDispatch();
+
+  const accessToken = useSelector(
+    (state: AppRootState) =>
+      state.auth.access_token 
+  );
+  const refreshToken = useSelector(
+    (state: AppRootState) =>
+      state.auth.refresh_token
+  );
+
+  const role = useSelector((state: AppRootState) => state.auth.role);
+
+  const isAuthed = accessToken && refreshToken && role;  
+
+
+
   const { toggle: toggleNotiDialog, toggleState: showNotiDialog } = useToggle();
 
   // console.log({ pathname }, "PN");
 
+  console.log({ isAuthed }, "isAuthed");
+
   const notifications: Array<any> = [];
+
+  const handleLogout = () => {
+    dispatch(setLogout());
+    router.push("/login");
+  };
 
   return (
     <Fragment>
@@ -356,14 +450,12 @@ const ServiceProviderHeader = ({
           variant === "white" ? "bg-neutral-white" : "bg-grey-10"
         )}
       >
-        <Link
-          href={'/'}
-        >
+        <Link href={"/"}>
           <PCMALogo />
         </Link>
 
         <nav className="w-fit h-full">
-          {type === "unauthed" && (
+          {!isAuthed && (
             <ul className="hidden sm:flex items-center gap-6 h-full">
               <li>
                 <span className=" text-secondary-black text-base font-semibold leading-4 tracking-[1%]">
@@ -383,18 +475,26 @@ const ServiceProviderHeader = ({
             </ul>
           )}
 
-          {type === "authed" && (
+          {isAuthed && (
             <ul className="hidden sm:flex items-center gap-6 h-full">
               <AuthenticatedHeaderItem
                 href="/applications"
                 icon={
                   <GridIcon
-                    stroke={pathname.startsWith("/applications") ? "#fff" : undefined}
+                    stroke={
+                      pathname.startsWith("/applications") ? "#fff" : undefined
+                    }
                   />
                 }
-                className={cn(pathname.startsWith("/applications") && `bg-primary`)}
+                className={cn(
+                  pathname.startsWith("/applications") && `bg-primary`
+                )}
               >
-                <span className={cn(pathname.startsWith("/applications") && `text-white`)}>
+                <span
+                  className={cn(
+                    pathname.startsWith("/applications") && `text-white`
+                  )}
+                >
                   Applications
                 </span>
               </AuthenticatedHeaderItem>
@@ -402,12 +502,22 @@ const ServiceProviderHeader = ({
                 href={"/profile/service-provider"}
                 icon={
                   <UserProfileIcon
-                    stroke={pathname === "/profile/service-provider" ? "#fff" : undefined}
+                    stroke={
+                      pathname === "/profile/service-provider"
+                        ? "#fff"
+                        : undefined
+                    }
                   />
                 }
-                className={cn(pathname === "/profile/service-provider" && `bg-primary`)}
+                className={cn(
+                  pathname === "/profile/service-provider" && `bg-primary`
+                )}
               >
-                <span className={cn(pathname === "/profile/service-provider" && `text-white`)}>
+                <span
+                  className={cn(
+                    pathname === "/profile/service-provider" && `text-white`
+                  )}
+                >
                   Profile
                 </span>
               </AuthenticatedHeaderItem>
@@ -415,13 +525,21 @@ const ServiceProviderHeader = ({
                 href="/audit-trail/service-provider"
                 icon={
                   <ColorSwatchIcon
-                    stroke={pathname === "/audit-trail/service-provider" ? "#fff" : undefined}
+                    stroke={
+                      pathname === "/audit-trail/service-provider"
+                        ? "#fff"
+                        : undefined
+                    }
                   />
                 }
-                className={cn(pathname === "/audit-trail/service-provider" && `bg-primary`)}
+                className={cn(
+                  pathname === "/audit-trail/service-provider" && `bg-primary`
+                )}
               >
                 <span
-                  className={cn(pathname === "/audit-trail/service-provider" && `text-white`)}
+                  className={cn(
+                    pathname === "/audit-trail/service-provider" && `text-white`
+                  )}
                 >
                   Audit Trail
                 </span>
@@ -430,7 +548,7 @@ const ServiceProviderHeader = ({
           )}
         </nav>
 
-        {type === "unauthed" && (
+        {!isAuthed && (
           <div className="flex items-center gap-5 ">
             <Link href={"/login"}>
               <PrimaryButton className=" bg-transparent text-pretty text-primary p-0">
@@ -445,18 +563,52 @@ const ServiceProviderHeader = ({
           </div>
         )}
 
-        {type === "authed" && (
-          <div
-            role="button"
-            className="relative flex items-center justify-center"
-            onClick={toggleNotiDialog}
-          >
-            <PCMABellIcon />
 
-            <div className="w-4 h-4 absolute -top-1.5 -right-1.5 rounded-full bg-red-500 flex items-center justify-center border border-white p-2">
-              <span className=" text-white font-semibold text-xs/3">1</span>
+{isAuthed && (
+          <TooltipProvider>
+            <div className="flex items-center gap-4 justify-between">
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    role="button"
+                    className="relative flex items-center justify-center"
+                    onClick={toggleNotiDialog}
+                  >
+                    <PCMABellIcon />
+
+                    <div className="w-4 h-4 absolute -top-1.5 -right-1.5 rounded-full bg-red-500 flex items-center justify-center border border-white p-2">
+                      <span className=" text-white font-semibold text-xs/3">
+                        0
+                      </span>
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className=" select-none">
+                  <span className="text-secondary-black font-bold">
+                    Notifications
+                  </span>
+                  <TooltipArrow className="fill-secondary-blue" />
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger>
+                  {" "}
+                  <div
+                    role="button"
+                    className="relative flex items-center justify-center  rounded-full p-2 rotate-180 "
+                    onClick={handleLogout}
+                  >
+                    <LogoutIcon stroke="#D60B0B" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className=" select-none">
+                  <span className="text-secondary-black font-bold">Logout</span>
+                  <TooltipArrow className="fill-secondary-blue" />
+                </TooltipContent>
+              </Tooltip>
             </div>
-          </div>
+          </TooltipProvider>
         )}
       </header>
 
@@ -468,10 +620,7 @@ const ServiceProviderHeader = ({
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center w-full">
-            <DialogPanel
-            
-              className="w-full max-w-[32rem] rounded-3xl bg-[#F7F9FD] border border-grey-30 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-[33rem] overflow-hidden"
-            >
+            <DialogPanel className="w-full max-w-[32rem] rounded-3xl bg-[#F7F9FD] border border-grey-30 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-[33rem] overflow-hidden">
               <DialogTitle
                 as="div"
                 className="text-xl/6 font-semibold text-grey-60 tracking-[2%] text-center  w-full relative"
@@ -507,8 +656,12 @@ const ServiceProviderHeader = ({
   );
 };
 
-const Header = ({ variant = "white", type = "unauthed" ,roleType}: HeaderProps) => {
-  const loggedInRole:Role =  roleType ?? "user";
+const Header = ({
+  variant = "white",
+  type = "unauthed",
+  roleType,
+}: HeaderProps) => {
+  const loggedInRole: Role = roleType ?? "user";
   return (
     <Fragment>
       {loggedInRole === "user" ? (

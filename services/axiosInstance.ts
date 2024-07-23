@@ -1,7 +1,7 @@
 import { RefreshTokenApiResponse } from '@/lib/types';
 import { errorToast } from '@/lib/utils';
 import { store } from '@/rtk/app/store';
-import { setAccessToken, setRefreshToken } from '@/rtk/features/auth-slice/auth-slice';
+import { setAccessToken, setLogout, setRefreshToken } from '@/rtk/features/auth-slice/auth-slice';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -43,6 +43,7 @@ const handleRefreshToken = async () => {
     console.error({ error })
     store.dispatch(setAccessToken(null));
     store.dispatch(setRefreshToken(null));
+    store.dispatch(setLogout());
     errorToast(error?.message ??  "Session expired.")
     window.location.href = '/';
   }
@@ -117,6 +118,7 @@ const _axiosResponseInterceptor = axiosInstance.interceptors.response.use(
             return axiosInstance(errorConfig);  
           }
         } else {
+          store.dispatch(setLogout());
           errorToast("Session expired.")
           window.location.href = '/';
           retryCount = 0;
@@ -127,9 +129,9 @@ const _axiosResponseInterceptor = axiosInstance.interceptors.response.use(
         // })
 
       } else if (errorResponse?.status === 401 && errorUrl === '/auth/token/refresh') {
-        toast.error("Session expired.")
+        store.dispatch(setLogout());
+        errorToast("Session expired.")
         window.location.href = '/';
-
         retryCount = 0;
         return;
       }
