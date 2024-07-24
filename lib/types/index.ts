@@ -129,6 +129,11 @@ export interface IndividualProfileResponse extends ApiResponse{
   }
 
 }
+
+export interface ServiceProviderApplicationsResponse extends ApiResponse{
+    data:Array<any>;
+}
+
 export interface IndividualOverviewResponse extends ApiResponse{
   data:{
     activities:{

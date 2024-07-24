@@ -309,22 +309,22 @@ const ApplicationCreationForm = () => {
 const ApplicationListPage = () => {
   const { handleSetApplicationFlowState,applicationFlowState } = useContext(ApplicationFlowContext);
 
-  const { isLoading, data } = useGetApplications();
+  const { isLoading:isLoadingApplications, data:applicationsData } = useGetApplications();
 
-  console.log({ isLoading, data });
-
+  
   const handleCreateApplication = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.CREATE_APPLICATION);
   };
 
-  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.VIEW_APPLICATIONS ? 0 : 2, [applicationFlowState]);
+  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.VIEW_APPLICATIONS ? 2 : 0, [applicationFlowState]);
 
-  console.log({screenDelay})
-
+  // console.log({screenDelay})
+  console.log({ isLoading:isLoadingApplications, applicationsData });
+  
   return (
     <motion.section
       // key={ApplicationFlowEnum.VIEW_APPLICATIONS}
-      className={cn("w-full grid grid-cols-2 grid-flow-row gap-4  max-w-[48.75rem] mx-auto")}
+      className={cn("w-full grid grid-cols-2 grid-flow-row gap-4  max-w-[48.75rem] mx-auto", !applicationsData || applicationsData?.data?.length === 0 && "flex items-center justify-center")}
       initial={false}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-50vw", opacity: 0 }}

@@ -1,4 +1,4 @@
-import { IndividualOverviewResponse, IndividualProfileResponse } from "@/lib/types"
+import { IndividualOverviewResponse, IndividualProfileResponse, ServiceProviderApplicationsResponse } from "@/lib/types"
 import axiosInstance from "@/services/axiosInstance"
 import { useQuery } from "@tanstack/react-query"
 
@@ -37,10 +37,11 @@ export const useGetServiceProviderProfile = () => {
 }
 
 
+
 export const useGetApplications = () => {
    const response = useQuery({
       queryKey: ["get-sp-applications"],
-      queryFn: async () => {
+      queryFn: async ():Promise<ServiceProviderApplicationsResponse> => {
         return axiosInstance.get("/tp/application")
       }
    })
