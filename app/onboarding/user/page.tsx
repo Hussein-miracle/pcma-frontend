@@ -1,25 +1,23 @@
+"use client";
 import React from "react";
 import Header from "@/components/header/header";
-import WelcomeCard from "./welcome-card/welcome-card";
-import BasicPiiCard from "./basic-pii-card/basic-pii-card";
 import Spacer from "@/components/spacer/spacer";
-import PersonalPiiCard from "./personal-pii-card/personal-pii-card";
+import WelcomeCardUser from "../components/welcome-card-user/welcome-card-user";
 
-const IntroductionPage = () => {
+const UserOnboardingPage = () => {
   return (
     <section className="bg-grey-10 w-full h-full min-h-screen">
-      <Header />
-
+      <Header roleType="user" />
       <main className="w-full mx-auto pt-[4rem]">
-        <WelcomeCard />
-        <Spacer size={72} />
+        <WelcomeCardUser/>
+        {/* <Spacer size={72} />
         <BasicPiiCard />
         <Spacer size={72} />
         <PersonalPiiCard />
-        <Spacer size={72} />
+        <Spacer size={72} /> */}
       </main>
     </section>
   );
 };
 
-export default IntroductionPage;
+export default UserOnboardingPage;

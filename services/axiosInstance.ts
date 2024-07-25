@@ -29,7 +29,7 @@ const handleRefreshToken = async () => {
       }
     });
 
-    // console.log({ responseRefresh:response });
+    console.log({ responseRefresh:response });
 
     const newAccessToken = response.access_token;
     const newRereshToken = response.refresh_token;
@@ -37,6 +37,7 @@ const handleRefreshToken = async () => {
 
     store.dispatch(setAccessToken(newAccessToken));
     store.dispatch(setRefreshToken(newRereshToken))
+    
 
     return newAccessToken;
   } catch (error:any) {
@@ -113,7 +114,7 @@ const _axiosResponseInterceptor = axiosInstance.interceptors.response.use(
           retryCount += 1;
           const new_token = await handleRefreshToken();
 
-          if (new_token) {
+          if (!!new_token) {
             errorConfig.headers['Authorization'] = `Bearer ${new_token}`;
             return axiosInstance(errorConfig);  
           }

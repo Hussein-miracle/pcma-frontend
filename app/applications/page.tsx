@@ -19,13 +19,22 @@ import { ApplicationCreationData } from "@/lib/types";
 import { useGetApplications } from "@/lib/hooks/api/queries";
 import { ApplicationFlowEnum } from "@/lib/constants";
 import { cn, sleep } from "@/lib/utils";
+import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
+import ApplicationCardSkeleton from "./components/application-card-skeleton/application-card-skeleton";
 
 const ConfirmApplicationDetails = () => {
-  const { handleSetApplicationFlowState } = useContext(ApplicationFlowContext);
+  const { handleSetApplicationFlowState ,applicationFlowState } = useContext(ApplicationFlowContext);
+  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.CONFIRM_APPLICATION ? 1.5 : 0, [applicationFlowState]);
+
+  // console.log({screenDelay})
+
+
 
   const handleBack = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.CREATE_APPLICATION);
   };
+
+
   return (
     <motion.section
       className="w-full max-w-[31.625rem] mx-auto"
@@ -143,18 +152,14 @@ const ApplicationCreationForm = () => {
 
   const {control,watch,handleSubmit} = useForm<Partial<ApplicationCreationData>>({
     defaultValues: {
-      applicationName: "",
+      name: "",
       website_url: "",
-      upload_logo: "",
-      email_access: false,
-      location_access: false,
-      contacts_access: false,
-      others_access: false,
+      logo_url: "",
       purpose_of_access: "",
     },
   });
 
-  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.CREATE_APPLICATION ? 0 : 2, [applicationFlowState]);
+  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.CREATE_APPLICATION ? 1.5 : 0, [applicationFlowState]);
 
   console.log({screenDelay})
 
@@ -196,7 +201,7 @@ const ApplicationCreationForm = () => {
         </div>
         <div className="flex flex-col items-center w-full gap-4 ">
           <Controller
-            name="applicationName"
+            name="name"
             control={control}
             render={({
               field: { onChange, value, onBlur },
@@ -205,7 +210,7 @@ const ApplicationCreationForm = () => {
               return (
                 <TextInput
                   onBlur={onBlur}
-                  fieldId="applicationName"
+                  fieldId="name"
                   fieldName="Application Name"
                   value={value}
                   onChange={onChange}
@@ -215,7 +220,7 @@ const ApplicationCreationForm = () => {
             }}
           />
           <Controller
-            name="applicationName"
+            name="website_url"
             control={control}
             render={({
               field: { onChange, value, onBlur },
@@ -224,8 +229,8 @@ const ApplicationCreationForm = () => {
               return (
                 <TextInput
                   onBlur={onBlur}
-                  fieldId="applicationName"
-                  fieldName="Application Name"
+                  fieldId="website_url"
+                  fieldName="Website URL"
                   value={value}
                   onChange={onChange}
                   error={error?.message ?? ""}
@@ -234,27 +239,20 @@ const ApplicationCreationForm = () => {
             }}
           />
           <Controller
-            name="upload_logo"
+            name="logo_url"
             control={control}
-            render={({ field: { onChange, value }, fieldState: { error } }) => {
-              //   console.log({value});
-
-              const v = typeof value === "string" ? value : value?.name;
-
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => {
               return (
-                <FileInput
-                  fieldId="upload_logo"
-                  fieldName="Upload Logo"
-                  selectedFileName={v}
-                  placeholder="Upload Company Logo"
+                <TextInput
+                  onBlur={onBlur}
+                  fieldId="logo_url"
+                  fieldName="Logo URL"
+                  value={value}
+                  onChange={onChange}
                   error={error?.message ?? ""}
-                  onFileSelect={(files) => {
-                    // console.log({ files });
-                    if (!!files) {
-                      const file = files[0];
-                      onChange(file);
-                    }
-                  }}
                 />
               );
             }}
@@ -316,7 +314,7 @@ const ApplicationListPage = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.CREATE_APPLICATION);
   };
 
-  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.VIEW_APPLICATIONS ? 2 : 0, [applicationFlowState]);
+  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.VIEW_APPLICATIONS ? 0 : 1.5, [applicationFlowState]);
 
   // console.log({screenDelay})
   console.log({ isLoading:isLoadingApplications, applicationsData });
@@ -324,8 +322,8 @@ const ApplicationListPage = () => {
   return (
     <motion.section
       // key={ApplicationFlowEnum.VIEW_APPLICATIONS}
-      className={cn("w-full grid grid-cols-2 grid-flow-row gap-4  max-w-[48.75rem] mx-auto", !applicationsData || applicationsData?.data?.length === 0 && "flex items-center justify-center")}
-      initial={false}
+      className={cn("w-full max-w-[48.75rem] mx-auto", ((!applicationsData?.data || applicationsData?.data?.length === 0) && !isLoadingApplications) ? "flex gap-4 items-center justify-center" : ' grid grid-cols-2 grid-flow-row gap-4 ')}
+      initial={{ x: "50vw", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-50vw", opacity: 0 }}
       transition={{ duration: 1, ease: "linear",delay:screenDelay }}
@@ -337,13 +335,20 @@ const ApplicationListPage = () => {
       >
         <PlusIcon /> <span>Create Application</span>
       </div>
-      {/* <ApplicationCard />
-      <ApplicationCard />
-      <ApplicationCard />
-      <ApplicationCard />
-      <ApplicationCard />
-      <ApplicationCard />
-      <ApplicationCard /> */}
+    
+     {!isLoadingApplications && !!applicationsData?.data && applicationsData?.data?.length > 0 && applicationsData?.data?.map((application,idx) => {
+        return <ApplicationCard key={idx} />;
+     })}
+
+
+      {isLoadingApplications && (
+        <>
+        <ApplicationCardSkeleton />
+        <ApplicationCardSkeleton />
+        <ApplicationCardSkeleton />
+        <ApplicationCardSkeleton />
+        </>
+      )}
     </motion.section>
   );
 };
@@ -374,4 +379,4 @@ const ApplicationPage = () => {
   );
 };
 
-export default ApplicationPage;
+export default ProtectServiceProviderRoute(ApplicationPage,'/profile/user');

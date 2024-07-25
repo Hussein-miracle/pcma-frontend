@@ -34,6 +34,9 @@ import { redirect } from "next/navigation";
 import { AppRootState } from "@/rtk/app/store";
 import { useSelector } from "react-redux";
 import { usePatchServiceProviderProfile } from "@/lib/hooks/api/mutations";
+import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
+
+// import ProtectServiceProviderRoute from '../../../hoc'
 
 interface PersonalInformationForm {
   fullname?: string;
@@ -48,7 +51,7 @@ interface PersonalInformationForm {
   id_card?: File | string;
 }
 
-const ProfilePage = () => {
+const ServicerProviderProfilePage = () => {
   const role = useSelector((state: AppRootState) => state.auth.role);
 
 
@@ -125,14 +128,14 @@ const ProfilePage = () => {
     toggleDisconnectDialog();
   };
 
-  if (
-    role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() &&
-    role?.toLowerCase() === RoleEnum.USER.toLowerCase()
-  ) {
-    return redirect("/profile/user");
-  } else if (role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()) {
-    return redirect("/");
-  }
+  // if (
+  //   role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() &&
+  //   role?.toLowerCase() === RoleEnum.USER.toLowerCase()
+  // ) {
+  //   return redirect("/profile/user");
+  // } else if (role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()) {
+  //   return redirect("/");
+  // }
 
   return (
     <>
@@ -647,4 +650,5 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default ProtectServiceProviderRoute(ServicerProviderProfilePage,'/profile/user');
+// export default ServicerProviderProfilePage;

@@ -24,6 +24,7 @@ import { RoleEnum } from "@/lib/constants";
 import { AppRootState } from "@/rtk/app/store";
 import { redirect } from "next/navigation";
 import { useSelector } from "react-redux";
+import ProtectUserRoute from "@/hoc/protect-user-route/protect-user-route";
 
 const Overview = () => {
   const role = useSelector((state: AppRootState) => state.auth.role);
@@ -40,14 +41,6 @@ const Overview = () => {
   };
 
   
-
-
-  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase() && role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase() ){
-    return redirect('/applications');
-  }else if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
-    return redirect('/');
-  }
-
 
 
 
@@ -325,4 +318,4 @@ const Overview = () => {
   );
 };
 
-export default Overview;
+export default ProtectUserRoute(Overview,'/applications');

@@ -29,6 +29,7 @@ import { useGetServiceProviderAuditTrailDashboard } from "@/lib/hooks/api/querie
 import { useSelector } from "react-redux";
 import { AppRootState } from "@/rtk/app/store";
 import { RoleEnum } from "@/lib/constants";
+import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
 
 const people = [
   { id: 1, name: "Tom Cook" },
@@ -318,4 +319,4 @@ const AuditTrailPage = () => {
   );
 };
 
-export default AuditTrailPage;
+export default ProtectServiceProviderRoute(AuditTrailPage,'/audit-trail/user');

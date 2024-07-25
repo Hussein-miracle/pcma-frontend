@@ -34,6 +34,7 @@ import { AppRootState } from "@/rtk/app/store";
 import { redirect } from "next/navigation";
 import { useSelector } from "react-redux";
 import { usePatchIndividualProfile } from "@/lib/hooks/api/mutations";
+import ProtectUserRoute from "@/hoc/protect-user-route/protect-user-route";
 
 interface PersonalInformationForm {
   fullname?: string;
@@ -125,11 +126,7 @@ const ProfilePage = () => {
     toggleDisconnectDialog();
   };
 
-  if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase() && role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase() ){
-    return redirect('/profile/service-provider');
-  }else if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
-    return redirect('/');
-  }
+
 
   return (
     <>
@@ -650,4 +647,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default ProtectUserRoute(ProfilePage, "/profile/service-provider");

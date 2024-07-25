@@ -78,13 +78,19 @@ export type ConnectedApplication = {
 
 
 export type ApplicationCreationData = {
-  applicationName: string;
+  // applicationName: string;
+  
+  // email_access: boolean;
+  // contacts_access: boolean;
+  // location_access: boolean;
+  // others_access: boolean;
+  
+  // NOTE: required by API
+  
   website_url: string;
-  upload_logo: string | File | null;
-  email_access: boolean;
-  contacts_access: boolean;
-  location_access: boolean;
-  others_access: boolean;
+  name:string; 
+  logo_url: string;
+  data_access?: Array<unknown>;
   purpose_of_access: string;
 }
 
@@ -152,12 +158,12 @@ export interface IndividualOverviewResponse extends ApiResponse{
 export interface IndividualLoginResponse extends ApiResponse { 
   token: { access_token: string; refresh_token: string; } 
   role:Role;
-  firstLogin:boolean;
+  firstTimeLogin:boolean;
 }
 
 export interface SPLoginResponse extends ApiResponse { 
   token: { access_token: string; refresh_token: string; } ;
   role:Role;
-  firstLogin:boolean;
+  firstTimeLogin:boolean;
 }
 

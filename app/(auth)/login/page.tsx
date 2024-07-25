@@ -87,7 +87,7 @@ const Login = () => {
 
         const role = individualLoginResponse?.role;
         const token = individualLoginResponse?.token;
-        const first_login = individualLoginResponse?.firstLogin;
+        const first_login = individualLoginResponse?.firstTimeLogin;
 
 
         dispatch(setAccessToken(token.access_token));
@@ -119,7 +119,7 @@ const Login = () => {
 
         const token = spLoginResponse?.token;
         const role = spLoginResponse?.role;
-        const first_login = spLoginResponse?.firstLogin;
+        const first_login = spLoginResponse?.firstTimeLogin;
 
         dispatch(setAccessToken(token.access_token));
         dispatch(setRefreshToken(token.refresh_token));

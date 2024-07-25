@@ -1,7 +1,10 @@
 import PrimaryButton from "@/components/primary-button/primary-button";
+import { Role } from "@/lib/types";
 import React from "react";
 
-const WelcomeCard = () => {
+interface WelcomeCardUserProps {}
+
+const WelcomeCardUser = (props: WelcomeCardUserProps) => {
   return (
     <main className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl">
       <div className="flex flex-col items-center gap-2">
@@ -18,12 +21,14 @@ const WelcomeCard = () => {
         place. Stay informed, stay secure, and take control of your personal
         information.
       </p>
+
       <p className=" text-base text-center font-normal text-[#4C689E]">
         Let’s ensure your data privacy together!
       </p>
+
       <PrimaryButton variant="secondary">Proceed</PrimaryButton>
     </main>
   );
 };
 
-export default WelcomeCard;
+export default WelcomeCardUser;

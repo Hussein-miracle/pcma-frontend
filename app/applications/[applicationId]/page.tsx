@@ -7,6 +7,7 @@ import Spacer from "@/components/spacer/spacer";
 import Checkbox from "@/components/checkbox/checkbox";
 import { CopyIcon } from "@/components/icons";
 import useToggle from "@/lib/hooks/client/use-toggle";
+import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
 
 const ApplicationDetailsPage = () => {
   const { toggle: toggleDeactivateDialog, toggleState: showDeactivateDialog } =
@@ -184,4 +185,4 @@ const ApplicationDetailsPage = () => {
   );
 };
 
-export default ApplicationDetailsPage;
+export default ProtectServiceProviderRoute(ApplicationDetailsPage);
