@@ -63,16 +63,6 @@ const AuditTrailPage = () => {
   };
 
 
-
-
-
-  if(role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() && role?.toLowerCase() === RoleEnum.USER.toLowerCase()){
-    return redirect("/audit-trail/user");
-  }else if (role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()){
-    return redirect("/");
-  }
-
-  
   return (
     <Fragment>
       <section className="bg-grey-10 w-full h-full min-h-screen">

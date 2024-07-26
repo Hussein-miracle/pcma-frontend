@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-
+import Link from "next/link";
 
 const ApplicationCard = () => {
   const router = useRouter();
@@ -9,7 +9,8 @@ const ApplicationCard = () => {
     router.push("/applications/123");
   };
 
-  
+  const applicationId = Math.floor(Math.random() * (500 - 200) + 200);
+
   return (
     <div className=" w-96 bg-white  border border-[#D4DAF0] rounded-xl p-3 flex justify-between items-center h-[5rem]">
       <div className="h-full flex gap-x-4 items-center justify-start">
@@ -22,12 +23,15 @@ const ApplicationCard = () => {
           </p>
         </div>
       </div>
-      <button
-        className="inline-flex items-center gap-2 rounded-xl bg-[#0074FF0D] py-1 px-3 text-sm/6 font-semibold text-primary shadow-inner shadow-white/10 focus:outline-none"
-        onClick={handleViewApplication}
-      >
-        Open
-      </button>
+
+      <Link href={`/applications/${applicationId}`}>
+        <div
+          className="inline-flex items-center gap-2 rounded-xl bg-[#0074FF0D] py-1 px-3 text-sm/6 font-semibold text-primary shadow-inner shadow-white/10 focus:outline-none"
+          onClick={handleViewApplication}
+        >
+          Open
+        </div>
+      </Link>
     </div>
   );
 };

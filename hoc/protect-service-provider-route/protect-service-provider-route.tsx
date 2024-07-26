@@ -10,9 +10,13 @@ import { RoleEnum } from "../../lib/constants";
 // TODO
 type ExpectedSPRedirectUrl<S = string> = S extends `/${infer H}/${infer R}` ? R extends `service-provider` ? never : R : S;
 
-const ProtectServiceProviderRoute = (Page:ComponentType, expectedRedirectUrl: ExpectedSPRedirectUrl = '/') => {
+interface ProtectServiceProviderRouteProps {
 
-  const AuthPage = ({...props}) => {
+}
+
+const ProtectServiceProviderRoute = <P extends object>(Page:ComponentType<P>, expectedRedirectUrl: ExpectedSPRedirectUrl = '/'):React.FC<ProtectServiceProviderRouteProps & P> => {
+
+  const AuthPage = ({...props}: P & ProtectServiceProviderRouteProps) => {
     // const router = useAppRouter();
     const access_token = useSelector((state: AppRootState) => state.auth.access_token);
     const role = useSelector((state: AppRootState) => state.auth.role);

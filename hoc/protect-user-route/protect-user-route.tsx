@@ -7,16 +7,21 @@ import { AppRootState } from "../../rtk/app/store";
 // import { useAppRouter } from "../../lib/hooks/client/use-app-router";
 import { RoleEnum } from "../../lib/constants";
 
-// todo
-type ExpectedRedirectUrl<S = string> = S extends `/${infer H}/${infer R}` ? H : S;
+// TODO
+type ExpectedUserRedirectUrl<S = string> = S extends `/${infer H}/${infer R}` ? R extends `user` ? never : R : S;
 
-type R = ExpectedRedirectUrl<"/profile/user">;
+interface ProtectUserRouteProps {
 
-const ProtectUserRoute = (
-  Page: ComponentType,
-  expectedRedirectUrl: string
-) => {
-  const AuthPage = ({ ...props }) => {
+}
+type R = ExpectedUserRedirectUrl<"/profile/user">;
+
+const ProtectUserRoute = <P extends object>(
+  Page: ComponentType<P>,
+  expectedRedirectUrl:ExpectedUserRedirectUrl = '/'
+):React.FC<ProtectUserRouteProps & P> => {
+
+
+  const AuthPage = ({ ...props }: P & ProtectUserRouteProps) => {
     // const router = useAppRouter();
     const access_token = useSelector(
       (state: AppRootState) => state.auth.access_token

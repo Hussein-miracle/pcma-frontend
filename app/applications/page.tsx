@@ -322,7 +322,12 @@ const ApplicationListPage = () => {
   return (
     <motion.section
       // key={ApplicationFlowEnum.VIEW_APPLICATIONS}
-      className={cn("w-full max-w-[48.75rem] mx-auto", ((!applicationsData?.data || applicationsData?.data?.length === 0) && !isLoadingApplications) ? "flex gap-4 items-center justify-center" : ' grid grid-cols-2 grid-flow-row gap-4 ')}
+      className={cn("w-full max-w-[48.75rem] mx-auto", 
+      // ((!applicationsData?.data || applicationsData?.data?.length === 0) && !isLoadingApplications) ? "flex gap-4 items-center justify-center" : ' grid grid-cols-2 grid-flow-row gap-4 '
+      ''
+      ,
+      'grid grid-cols-2 grid-flow-row gap-4'
+      )}
       initial={{ x: "50vw", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-50vw", opacity: 0 }}
@@ -341,6 +346,11 @@ const ApplicationListPage = () => {
      })}
 
 
+     {!isLoadingApplications  && <>
+      <ApplicationCard  />
+      <ApplicationCard  />
+      <ApplicationCard  />
+     </>}
       {isLoadingApplications && (
         <>
         <ApplicationCardSkeleton />
@@ -353,7 +363,7 @@ const ApplicationListPage = () => {
   );
 };
 
-const ApplicationPage = () => {
+const ApplicationsPage = () => {
   const { applicationFlowState } = useContext(ApplicationFlowContext);
 
   return (
@@ -379,4 +389,4 @@ const ApplicationPage = () => {
   );
 };
 
-export default ProtectServiceProviderRoute(ApplicationPage,'/profile/user');
+export default ProtectServiceProviderRoute(ApplicationsPage,'/overview');

@@ -63,12 +63,6 @@ const AuditTrailPage = () => {
   };
 
 
-    
-  // if(role?.toLowerCase() !== RoleEnum.USER.toLowerCase() && role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase()){
-  //   return redirect("/audit-trail/service-provider");
-  // }else if (role?.toLowerCase() !== RoleEnum.USER.toLowerCase()){
-  //   return redirect("/");
-  // }
 
   return (
     <Fragment>

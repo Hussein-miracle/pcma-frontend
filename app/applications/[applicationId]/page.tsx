@@ -7,14 +7,23 @@ import Spacer from "@/components/spacer/spacer";
 import Checkbox from "@/components/checkbox/checkbox";
 import { CopyIcon } from "@/components/icons";
 import useToggle from "@/lib/hooks/client/use-toggle";
+
 import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
 
-const ApplicationDetailsPage = () => {
-  const { toggle: toggleDeactivateDialog, toggleState: showDeactivateDialog } =
-    useToggle(false);
+
+
+const ApplicationDetailsPage = ({params:{applicationId}}:{params:{applicationId:string;}}) => {
+
+
+
+  const { toggle: toggleDeactivateDialog, toggleState: showDeactivateDialog } = useToggle(false);
+
+  console.log({applicationId});
+
+
   return (
-    <>
-      <section className=" w-full max-w-[24rem] sm:max-w-[25rem] mx-auto">
+    <section className="w-full h-full min-h-screen">
+      <section className="w-full max-w-[24rem] sm:max-w-[25rem] mx-auto">
         <BackButton />
         <Spacer size={20} />
         <section className="w-full overflow-hidden bg-white rounded-xl border border-[#D4DAF0]">
@@ -181,7 +190,7 @@ const ApplicationDetailsPage = () => {
           </div>
         </div>
       </Dialog>
-    </>
+    </section>
   );
 };
 

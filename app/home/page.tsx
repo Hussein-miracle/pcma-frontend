@@ -51,7 +51,7 @@ const HomeStackedCard = ({
 
   const height = useMemo(() => {
     return isMobile ? mobileHeight : desktopheight;
-  }, [isMobile]);
+  }, [isMobile,mobileHeight,desktopheight]);
   return (
     <div
       className={cn(
@@ -89,6 +89,8 @@ export default function Home() {
   // console.log("pixelVal",pixelVal);
 
   //console.log({ isMobile });
+
+  console.log({roleHome:role})
   return (
     <main className="flex sm:min-h-screen flex-col items-center justify-between  bg-neutral-white w-full h-full">
       {/* FIRST  SECTION */}
