@@ -40,7 +40,7 @@ const people = [
 ];
 
 const AuditTrailPage = () => {
-  const role = useSelector((state:AppRootState) => state.auth.role);
+  // const role = useSelector((state:AppRootState) => state.auth.role);
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
   
   const [selected, setSelected] = useState(people[1]);

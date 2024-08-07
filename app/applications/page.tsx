@@ -17,23 +17,32 @@ import { ApplicationFlowContext } from "@/contexts/application-context/applicati
 
 import { ApplicationCreationData } from "@/lib/types";
 import { useGetApplications } from "@/lib/hooks/api/queries";
-import { ApplicationFlowEnum } from "@/lib/constants";
-import { cn, sleep } from "@/lib/utils";
+import { ApplicationFlowEnum, DataAccessEnum } from "@/lib/constants";
+import { cn, handleErrorGlobal, sleep } from "@/lib/utils";
 import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
 import ApplicationCardSkeleton from "./components/application-card-skeleton/application-card-skeleton";
+import ErrorMessage from "@/components/error-message/error-message";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createApplicationSchema } from "@/lib/validations";
+import { usePostCreateApplication } from "@/lib/hooks/api/mutations";
 
 const ConfirmApplicationDetails = () => {
-  const { handleSetApplicationFlowState ,applicationFlowState } = useContext(ApplicationFlowContext);
-  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.CONFIRM_APPLICATION ? 1.5 : 0, [applicationFlowState]);
+  const { handleSetApplicationFlowState, applicationFlowState } = useContext(
+    ApplicationFlowContext
+  );
+  const screenDelay = useMemo(
+    () =>
+      applicationFlowState === ApplicationFlowEnum.CONFIRM_APPLICATION
+        ? 1.5
+        : 0,
+    [applicationFlowState]
+  );
 
   // console.log({screenDelay})
-
-
 
   const handleBack = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.CREATE_APPLICATION);
   };
-
 
   return (
     <motion.section
@@ -147,32 +156,72 @@ const ConfirmApplicationDetails = () => {
   );
 };
 const ApplicationCreationForm = () => {
-  const { handleSetApplicationFlowState ,applicationFlowState} = useContext(ApplicationFlowContext);
+  const { handleSetApplicationFlowState, applicationFlowState } = useContext(
+    ApplicationFlowContext
+  );
 
+  const { mutateAsync: createApplication, isPending: isCreatingApplication } =
+    usePostCreateApplication();
 
-  const {control,watch,handleSubmit} = useForm<Partial<ApplicationCreationData>>({
+  const {
+    control,
+    watch,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<ApplicationCreationData>({
     defaultValues: {
       name: "",
       website_url: "",
       logo_url: "",
       purpose_of_access: "",
+      data_access: [],
     },
+    resolver: zodResolver(createApplicationSchema),
   });
 
-  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.CREATE_APPLICATION ? 1.5 : 0, [applicationFlowState]);
+  const formValues = watch();
 
-  console.log({screenDelay})
+  console.log({ formValues });
 
+  const screenDelay = useMemo(
+    () =>
+      applicationFlowState === ApplicationFlowEnum.CREATE_APPLICATION ? 1.5 : 0,
+    [applicationFlowState]
+  );
 
+  console.log({ screenDelay });
 
-  const handleCreateApplication = async (values:Partial<ApplicationCreationData>) => {
+  const handleCreateApplication = async (values: ApplicationCreationData) => {
     console.log({ values });
-    await sleep(500);
-    handleSetApplicationFlowState(ApplicationFlowEnum.CONFIRM_APPLICATION);
+    try {
+      const appResponse = await createApplication(values);
+      console.log({appResponse},'APP RESPONSE')
+      handleSetApplicationFlowState(ApplicationFlowEnum.CONFIRM_APPLICATION);
+    } catch (error:any) {
+      const errorMsg = error?.response?.message;
+      handleErrorGlobal(errorMsg ?? error?.message ?? 'An error occured');
+    }
+    // await sleep(500);
   };
 
   const handleBack = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.VIEW_APPLICATIONS);
+  };
+
+  const handleAddAccessType = (access_type: DataAccessEnum) => {
+    const dataToAccess = [...formValues?.data_access];
+    const dataToAccessIndex = dataToAccess?.findIndex(
+      (dt) => dt === access_type
+    );
+
+    if (dataToAccessIndex > -1) {
+      dataToAccess.splice(dataToAccessIndex, 1);
+    } else {
+      dataToAccess.push(access_type);
+    }
+
+    setValue("data_access", [...dataToAccess]);
   };
 
   return (
@@ -182,7 +231,7 @@ const ApplicationCreationForm = () => {
       initial={{ x: "50vw", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-50vw", opacity: 0 }}
-      transition={{ duration: 1, ease: "linear",delay:screenDelay }}
+      transition={{ duration: 1, ease: "linear", delay: screenDelay }}
     >
       <BackButton onClick={handleBack} />
       <Spacer size={24} />
@@ -264,23 +313,65 @@ const ApplicationCreationForm = () => {
             </h2>
             {/* <Spacer size={16} /> */}
             <main className="w-full flex flex-wrap  gap-2">
-              <div className="flex items-center justify-start gap-1">
-                <Checkbox checked={true} /> <span className="block">Email</span>
+              <div
+                className="flex items-center justify-start gap-1"
+                onClick={() => {
+                  handleAddAccessType(DataAccessEnum.EMAIL);
+                }}
+              >
+                <Checkbox
+                  checked={formValues?.data_access?.includes(
+                    DataAccessEnum.EMAIL
+                  )}
+                />{" "}
+                <span className="block">Email</span>
               </div>
-              <div className="flex items-center justify-start gap-1">
-                <Checkbox checked={!true} />{" "}
+              <div
+                className="flex items-center justify-start gap-1"
+                onClick={() => {
+                  handleAddAccessType(DataAccessEnum.CONTACTS);
+                }}
+              >
+                <Checkbox
+                  checked={formValues.data_access.includes(
+                    DataAccessEnum.CONTACTS
+                  )}
+                />{" "}
                 <span className="block">Contacts</span>
               </div>
-              <div className="flex items-center justify-start gap-1">
-                <Checkbox checked={true} disabled />{" "}
+              <div
+                className="flex items-center justify-start gap-1"
+                onClick={() => {
+                  handleAddAccessType(DataAccessEnum.LOCATION);
+                }}
+              >
+                <Checkbox
+                  checked={formValues.data_access.includes(
+                    DataAccessEnum.LOCATION
+                  )}
+                  // disabled
+                />{" "}
                 <span className="block">Location</span>
               </div>
 
-              <div className="flex items-center justify-start gap-1">
-                <Checkbox checked={!true} />{" "}
+              <div
+                className="flex items-center justify-start gap-1"
+                onClick={() => {
+                  handleAddAccessType(DataAccessEnum.OTHERS);
+                }}
+              >
+                <Checkbox
+                  checked={formValues.data_access.includes(
+                    DataAccessEnum.OTHERS
+                  )}
+                />{" "}
                 <span className="block">Others</span>
               </div>
             </main>
+
+            {errors.data_access?.message && (
+              <ErrorMessage text={errors?.data_access?.message} />
+            )}
           </section>
           <section className="flex flex-col items-start gap-2 w-full">
             <h2 className=" text-grey-70 font-normal text-base/5">
@@ -294,8 +385,15 @@ const ApplicationCreationForm = () => {
                 rows={4}
               />
             </div>
+
+            {errors?.purpose_of_access?.message && <ErrorMessage text={errors?.purpose_of_access?.message}/>}
           </section>
-          <PrimaryButton variant="secondary" type="submit">
+          <PrimaryButton
+            loading={isCreatingApplication}
+            disabled={isCreatingApplication}
+            variant="secondary"
+            type="submit"
+          >
             Save&nbsp;&&nbsp;Continue
           </PrimaryButton>
         </div>
@@ -305,33 +403,39 @@ const ApplicationCreationForm = () => {
 };
 
 const ApplicationListPage = () => {
-  const { handleSetApplicationFlowState,applicationFlowState } = useContext(ApplicationFlowContext);
+  const { handleSetApplicationFlowState, applicationFlowState } = useContext(
+    ApplicationFlowContext
+  );
 
-  const { isLoading:isLoadingApplications, data:applicationsData } = useGetApplications();
+  const { isLoading: isLoadingApplications, data: applicationsData } =
+    useGetApplications();
 
-  
   const handleCreateApplication = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.CREATE_APPLICATION);
   };
 
-  const screenDelay = useMemo(() => applicationFlowState === ApplicationFlowEnum.VIEW_APPLICATIONS ? 0 : 1.5, [applicationFlowState]);
+  const screenDelay = useMemo(
+    () =>
+      applicationFlowState === ApplicationFlowEnum.VIEW_APPLICATIONS ? 0 : 1.5,
+    [applicationFlowState]
+  );
 
   // console.log({screenDelay})
-  console.log({ isLoading:isLoadingApplications, applicationsData });
-  
+  console.log({ isLoading: isLoadingApplications, applicationsData });
+
   return (
     <motion.section
       // key={ApplicationFlowEnum.VIEW_APPLICATIONS}
-      className={cn("w-full max-w-[48.75rem] mx-auto", 
-      // ((!applicationsData?.data || applicationsData?.data?.length === 0) && !isLoadingApplications) ? "flex gap-4 items-center justify-center" : ' grid grid-cols-2 grid-flow-row gap-4 '
-      ''
-      ,
-      'grid grid-cols-2 grid-flow-row gap-4'
+      className={cn(
+        "w-full max-w-[48.75rem] mx-auto",
+        // ((!applicationsData?.data || applicationsData?.data?.length === 0) && !isLoadingApplications) ? "flex gap-4 items-center justify-center" : ' grid grid-cols-2 grid-flow-row gap-4 '
+        "",
+        "grid grid-cols-2 grid-flow-row gap-4"
       )}
       initial={{ x: "50vw", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "-50vw", opacity: 0 }}
-      transition={{ duration: 1, ease: "linear",delay:screenDelay }}
+      transition={{ duration: 1, ease: "linear", delay: screenDelay }}
     >
       <div
         role="button"
@@ -340,23 +444,27 @@ const ApplicationListPage = () => {
       >
         <PlusIcon /> <span>Create Application</span>
       </div>
-    
-     {!isLoadingApplications && !!applicationsData?.data && applicationsData?.data?.length > 0 && applicationsData?.data?.map((application,idx) => {
-        return <ApplicationCard key={idx} />;
-     })}
 
+      {!isLoadingApplications &&
+        !!applicationsData?.data &&
+        applicationsData?.data?.length > 0 &&
+        applicationsData?.data?.map((application, idx) => {
+          return <ApplicationCard key={idx} />;
+        })}
 
-     {!isLoadingApplications  && <>
-      <ApplicationCard  />
-      <ApplicationCard  />
-      <ApplicationCard  />
-     </>}
+      {!isLoadingApplications && (
+        <>
+          <ApplicationCard />
+          <ApplicationCard />
+          <ApplicationCard />
+        </>
+      )}
       {isLoadingApplications && (
         <>
-        <ApplicationCardSkeleton />
-        <ApplicationCardSkeleton />
-        <ApplicationCardSkeleton />
-        <ApplicationCardSkeleton />
+          <ApplicationCardSkeleton />
+          <ApplicationCardSkeleton />
+          <ApplicationCardSkeleton />
+          <ApplicationCardSkeleton />
         </>
       )}
     </motion.section>
@@ -389,4 +497,4 @@ const ApplicationsPage = () => {
   );
 };
 
-export default ProtectServiceProviderRoute(ApplicationsPage,'/overview');
+export default ProtectServiceProviderRoute(ApplicationsPage, "/overview");

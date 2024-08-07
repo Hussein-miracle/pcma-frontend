@@ -2,6 +2,13 @@ import { SelectItem, LoginType } from "../types";
 import { dynamicRequiredErrorMsg } from "../utils";
 
 
+export enum DataAccessEnum{
+  EMAIL = 'email',
+  OTHERS = 'others',
+  LOCATION = 'location',
+  CONTACTS = 'contacts'    
+}
+
 export enum RoleEnum{
   USER = "USER",
   TRANSACTION_PARTY = "TRANSACTION_PARTY", 

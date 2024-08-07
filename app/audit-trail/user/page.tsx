@@ -67,7 +67,7 @@ const AuditTrailPage = () => {
   return (
     <Fragment>
       <section className="bg-grey-10 w-full h-full min-h-screen">
-        <Header type="authed" />
+        <Header type="authed" roleType={'user'} />
 
         <main className=" pt-8 mx-auto w-full max-w-[756px]">
           <h2 className=" font-bold text-2xl/9 text-center max-w-lg mx-auto">

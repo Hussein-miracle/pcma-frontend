@@ -32,7 +32,7 @@ const Footer = () => {
 
   // console.log({px})
 
-  const { control, handleSubmit,watch ,setValue} = useForm<ContactForm>({
+  const { control, handleSubmit, watch, setValue } = useForm<ContactForm>({
     defaultValues: {
       where: "",
       name: "",
@@ -66,19 +66,20 @@ const Footer = () => {
             <div className="flex items-start gap-6">
               <PCMAPhoneCallIcon className=" w-6 h-6 min-h-6 min-w-6" />
               <span className=" text-base text-secondary-black font-normal">
-                +1012 3456 789
+                ⁠+2348022904983
               </span>
             </div>
             <div className="flex items-start gap-4">
               <PCMAEmailIcon className=" w-6 h-6 min-h-6 min-w-6" />
               <span className=" text-base text-secondary-black font-normal">
-                demo@gmail.com
+                Tolasogbesan@ieee.org
               </span>
             </div>
             <div className="flex items-start gap-4">
               <PCMALocationIcon className=" w-6 h-6 min-h-6 min-w-6" />
               <span className=" text-base text-secondary-black font-normal">
-                132 Dartmouth Street Boston, Massachusetts 02156 United States
+                Centre for Cyberspace: Nasarawa State University, Keffi,
+                Nasarawa State, Nigeria
               </span>
             </div>
           </div>
@@ -90,7 +91,10 @@ const Footer = () => {
         </main>
 
         <main className="pr-0 h-fit sm:h-full sm:pr-8">
-          <form className="h-full w-full max-w-[545px] flex flex-col items-start gap-10"     onSubmit={handleSubmit(handleSubmitContactDetails)}>
+          <form
+            className="h-full w-full max-w-[545px] flex flex-col items-start gap-10"
+            onSubmit={handleSubmit(handleSubmitContactDetails)}
+          >
             <div className="w-full">
               <h2 className=" text-[32px] sm:text-[54px] font-extrabold text-secondary-black">
                 Get in <span className=" text-primary">Touch</span>{" "}
@@ -101,15 +105,14 @@ const Footer = () => {
               </p>
             </div>
 
-            <main
-             
-              className="flex flex-col items-center w-full gap-5"
-          
-            >
+            <main className="flex flex-col items-center w-full gap-5">
               <Controller
                 name="name"
                 control={control}
-                render={({  field:{ref,...fields}, fieldState: { error } }) => (
+                render={({
+                  field: { ref, ...fields },
+                  fieldState: { error },
+                }) => (
                   <FooterFormField
                     fieldName="Name"
                     endFieldNameWithAsterisk
@@ -123,7 +126,10 @@ const Footer = () => {
               <Controller
                 control={control}
                 name="email"
-                render={({  field:{ref,...fields}, fieldState: { error } }) => {
+                render={({
+                  field: { ref, ...fields },
+                  fieldState: { error },
+                }) => {
                   return (
                     <FooterFormField
                       fieldName="Email"
@@ -139,7 +145,10 @@ const Footer = () => {
               <Controller
                 control={control}
                 name="phoneNumber"
-                render={({ field:{ref,...fields}, fieldState: { error } }) => {
+                render={({
+                  field: { ref, ...fields },
+                  fieldState: { error },
+                }) => {
                   return (
                     <FooterFormField
                       fieldName="Phone Number"
@@ -176,8 +185,6 @@ const Footer = () => {
                       const where = e.target.value;
                       // console.log(e.target.value);
                       setValue("where", where);
-
-
                     }}
                     className={cn(
                       "block w-full appearance-none h-full border-none outline-none bg-transparent",
@@ -201,7 +208,9 @@ const Footer = () => {
                 </div>
               </label>
             </main>
-            <PrimaryButton className="w-full" type="submit">SEND</PrimaryButton>
+            <PrimaryButton className="w-full" type="submit">
+              SEND
+            </PrimaryButton>
           </form>
         </main>
       </section>
@@ -250,8 +259,9 @@ const Footer = () => {
               Contact Us
             </h2>
             <div className=" text-base text-white leading-6 pb-4 border-b border-b-[#10807080] ">
-              <span className="block">contact@pcma.com</span>
-              <span className="block">+44 2045842425</span>
+              <span className="block"> ⁠Adetola Sogbesan, PhD candidate.</span>
+              <span className="block"> Tolasogbesan@ieee.org</span>
+              <span className="block">+2348022904983</span>
             </div>
             <div className="flex items-center gap-2  sm:hidden pb-4 border-b border-b-[#10807080] ">
               <PCMAWhatsappIcon />

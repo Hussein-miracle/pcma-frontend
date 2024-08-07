@@ -8,6 +8,8 @@ export type DynPixel<P> = P extends `${infer T}px` ? T : P;
 
 export type LoginType = 'individual' | 'company' | 'service-provider';
 
+export type DataAccessType = 'email' | 'contacts' | 'location' | 'others' 
+
 
 export interface LoginForm {
   email: string;
@@ -77,20 +79,11 @@ export type ConnectedApplication = {
 }
 
 
-export type ApplicationCreationData = {
-  // applicationName: string;
-  
-  // email_access: boolean;
-  // contacts_access: boolean;
-  // location_access: boolean;
-  // others_access: boolean;
-  
-  // NOTE: required by API
-  
+export type ApplicationCreationData = {  
   website_url: string;
   name:string; 
   logo_url: string;
-  data_access?: Array<unknown>;
+  data_access: DataAccessType[];
   purpose_of_access: string;
 }
 

@@ -1,6 +1,8 @@
 "use client";
 
-import { ApiResponse, IndividualLoginResponse, IndividualRegistrationDetails, InferredLoginForm, LoginDetails, SPLoginResponse, SPRegistrationDetails } from "@/lib/types";
+import { queryClient } from "@/app/layout.client";
+import { ApiResponse, ApplicationCreationData, IndividualLoginResponse, IndividualRegistrationDetails, InferredLoginForm, LoginDetails, SPLoginResponse, SPRegistrationDetails } from "@/lib/types";
+import { successToast } from "@/lib/utils";
 import axiosInstance from "@/services/axiosInstance"
 import { useMutation } from "@tanstack/react-query"
 
@@ -76,3 +78,22 @@ export const usePatchIndividualProfile = () => {
   });
   return mutationDetails;
 }
+
+
+export const usePostCreateApplication = () => {
+  const mutationDetails = useMutation({
+    mutationKey:['post-create-application'],
+    mutationFn:(details:ApplicationCreationData):Promise<ApiResponse> => {
+     return axiosInstance.post("/tp/application",details)  
+    },
+    onSuccess:(data,variables,ctx)=>{
+      
+      console.log({data,variables,ctx},'avc');
+      successToast(data?.message ?? 'Application created successfully.')
+      
+      queryClient.invalidateQueries({ queryKey: ['get-sp-applications']})
+    }
+  });
+  return mutationDetails;
+}
+

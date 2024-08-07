@@ -13,16 +13,14 @@ interface CheckboxProps{
 
 
 const Checkbox = ({checked = false,onChange,className,disabled = false}:CheckboxProps) => {
-  const {toggle:toggleIsChecked,toggleState:isChecked} = useToggle(checked);
+  // const {toggle:toggleIsChecked,toggleState:isChecked} = useToggle(checked ?? false);
 
   return (
     <div className={cn(' w-4 h-4 min-h-4 min-w-4 max-w-4 max-h-4 cursor-pointer',disabled && 'cursor-not-allowed opacity-50  will-change-auto', className )} onClick={() => {
       if(disabled) return;
-
-      onChange?.(!isChecked);
-      toggleIsChecked();
+      onChange?.(!checked);
     }}>
-      {isChecked ? <CheckboxIcon/> : <CheckboxEmptyIcon/>}
+      {checked ? <CheckboxIcon/> : <CheckboxEmptyIcon/>}
     </div>
   )
 }

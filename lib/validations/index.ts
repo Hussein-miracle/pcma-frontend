@@ -106,3 +106,19 @@ export const loginSchema = z.object({
     }),
   }).required(),
 })
+
+
+export const createApplicationSchema = z.object({
+  name:z.string({
+    message: dynamicRequiredErrorMsg('application name'),
+    required_error:dynamicRequiredErrorMsg('application name'),
+  }).min(4,"application name must be at least 4 characters long"),
+  website_url:z.string({
+    message: dynamicRequiredErrorMsg('website url')
+  }).url("website url must be a valid url"),
+  logo_url:z.string({
+    message: dynamicRequiredErrorMsg('logo url')
+  }).url("logo url must be a valid url").startsWith("https",'please provide a valid image url starting with https'),
+  purpose_of_access:z.string().optional(),
+  data_access:z.array(z.string()).max(4).nonempty("At least one item must be selected"),
+})
