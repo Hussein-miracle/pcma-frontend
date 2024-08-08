@@ -18,18 +18,31 @@ import { ApplicationFlowContext } from "@/contexts/application-context/applicati
 import { ApplicationCreationData } from "@/lib/types";
 import { useGetApplications } from "@/lib/hooks/api/queries";
 import { ApplicationFlowEnum, DataAccessEnum } from "@/lib/constants";
-import { cn, handleErrorGlobal, sleep, successToast } from "@/lib/utils";
+import { cn, handleErrorGlobal, sleep, successToast, truncateString } from "@/lib/utils";
 import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
 import ApplicationCardSkeleton from "./components/application-card-skeleton/application-card-skeleton";
 import ErrorMessage from "@/components/error-message/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createApplicationSchema } from "@/lib/validations";
 import { usePostCreateApplication } from "@/lib/hooks/api/mutations";
+import { useDispatch, useSelector } from "react-redux";
+import { AppRootState } from "@/rtk/app/store";
+import { useCopyToClipboard } from "@/lib/hooks/client/use-copy-to-clipboard";
+import { useAppRouter } from "@/lib/hooks/client/use-app-router";
+import { setLatestApplicationCreated } from "@/rtk/features/sp-slice/sp-slice";
 
 const ConfirmApplicationDetails = () => {
+  const router = useAppRouter();
+  const latestApplicationCreated = useSelector(
+    (state: AppRootState) => state.service_provider.latestApplicationCreated
+  );
+
   const { handleSetApplicationFlowState, applicationFlowState } = useContext(
     ApplicationFlowContext
   );
+
+  const [_, copyFn] = useCopyToClipboard();
+
   const screenDelay = useMemo(
     () =>
       applicationFlowState === ApplicationFlowEnum.CONFIRM_APPLICATION
@@ -115,9 +128,12 @@ const ConfirmApplicationDetails = () => {
                 </h2>
                 <div className="w-full  bg-white rounded p-2 border border-grey-30 flex items-center justify-between">
                   <span className=" text-grey-90 text-base/5 font-normal">
-                    3456787654356789654667809
+                    {latestApplicationCreated?.id}
                   </span>
-                  <CopyIcon />
+                  <CopyIcon className=" cursor-pointer" onClick={() => {
+                    if (!latestApplicationCreated?.id) return;
+                    copyFn(latestApplicationCreated?.id);
+                  }} />
                 </div>
               </div>
               {/* CREDENTIAL ITEM */}
@@ -127,9 +143,12 @@ const ConfirmApplicationDetails = () => {
                 </h2>
                 <div className="w-full  bg-white rounded p-2 border border-grey-30 flex items-center justify-between">
                   <span className=" text-grey-90 text-base/5 font-normal">
-                    3456787654356789654667809
+                    {truncateString(latestApplicationCreated?.secret_key!,32)}
                   </span>
-                  <CopyIcon />
+                  <CopyIcon className=" cursor-pointer" onClick={() => {
+                    if (!latestApplicationCreated?.secret_key) return;
+                    copyFn(latestApplicationCreated?.secret_key);
+                  }} />
                 </div>
               </div>
               {/* CREDENTIAL ITEM */}
@@ -139,16 +158,28 @@ const ConfirmApplicationDetails = () => {
                 </h2>
                 <div className="w-full  bg-white rounded p-2 border border-grey-30 flex items-center justify-between">
                   <span className=" text-grey-90 text-base/5 font-normal">
-                    3456787654356789654667809
+                    {truncateString(latestApplicationCreated?.public_key!, 32)}
                   </span>
-                  <CopyIcon />
+                  <CopyIcon  className=" cursor-pointer"
+                    onClick={() => {
+                      if (!latestApplicationCreated?.public_key) return;
+                      copyFn(latestApplicationCreated?.public_key);
+                    }}
+                  />
                 </div>
               </div>
             </div>
           </section>
         </section>
 
-        <PrimaryButton variant="secondary" type="button">
+        <PrimaryButton
+          variant="secondary"
+          type="button"
+          onClick={() => {
+            if (!latestApplicationCreated?.id) return;
+            router.push(`/applications/${latestApplicationCreated?.id}`);
+          }}
+        >
           Proceed
         </PrimaryButton>
       </div>
@@ -156,6 +187,7 @@ const ConfirmApplicationDetails = () => {
   );
 };
 const ApplicationCreationForm = () => {
+  const dispatch = useDispatch();
   const { handleSetApplicationFlowState, applicationFlowState } = useContext(
     ApplicationFlowContext
   );
@@ -197,13 +229,20 @@ const ApplicationCreationForm = () => {
     try {
       const appResponse = await createApplication(values);
       console.log({ appResponse }, "APP RESPONSE");
-      if (appResponse?.status === 201) {
+      if (appResponse?.status === 201 && !!appResponse?.data) {
+        const appDetails = appResponse?.data;
+        dispatch(setLatestApplicationCreated(appDetails));
+       
+        
+        
         successToast(
           appResponse?.message ?? "Application created successfully"
         );
         handleSetApplicationFlowState(ApplicationFlowEnum.CONFIRM_APPLICATION);
       } else {
-        throw new Error(appResponse?.message ?? "An error occured while creating application");
+        throw new Error(
+          appResponse?.message ?? "An error occured while creating application"
+        );
       }
     } catch (error: any) {
       const errorMsg = error?.response?.message;

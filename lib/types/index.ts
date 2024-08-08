@@ -119,6 +119,14 @@ export interface ApiResponse{
   message?: string; 
 }
 
+export interface  ApplicationDetails {
+  id:string;
+  public_key:string;
+  secret_key:string;
+}
+export interface ApplicationCreationResponse extends ApiResponse{
+  data:ApplicationDetails
+}
 export interface IndividualProfileResponse extends ApiResponse{
   data:{
     firstName:string;

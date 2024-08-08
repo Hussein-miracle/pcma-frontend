@@ -3,6 +3,9 @@
 import { createContext, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { ApplicationFlowEnum } from "@/lib/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { AppRootState } from "@/rtk/app/store";
+import { setAppFlowStatePersist } from "@/rtk/features/sp-slice/sp-slice";
 
 
 
@@ -25,11 +28,14 @@ const ApplicationContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const dispatch = useDispatch();
+  const persistedState = useSelector((state:AppRootState) => state.service_provider.appFlowStatePersist);
   const [applicationFlowState, setApplicationFlowState] =
-    useState<ApplicationFlowEnum>(ApplicationFlowEnum.VIEW_APPLICATIONS);
+    useState<ApplicationFlowEnum>( persistedState ??  ApplicationFlowEnum.VIEW_APPLICATIONS);
 
 
   const handleSetApplicationFlowState = (state: ApplicationFlowEnum) => {
+    dispatch(setAppFlowStatePersist(state));
     setApplicationFlowState(state);
   }
 

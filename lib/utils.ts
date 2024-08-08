@@ -40,6 +40,13 @@ export const errorToast = (msg: string,options:ToastOptions = {}) => {
 };
 
 
+export const truncateString = (str: string, num: number = 22) => {
+  if (str.length <= num) {
+    return str;
+  }
+  return str.slice(0, num) + '...';
+}
+
 
 export const pxToRemCalc = <P extends string | number>(pixels: DynPixel<P>):CountNumber<number>  => {
   if (typeof pixels === 'string') {
