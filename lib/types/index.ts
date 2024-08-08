@@ -129,8 +129,19 @@ export interface IndividualProfileResponse extends ApiResponse{
 
 }
 
+export interface Application{
+  id:string;
+  name:string;
+  logo_url:string;
+  website_url:string;
+  updatedAt:string;
+  createdAt:string;
+  data_access?:Array<DataAccessType>;
+  purpose_of_access?:string;
+}
+
 export interface ServiceProviderApplicationsResponse extends ApiResponse{
-    data:Array<any>;
+    data:Array<Application>;
 }
 
 export interface IndividualOverviewResponse extends ApiResponse{

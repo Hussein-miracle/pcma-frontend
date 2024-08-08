@@ -18,7 +18,7 @@ import { ApplicationFlowContext } from "@/contexts/application-context/applicati
 import { ApplicationCreationData } from "@/lib/types";
 import { useGetApplications } from "@/lib/hooks/api/queries";
 import { ApplicationFlowEnum, DataAccessEnum } from "@/lib/constants";
-import { cn, handleErrorGlobal, sleep } from "@/lib/utils";
+import { cn, handleErrorGlobal, sleep, successToast } from "@/lib/utils";
 import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
 import ApplicationCardSkeleton from "./components/application-card-skeleton/application-card-skeleton";
 import ErrorMessage from "@/components/error-message/error-message";
@@ -196,11 +196,18 @@ const ApplicationCreationForm = () => {
     console.log({ values });
     try {
       const appResponse = await createApplication(values);
-      console.log({appResponse},'APP RESPONSE')
-      handleSetApplicationFlowState(ApplicationFlowEnum.CONFIRM_APPLICATION);
-    } catch (error:any) {
+      console.log({ appResponse }, "APP RESPONSE");
+      if (appResponse?.status === 201) {
+        successToast(
+          appResponse?.message ?? "Application created successfully"
+        );
+        handleSetApplicationFlowState(ApplicationFlowEnum.CONFIRM_APPLICATION);
+      } else {
+        throw new Error(appResponse?.message ?? "An error occured while creating application");
+      }
+    } catch (error: any) {
       const errorMsg = error?.response?.message;
-      handleErrorGlobal(errorMsg ?? error?.message ?? 'An error occured');
+      handleErrorGlobal(errorMsg ?? error?.message ?? "An error occured");
     }
     // await sleep(500);
   };
@@ -386,7 +393,9 @@ const ApplicationCreationForm = () => {
               />
             </div>
 
-            {errors?.purpose_of_access?.message && <ErrorMessage text={errors?.purpose_of_access?.message}/>}
+            {errors?.purpose_of_access?.message && (
+              <ErrorMessage text={errors?.purpose_of_access?.message} />
+            )}
           </section>
           <PrimaryButton
             loading={isCreatingApplication}
@@ -430,7 +439,7 @@ const ApplicationListPage = () => {
         "w-full max-w-[48.75rem] mx-auto",
         // ((!applicationsData?.data || applicationsData?.data?.length === 0) && !isLoadingApplications) ? "flex gap-4 items-center justify-center" : ' grid grid-cols-2 grid-flow-row gap-4 '
         "",
-        "grid grid-cols-2 grid-flow-row gap-4"
+        "grid  grid-cols-1 sm:grid-cols-2 grid-flow-row gap-3 sm:gap-4"
       )}
       initial={{ x: "50vw", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
@@ -449,16 +458,9 @@ const ApplicationListPage = () => {
         !!applicationsData?.data &&
         applicationsData?.data?.length > 0 &&
         applicationsData?.data?.map((application, idx) => {
-          return <ApplicationCard key={idx} />;
+          return <ApplicationCard key={idx} application={application} />;
         })}
 
-      {!isLoadingApplications && (
-        <>
-          <ApplicationCard />
-          <ApplicationCard />
-          <ApplicationCard />
-        </>
-      )}
       {isLoadingApplications && (
         <>
           <ApplicationCardSkeleton />
