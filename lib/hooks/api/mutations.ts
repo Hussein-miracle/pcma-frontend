@@ -1,7 +1,7 @@
 "use client";
 
 import { queryClient } from "@/app/layout.client";
-import { ApiResponse, ApplicationCreationData, IndividualLoginResponse, IndividualRegistrationDetails, InferredLoginForm, LoginDetails, SPLoginResponse, SPRegistrationDetails } from "@/lib/types";
+import { ApiResponse, ApplicationCreationData, ApplicationCreationResponse, IndividualLoginResponse, IndividualRegistrationDetails, InferredLoginForm, LoginDetails, SPLoginResponse, SPRegistrationDetails } from "@/lib/types";
 import { successToast } from "@/lib/utils";
 import axiosInstance from "@/services/axiosInstance"
 import { useMutation } from "@tanstack/react-query"
@@ -83,7 +83,7 @@ export const usePatchIndividualProfile = () => {
 export const usePostCreateApplication = () => {
   const mutationDetails = useMutation({
     mutationKey:['post-create-application'],
-    mutationFn:(details:ApplicationCreationData):Promise<ApiResponse> => {
+    mutationFn:(details:ApplicationCreationData):Promise<ApplicationCreationResponse> => {
      return axiosInstance.post("/tp/application",details)  
     },
     onSuccess:(data,variables,ctx)=>{
