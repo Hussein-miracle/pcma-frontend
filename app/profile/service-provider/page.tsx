@@ -16,7 +16,7 @@ import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
 import { format as formatDate } from "date-fns";
 import FileInput from "@/components/file-input/file-input";
 import ProfileTable from "../components/profile-table/profile-table";
-import { connectedApplications } from "@/data";
+// import { connectedApplications } from "@/data";
 import { Application, ConnectedApplication, ServiceProviderInformationForm } from "@/lib/types";
 import {
   Dialog,

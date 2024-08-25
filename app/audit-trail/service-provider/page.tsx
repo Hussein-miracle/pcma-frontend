@@ -21,7 +21,7 @@ import Spacer from "@/components/spacer/spacer";
 import AuditTrailTable from "../components/audit-trail-table/audit-trail-table";
 import DataAccessItem from "../../profile/components/data-access-item/data-access-item";
 import { CheckIcon, FilterIcon, MoreIcon, SearchIcon } from "@/components/icons";
-import { auditTrails } from "@/data";
+// import { auditTrails } from "@/data";
 import { AuditTrail } from "@/lib/types";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import { cn } from "@/lib/utils";
@@ -146,7 +146,7 @@ const AuditTrailPage = () => {
                 </AuditTrailTable.TableRow>
 
                 <main className="w-full custom-scroller overflow-auto h-[35rem]">
-                  {auditTrails?.map((audit_trail: AuditTrail, idx: number) => {
+                  {/* {auditTrails?.map((audit_trail: AuditTrail, idx: number) => {
                     return (
                       <AuditTrailTable.TableRow
                         key={idx}
@@ -205,7 +205,7 @@ const AuditTrailPage = () => {
                         </AuditTrailTable.TableDetail>
                       </AuditTrailTable.TableRow>
                     );
-                  })}
+                  })} */}
                 </main>
               </AuditTrailTable>
             </main>

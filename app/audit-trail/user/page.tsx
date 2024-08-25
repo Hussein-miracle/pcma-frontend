@@ -20,7 +20,7 @@ import Spacer from "@/components/spacer/spacer";
 import AuditTrailTable from "../components/audit-trail-table/audit-trail-table";
 import DataAccessItem from "../../profile/components/data-access-item/data-access-item";
 import { CheckIcon, FilterIcon, MoreIcon, SearchIcon } from "@/components/icons";
-import { auditTrails } from "@/data";
+// import { auditTrails } from "@/data";
 import { Activity, AuditTrail } from "@/lib/types";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import { cn } from "@/lib/utils";

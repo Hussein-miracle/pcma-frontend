@@ -17,7 +17,7 @@ import {
 
 import useToggle from "@/lib/hooks/client/use-toggle";
 import { OverviewActivity, PendingRequest } from "@/lib/types";
-import { overviewActivities } from "@/data";
+// import { overviewActivities } from "@/data";
 import { cn, handleErrorGlobal, plusJakartaSans, successToast } from "@/lib/utils";
 import {
   useGetIndividualOverview,
