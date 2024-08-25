@@ -78,7 +78,7 @@ const AuthenticatedHeaderItem = ({
             )}
           >
             <div className="">{icon}</div>
-            <div className=" font-semibold text-secondary-black text-base/4 tracking-[1%]">
+            <div className=" font-semibold text-secondary-black text-xs/4 sm:text-base/4 tracking-[1%]">
               {children}
             </div>
           </li>
@@ -92,7 +92,7 @@ const AuthenticatedHeaderItem = ({
           )}
         >
           <div className="">{icon}</div>
-          <div className=" font-semibold text-secondary-black text-base/4 tracking-[1%]">
+          <div className=" font-semibold text-secondary-black text-xs/4 sm:text-base/4 tracking-[1%]">
             {children}
           </div>
         </li>
@@ -196,7 +196,7 @@ const AuthHeader = ({
       )}
     >
       <Link href={"/"}>
-        <PCMALogo />
+        <PCMALogo  />
       </Link>
 
       <nav className="w-fit h-full">
@@ -362,13 +362,14 @@ const InvidualHeader = ({
 
   const role = useSelector((state: AppRootState) => state.auth.role);
 
-  const isAuthed = accessToken && refreshToken && role;
+  const isAuthed = !!accessToken && !!refreshToken && !!role;
 
   const { toggle: toggleNotiDialog, toggleState: showNotiDialog } = useToggle();
 
-  // console.log({ pathname }, "PN");
+  // //console.log({ pathname }, "PN");
 
-  console.log({ isAuthed }, "isAuthed");
+ // //console.log({ isAuthed }, "isAuthed");
+ //console.log({ accessToken, refreshToken, role ,isAuthed}, "Auth");
 
   const notifications: Array<any> = [];
 
@@ -386,7 +387,7 @@ const InvidualHeader = ({
         )}
       >
         <Link href={"/"}>
-          <PCMALogo />
+          <PCMALogo className=" " />
         </Link>
 
         <nav className="w-fit h-full">
@@ -599,13 +600,15 @@ ServiceProviderHeaderProps) => {
 
   const role = useSelector((state: AppRootState) => state.auth.role);
 
-  const isAuthed = accessToken && refreshToken && role;
-
+  
+  const isAuthed = !!accessToken && !!refreshToken && !!role;
+  //console.log({ accessToken, refreshToken, role,isAuthed }, "Auth");
+  
   const { toggle: toggleNotiDialog, toggleState: showNotiDialog } = useToggle();
 
-  // console.log({ pathname }, "PN");
+  // //console.log({ pathname }, "PN");
 
-  console.log({ isAuthed }, "isAuthed");
+  // //console.log({ isAuthed }, "isAuthed");
 
   const notifications: Array<any> = [];
 
@@ -623,7 +626,7 @@ ServiceProviderHeaderProps) => {
         )}
       >
         <Link href={"/"}>
-          <PCMALogo />
+          <PCMALogo className="  w-16 h-8 sm:h-auto sm:w-auto" />
         </Link>
 
         <nav className="w-fit h-full">
@@ -648,26 +651,26 @@ ServiceProviderHeaderProps) => {
           )}
 
           {isAuthed && (
-            <ul className="hidden sm:flex items-center gap-6 h-full">
+            <ul className="flex items-center gap-3 sm:gap-6 h-full">
               <AuthenticatedHeaderItem
-                href="/applications"
+                href="/dashboard"
                 icon={
                   <GridIcon
                     stroke={
-                      pathname.startsWith("/applications") ? "#fff" : undefined
+                      pathname.startsWith("/dashboard") ? "#fff" : undefined
                     }
                   />
                 }
                 className={cn(
-                  pathname.startsWith("/applications") && `bg-primary`
+                  pathname.startsWith("/dashboard") && `bg-primary`
                 )}
               >
                 <span
                   className={cn(
-                    pathname.startsWith("/applications") && `text-white`
+                    pathname.startsWith("/dashboard") && `text-white`
                   )}
                 >
-                  Applications
+                  Dashboard
                 </span>
               </AuthenticatedHeaderItem>
               <AuthenticatedHeaderItem
@@ -693,7 +696,7 @@ ServiceProviderHeaderProps) => {
                   Profile
                 </span>
               </AuthenticatedHeaderItem>
-              <AuthenticatedHeaderItem
+              {/* <AuthenticatedHeaderItem
                 href="/audit-trail/service-provider"
                 icon={
                   <ColorSwatchIcon
@@ -715,7 +718,7 @@ ServiceProviderHeaderProps) => {
                 >
                   Audit Trail
                 </span>
-              </AuthenticatedHeaderItem>
+              </AuthenticatedHeaderItem> */}
             </ul>
           )}
         </nav>
@@ -832,15 +835,19 @@ const Header = ({
   type = "unauthed",
   roleType,
 }: HeaderProps) => {
-  const loggedInRole: Role | undefined = roleType ?? undefined;
+  // const  role = useSelector((state:AppRootState) => state.auth.role);
+
+  const loggedInRole = roleType  ?? undefined;
+  //console.log({type})
+
   return (
     <Fragment>
-      {loggedInRole?.toLowerCase() === RoleEnum.USER.toLowerCase() ? (
+      {loggedInRole?.toLowerCase() === RoleEnum.END_USER.toLowerCase() ? (
         <InvidualHeader variant={variant} type={type} />
       ) : null}
 
       {loggedInRole?.toLowerCase() ===
-      RoleEnum.TRANSACTION_PARTY?.toLowerCase() ? (
+      RoleEnum.SERVICE_PROVIDER?.toLowerCase() ? (
         <ServiceProviderHeader variant={variant} type={type} />
       ) : null}
 

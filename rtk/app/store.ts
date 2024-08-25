@@ -12,6 +12,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 
 import authSliceReducer from '../features/auth-slice/auth-slice';
 import spSliceReducer from '../features/sp-slice/sp-slice';
+import userSlice from '../features/user-slice/user-slice';
 
 
 const middlewares: Middleware<{}, any, Dispatch<UnknownAction>>[] = [];
@@ -30,7 +31,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authSliceReducer,
-  service_provider:spSliceReducer
+  service_provider:spSliceReducer,
+  individual:userSlice
 });
 const persistedRootReducer = persistReducer(persistConfig, rootReducer);
 

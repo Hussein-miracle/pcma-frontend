@@ -8,7 +8,7 @@ import WelcomeCardServiceProvider from "../components/welcome-card-service-provi
 const ServiceProviderOnboardingPage = () => {
   return (
     <section className="bg-grey-10 w-full h-full min-h-screen">
-      <Header roleType="transaction_party" />
+      <Header roleType="service_provider" />
       <main className="w-full mx-auto pt-[4rem]">
         <WelcomeCardServiceProvider />
         {/* <Spacer size={72} />

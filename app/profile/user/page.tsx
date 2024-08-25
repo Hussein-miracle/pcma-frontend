@@ -11,13 +11,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
 import { format as formatDate } from "date-fns";
 import FileInput from "@/components/file-input/file-input";
 import ProfileTable from "../components/profile-table/profile-table";
-import { connectedApplications } from "@/data";
-import { ConnectedApplication } from "@/lib/types";
+// import { connectedApplications } from "@/data";
+import { Application, ConnectedApplication } from "@/lib/types";
 import {
   Dialog,
   DialogTitle,
@@ -28,18 +28,22 @@ import {
 import useToggle from "@/lib/hooks/client/use-toggle";
 import DataAccessItem from "../components/data-access-item/data-access-item";
 import DataAccessCheckItem from "../components/data-access-check-item/data-access-check-item";
-import { useGetIndividualProfile } from "@/lib/hooks/api/queries";
+import {
+  useGetIndividualDashboard,
+  useGetIndividualProfile,
+} from "@/lib/hooks/api/queries";
 import { RoleEnum } from "@/lib/constants";
 import { AppRootState } from "@/rtk/app/store";
 import { redirect } from "next/navigation";
 import { useSelector } from "react-redux";
 import { usePatchIndividualProfile } from "@/lib/hooks/api/mutations";
 import ProtectUserRoute from "@/hoc/protect-user-route/protect-user-route";
+import { handleErrorGlobal, mergeArrayString, successToast } from "@/lib/utils";
 
 interface PersonalInformationForm {
-  fullname?: string;
-  firstname?:string;
-  lastname?:string;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
   email: string;
   phone_number: string;
   home_address: string;
@@ -49,25 +53,33 @@ interface PersonalInformationForm {
   id_card?: File | string;
 }
 
-
-
 const ProfilePage = () => {
-  
-  const role = useSelector((state:AppRootState) => state.auth.role);
+  const role = useSelector((state: AppRootState) => state.auth.role);
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
   const { toggle: togglePermissionDialog, toggleState: showPermissionDialog } =
-  useToggle();
+    useToggle();
   const { toggle: toggleDisconnectDialog, toggleState: showDisconnectDialog } =
-  useToggle();
+    useToggle();
 
-    
-  const {isLoading:isLoadingIndividual,data:individualProfile} = useGetIndividualProfile();
+  const { isLoading: isLoadingIndividualProfile, data: individualProfile } =
+    useGetIndividualProfile();
 
-  const {isPending:isPatchingIndividual,mutateAsync:patchIndividual} = usePatchIndividualProfile();
-  
-  const individualProfileData: Partial<PersonalInformationForm> | null = individualProfile?.data ?? null;
+  const { data: individualDashboard, isLoading: isLoadingIndividualDashboard } =
+    useGetIndividualDashboard();
 
-  console.log({isLoadingIndividual,individualProfileData});
+  const { isPending: isPatchingIndividual, mutateAsync: patchIndividual } =
+    usePatchIndividualProfile();
+
+    // @ts-ignore
+    const individualProfileData: Partial<PersonalInformationForm> | null = useMemo(() => {
+      
+    // @ts-ignore
+    return individualProfile?.basic_pii ? {...individualProfile?.basic_pii,...individualProfile?.sensitive_pii} :  null;
+    },[individualProfile]);
+
+  //console.log({ isLoadingIndividualProfile, individualProfileData,individualProfile });
+
+  //console.log({ individualDashboard, isLoadingIndividualDashboard });
 
   const {
     control,
@@ -79,40 +91,62 @@ const ProfilePage = () => {
   } = useForm<PersonalInformationForm>({
     defaultValues: {
       email: "",
-      firstname: "",
-      lastname: "",
-      fullname: "",
+      first_name: "",
+      last_name: "",
+      full_name: "",
       phone_number: "",
       home_address: "",
       occupation: "",
       date_of_birth: "",
-      id_card: "",
+      // id_card: "",
     },
   });
 
   const formValues = watch();
 
-  console.log({formValues});
-
-
+  //console.log({ formValues });
 
   useEffect(() => {
-    if(!!individualProfileData){
-      for(const key in individualProfileData){
-        if(key in formValues){
-          setValue(key as unknown as keyof PersonalInformationForm, individualProfileData[key as unknown as keyof PersonalInformationForm]);
+    if (!!individualProfileData) {
+      for (const key in individualProfileData) {
+        if (key in formValues) {
+          setValue(
+            key as unknown as keyof PersonalInformationForm,
+            individualProfileData[
+              key as unknown as keyof PersonalInformationForm
+            ]
+          );
         }
       }
     }
-       // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[individualProfileData])
-
-  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [individualProfileData]);
 
   const handleSubmitPersonalInformation = async (
     values: PersonalInformationForm
   ) => {
-    console.log({ values });
+    ////console.log({ values });
+
+    try {
+
+      const response = await patchIndividual(values);
+      // //console.log({response})
+      if(!!response){
+        successToast("Profile updated successfully.")
+      }
+    } catch (error:any) {
+      let errorMsg =  "An error occurred";
+      // //console.log({errorLogin:error})
+      if(error instanceof Error){
+        errorMsg = error?.message;
+      }else{
+        if(error?.response?.data?.message){
+          errorMsg =  error?.response?.data?.message ;
+        }
+      }
+      // //console.log({errorMsg})
+      handleErrorGlobal(errorMsg);
+    }
   };
 
   const handleViewDetails = () => {
@@ -127,12 +161,10 @@ const ProfilePage = () => {
     toggleDisconnectDialog();
   };
 
-
-
   return (
     <>
       <section className=" bg-grey-10  w-full h-full min-h-screen">
-        <Header type="authed" roleType="user"  />
+        <Header type="authed" roleType="end_user" />
         <Spacer size={24} />
         <main className=" mx-auto  max-w-[54rem] w-full">
           <section className="w-full ">
@@ -146,50 +178,36 @@ const ProfilePage = () => {
             >
               <div className="grid grid-cols-1 grid-rows-8 md:grid-cols-2 md:grid-rows-4 gap-4 w-full">
                 <Controller
-                  name="firstname"
+                  name="first_name"
                   control={control}
                   render={({ field: { onChange, value } }) => {
                     return (
                       <TextInput
-                        fieldId="firstname"
+                        fieldId="first_name"
                         fieldName="First Name"
                         value={value}
                         onChange={onChange}
-                        error={errors?.fullname?.message ?? ""}
+                        error={errors?.first_name?.message ?? ""}
                       />
                     );
                   }}
                 />
                 <Controller
-                  name="lastname"
+                  name="last_name"
                   control={control}
                   render={({ field: { onChange, value } }) => {
                     return (
                       <TextInput
-                        fieldId="lastname"
+                        fieldId="last_name"
                         fieldName="Last Name"
                         value={value}
                         onChange={onChange}
-                        error={errors?.fullname?.message ?? ""}
+                        error={errors?.last_name?.message ?? ""}
                       />
                     );
                   }}
                 />
-                <Controller
-                  name="fullname"
-                  control={control}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <TextInput
-                        fieldId="fullname"
-                        fieldName="Full Name"
-                        value={value}
-                        onChange={onChange}
-                        error={errors?.fullname?.message ?? ""}
-                      />
-                    );
-                  }}
-                />
+
 
                 <Controller
                   name="home_address"
@@ -308,7 +326,7 @@ const ProfilePage = () => {
                               mode="single"
                               selected={formValues.date_of_birth as Date}
                               onSelect={(date_value) => {
-                                console.log({ date_value }, "date");
+                                //console.log({ date_value }, "date");
                                 if (!!date_value) {
                                   const date = formatDate(date_value, "PPP");
                                   setValue("date_of_birth", date);
@@ -322,11 +340,11 @@ const ProfilePage = () => {
                     );
                   }}
                 />
-                <Controller
+                {/* <Controller
                   name="id_card"
                   control={control}
                   render={({ field: { onChange, value } }) => {
-                    //   console.log({value});
+                    //   //console.log({value});
 
                     const v = typeof value === "string" ? value : value?.name;
 
@@ -338,7 +356,7 @@ const ProfilePage = () => {
                         placeholder="Upload Document"
                         error={errors?.id_card?.message ?? ""}
                         onFileSelect={(files) => {
-                          // console.log({ files });
+                          // //console.log({ files });
                           if (!!files) {
                             const file = files[0];
                             onChange(file);
@@ -347,7 +365,7 @@ const ProfilePage = () => {
                       />
                     );
                   }}
-                />
+                /> */}
               </div>
               <Spacer size={32} />
               <PrimaryButton className=" bg-[#4169E1]">
@@ -357,7 +375,7 @@ const ProfilePage = () => {
           </section>
           <Spacer size={32} />
 
-          <section className=" w-full">
+          {/* <section className=" w-full hidden">
             <h2 className=" text-secondary-black font-bold text-2xl">
               Connected Applications
             </h2>
@@ -383,75 +401,133 @@ const ProfilePage = () => {
                 </ProfileTable.TableRow>
 
                 <main className="w-full">
-                  {connectedApplications?.map(
-                    (ca: ConnectedApplication, idx: number) => {
-                      return (
-                        <ProfileTable.TableRow
-                          key={idx}
-                          className="grid grid-cols-5 grid-rows-1 border-b-2 border-b-[#0074FF0D] w-full "
-                        >
-                          <ProfileTable.TableDetail>
-                            <span>{ca.company_name}</span>
-                          </ProfileTable.TableDetail>
-                          <ProfileTable.TableDetail>
-                            <span>{ca.connected_date}</span>
-                          </ProfileTable.TableDetail>
-                          <ProfileTable.TableDetail className=" whitespace-break-spaces">
-                            <span>{ca.data_access}</span>
-                          </ProfileTable.TableDetail>
-                          <ProfileTable.TableDetail>
-                            <span>{ca.last_accessed}</span>
-                          </ProfileTable.TableDetail>
-                          <ProfileTable.TableDetail>
-                            <Popover>
-                              <PopoverTrigger>
-                                {" "}
-                                <div className=" cursor-pointer">
-                                  <MoreIcon />
-                                </div>
-                              </PopoverTrigger>
-                              <PopoverContent className=" w-fit h-fit py-1 px-2 bg-white border-2  border-[#0074FF0D]">
-                                <button
-                                  className=" text-left  py-2 px-2.5 block  hover:bg-grey-30 rounded-md w-full"
-                                  onClick={() => {
-                                    handleViewDetails();
-                                  }}
-                                >
-                                  <span className=" text-secondary-black font-medium text-sm/3 ">
-                                    View&nbsp;Details
-                                  </span>
-                                </button>
-                                <button
-                                  className=" text-left  py-2 px-2.5 block hover:bg-grey-30 rounded-md  w-full"
-                                  onClick={() => {
-                                    handleManagePermissions();
-                                  }}
-                                >
-                                  <span className=" text-secondary-black font-medium text-sm/3  truncate">
-                                    Manage&nbsp;Permission
-                                  </span>
-                                </button>
-                                <button
-                                  className=" text-left  py-2 px-2.5 block  rounded-md hover:bg-danger-1 text-[#D60B0B] transition-colors ease-in-out duration-100  w-full"
-                                  onClick={() => {
-                                    handleDisconnect();
-                                  }}
-                                >
-                                  <span className="   font-medium text-sm/3 ">
-                                    Disconnect
-                                  </span>
-                                </button>
-                              </PopoverContent>
-                            </Popover>
-                          </ProfileTable.TableDetail>
-                        </ProfileTable.TableRow>
-                      );
-                    }
-                  )}
+                  {!isLoadingIndividualDashboard &&
+                  !!individualDashboard?.connected_applications &&
+                  individualDashboard?.connected_applications?.length > 0 ? (
+                    <Fragment>
+                      {individualDashboard?.connected_applications?.map(
+                        (app:Partial<Application>, idx: number) => {
+                          return (
+                            <ProfileTable.TableRow
+                              key={idx}
+                              className="grid grid-cols-5 grid-rows-1 border-b-2 border-b-[#0074FF0D] w-full "
+                            >
+                              <ProfileTable.TableDetail>
+                                <span>{app?.name}</span>
+                              </ProfileTable.TableDetail>
+                              <ProfileTable.TableDetail>
+                                <span>{app?.createdAt ? formatDate(app?.createdAt,'do MMM YYYY') : 'N/A'}</span>
+                              </ProfileTable.TableDetail>
+                              <ProfileTable.TableDetail className=" whitespace-break-spaces">
+                                <span>{mergeArrayString(app?.data_access! ?? [])}</span>
+                              </ProfileTable.TableDetail>
+                              <ProfileTable.TableDetail>
+                                <span>{app?.updatedAt ? formatDate(app?.updatedAt,'do MMM YYYY') : 'N/A'}</span>
+                              </ProfileTable.TableDetail>
+                              <ProfileTable.TableDetail>
+                                <Popover>
+                                  <PopoverTrigger>
+                                    {" "}
+                                    <div className=" cursor-pointer">
+                                      <MoreIcon />
+                                    </div>
+                                  </PopoverTrigger>
+                                  <PopoverContent className=" w-fit h-fit py-1 px-2 bg-white border-2  border-[#0074FF0D]">
+                                    <button
+                                      className=" text-left  py-2 px-2.5 block  hover:bg-grey-30 rounded-md w-full"
+                                      onClick={() => {
+                                        handleViewDetails();
+                                      }}
+                                    >
+                                      <span className=" text-secondary-black font-medium text-sm/3 ">
+                                        View&nbsp;Details
+                                      </span>
+                                    </button>
+                                    <button
+                                      className=" text-left  py-2 px-2.5 block hover:bg-grey-30 rounded-md  w-full"
+                                      onClick={() => {
+                                        handleManagePermissions();
+                                      }}
+                                    >
+                                      <span className=" text-secondary-black font-medium text-sm/3  truncate">
+                                        Manage&nbsp;Permission
+                                      </span>
+                                    </button>
+                                    <button
+                                      className=" text-left  py-2 px-2.5 block  rounded-md hover:bg-danger-1 text-[#D60B0B] transition-colors ease-in-out duration-100  w-full"
+                                      onClick={() => {
+                                        handleDisconnect();
+                                      }}
+                                    >
+                                      <span className="   font-medium text-sm/3 ">
+                                        Disconnect
+                                      </span>
+                                    </button>
+                                  </PopoverContent>
+                                </Popover>
+                              </ProfileTable.TableDetail>
+                            </ProfileTable.TableRow>
+                          );
+                        }
+                      )}
+                    </Fragment>
+                  ) : null}
+
+
+{isLoadingIndividualDashboard? (
+                    <>
+                      <ProfileTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full grid grid-cols-5 grid-rows-1">
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                      </ProfileTable.TableRow>
+                      <ProfileTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full grid grid-cols-5 grid-rows-1">
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                      </ProfileTable.TableRow>
+                      <ProfileTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full grid grid-cols-5 grid-rows-1">
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                      </ProfileTable.TableRow>
+                      <ProfileTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full grid grid-cols-5 grid-rows-1">
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                      </ProfileTable.TableRow>
+                      <ProfileTable.TableRow className="border-b-2 border-b-[#0074FF0D] w-full grid grid-cols-5 grid-rows-1">
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                        <ProfileTable.TableDetailLoaderItem />
+                      </ProfileTable.TableRow>
+                    </>
+                  ) : null}
+
+
+{!isLoadingIndividualDashboard &&
+                  !!individualDashboard?.connected_applications &&
+                  individualDashboard?.connected_applications?.length <= 0? (
+                    <div className="w-full flex items-center justify-center min-h-56">
+                      <p className=" text-secondary-black  font-bold text-lg">
+                        You have no connected applications yet.
+                      </p>
+                    </div>
+                  ) : null}
                 </main>
               </ProfileTable>
             </div>
-          </section>
+          </section> */}
           <Spacer size={16} />
         </main>
         <Spacer size={32} />
@@ -465,9 +541,7 @@ const ProfilePage = () => {
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
-            <DialogPanel
-              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
-            >
+            <DialogPanel className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]">
               <DialogTitle
                 as="h3"
                 className="text-2xl/6 font-bold text-secondary-black tracking-[1%]"
@@ -542,9 +616,7 @@ const ProfilePage = () => {
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
-            <DialogPanel
-              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]"
-            >
+            <DialogPanel className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  min-h-[22rem]">
               <DialogTitle
                 as="h3"
                 className="text-2xl/6 font-bold text-secondary-black tracking-[1%]"
@@ -610,9 +682,7 @@ const ProfilePage = () => {
       >
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-grey-100/70">
           <div className="flex min-h-full items-center justify-center">
-            <DialogPanel
-              className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-fit"
-            >
+            <DialogPanel className="w-full max-w-[26rem] rounded-3xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0  h-fit">
               <DialogTitle
                 as="h3"
                 className="text-2xl/9 font-bold text-secondary-black tracking-[1%]"

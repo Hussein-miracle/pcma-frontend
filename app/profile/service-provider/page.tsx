@@ -11,13 +11,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
 import { format as formatDate } from "date-fns";
 import FileInput from "@/components/file-input/file-input";
 import ProfileTable from "../components/profile-table/profile-table";
-import { connectedApplications } from "@/data";
-import { ConnectedApplication } from "@/lib/types";
+// import { connectedApplications } from "@/data";
+import { Application, ConnectedApplication, ServiceProviderInformationForm } from "@/lib/types";
 import {
   Dialog,
   DialogTitle,
@@ -28,33 +28,21 @@ import {
 import useToggle from "@/lib/hooks/client/use-toggle";
 import DataAccessItem from "../components/data-access-item/data-access-item";
 import DataAccessCheckItem from "../components/data-access-check-item/data-access-check-item";
-import { useGetServiceProviderProfile } from "@/lib/hooks/api/queries";
+import { useGetApplications, useGetServiceProviderProfile } from "@/lib/hooks/api/queries";
 import { RoleEnum } from "@/lib/constants";
 import { redirect } from "next/navigation";
 import { AppRootState } from "@/rtk/app/store";
 import { useSelector } from "react-redux";
 import { usePatchServiceProviderProfile } from "@/lib/hooks/api/mutations";
 import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
+import ButtonLoader from "@/components/button-loader/button-loader";
+import { mergeArrayString } from "@/lib/utils";
 
 // import ProtectServiceProviderRoute from '../../../hoc'
 
-interface PersonalInformationForm {
-  fullname?: string;
-  firstname?: string;
-  lastname?: string;
-  email: string;
-  phone_number: string;
-  home_address: string;
-  country: string;
-  occupation: string;
-  date_of_birth?: Date | string;
-  id_card?: File | string;
-}
 
 const ServicerProviderProfilePage = () => {
   const role = useSelector((state: AppRootState) => state.auth.role);
-
-
 
   const { toggle: toggleVdDialog, toggleState: showVdDialog } = useToggle();
   const { toggle: togglePermissionDialog, toggleState: showPermissionDialog } =
@@ -66,12 +54,25 @@ const ServicerProviderProfilePage = () => {
     useGetServiceProviderProfile();
   const { isPending: isPatchingSP, mutateAsync: patchServiceProvider } =
     usePatchServiceProviderProfile();
+    // const { isLoading: isLoadingApplications, data: applicationsData } =
+    // useGetApplications();
 
-  const spProfile: Partial<PersonalInformationForm> | null =
-    serviceProviderProfile?.data ?? null;
+  const spProfile = useMemo(() => {
+    if(serviceProviderProfile?.user && serviceProviderProfile?.company){
+      return {...serviceProviderProfile?.user,...serviceProviderProfile?.company};
+    }else if(!serviceProviderProfile?.user && serviceProviderProfile?.company){
+      return {...serviceProviderProfile?.company};
+    }else if(serviceProviderProfile?.user && !serviceProviderProfile?.company){
+      return {...serviceProviderProfile?.user};
+    }
+    return null;
+  },[serviceProviderProfile])
 
-  console.log({ isLoadingSpProfile, spProfile });
+  console.log({ isLoadingSpProfile, spProfile },'sppppppp');
+  //console.log({ isLoadingApplications, applicationsData},'APPPS DATA');
 
+
+ //console.log({connectedApplications},'connectedApplications');
   const {
     control,
     formState: { errors },
@@ -79,42 +80,48 @@ const ServicerProviderProfilePage = () => {
     handleSubmit,
     getValues,
     watch,
-  } = useForm<PersonalInformationForm>({
+  } = useForm<ServiceProviderInformationForm>({
     defaultValues: {
       email: "",
-      firstname: "",
-      lastname: "",
-      fullname: "",
+      company_name: "",
       phone_number: "",
-      home_address: "",
-      occupation: "",
-      date_of_birth: "",
-      id_card: "",
+      company_address: "",
+      registration_number: "",
+      first_name:"",
+      last_name:"",
     },
   });
 
   const formValues = watch();
 
-  console.log({ formValues });
+  ////console.log({ formValues });
 
   useEffect(() => {
     if (!!spProfile) {
       for (const key in spProfile) {
         if (key in formValues) {
           setValue(
-            key as unknown as keyof PersonalInformationForm,
-            spProfile[key as unknown as keyof PersonalInformationForm]
+            key as unknown as keyof ServiceProviderInformationForm,
+            spProfile[key as unknown as keyof ServiceProviderInformationForm]
           );
         }
       }
     }
-       // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spProfile]);
 
-  const handleSubmitPersonalInformation = async (
-    values: PersonalInformationForm
+  const handleSubmitSpInformation = async (
+    values: ServiceProviderInformationForm
   ) => {
-    console.log({ values });
+    try {
+      const spPatchResponse = await patchServiceProvider(values);
+      //console.log({ spPatchResponse },'patch response');
+      //console.log({ values });
+      // if(spPatchResponse.status === 200){
+        // alert('Profile Updated Successfully');
+    } catch (error:any) {
+      //console.log({ error });
+    }
   };
 
   const handleViewDetails = () => {
@@ -141,79 +148,109 @@ const ServicerProviderProfilePage = () => {
   return (
     <>
       <section className=" bg-grey-10  w-full h-full min-h-screen">
-        <Header type="authed" roleType="transaction_party" />
+        <Header type="authed" roleType="service_provider" />
         <Spacer size={24} />
-        <main className=" mx-auto  max-w-[54rem] w-full">
+        <main className=" mx-auto  max-w-[54rem] w-full px-4 sm:px-[7.5rem]">
           <section className="w-full ">
-            <h2 className=" text-2xl font-bold text-secondary-black text-left">
-              Personal&nbsp;information
-            </h2>
+            <div className="flex items-center justify-start gap-2">
+              <h2 className="text-2xl font-bold text-secondary-black text-left">
+                Service&nbsp;provider&nbsp;information
+              </h2>
+              {isLoadingSpProfile && <ButtonLoader inverted className="  -translate-x-10  z-50" />}
+            </div>
 
             <form
               className=" w-full "
-              onSubmit={handleSubmit(handleSubmitPersonalInformation)}
+              onSubmit={handleSubmit(handleSubmitSpInformation)}
             >
               <div className="grid grid-cols-1 grid-rows-8 md:grid-cols-2 md:grid-rows-4 gap-4 w-full">
                 <Controller
-                  name="firstname"
+                  name="company_name"
                   control={control}
                   render={({ field: { onChange, value } }) => {
                     return (
                       <TextInput
-                        fieldId="firstname"
+                        fieldId="company_name"
+                        fieldName="Company Name"
+                        value={value}
+                        onChange={onChange}
+                        error={errors?.company_name?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  name="first_name"
+                  control={control}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <TextInput
+                        fieldId="first_name"
                         fieldName="First Name"
                         value={value}
                         onChange={onChange}
-                        error={errors?.fullname?.message ?? ""}
+                        error={errors?.first_name?.message ?? ""}
                       />
                     );
                   }}
                 />
                 <Controller
-                  name="lastname"
+                  name="last_name"
                   control={control}
                   render={({ field: { onChange, value } }) => {
                     return (
                       <TextInput
-                        fieldId="lastname"
+                        fieldId="last_name"
                         fieldName="Last Name"
                         value={value}
                         onChange={onChange}
-                        error={errors?.fullname?.message ?? ""}
+                        error={errors?.last_name?.message ?? ""}
                       />
                     );
                   }}
                 />
                 <Controller
-                  name="fullname"
+                  name="company_address"
                   control={control}
                   render={({ field: { onChange, value } }) => {
                     return (
                       <TextInput
-                        fieldId="fullname"
-                        fieldName="Full Name"
+                        fieldId="company_address"
+                        fieldName="Company Address"
                         value={value}
                         onChange={onChange}
-                        error={errors?.fullname?.message ?? ""}
+                        error={errors?.company_address?.message ?? ""}
                       />
                     );
                   }}
                 />
-
                 <Controller
-                  name="home_address"
+                  name="phone_number"
                   control={control}
                   render={({ field: { onChange, value } }) => {
                     return (
-                      <>
-                        <TextInput
-                          fieldId="home_address"
-                          fieldName="Home Address"
-                          value={value}
-                          onChange={onChange}
-                          error={errors?.home_address?.message ?? ""}
-                        />
-                      </>
+                      <TextInput
+                        fieldId="phone_number"
+                        fieldName="Phone Number"
+                        value={value}
+                        onChange={onChange}
+                        error={errors?.phone_number?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  name="registration_number"
+                  control={control}
+                  render={({ field: { onChange, value } }) => {
+                    return (
+                      <TextInput
+                        fieldId="registration_number"
+                        fieldName="Registration Number"
+                        value={value}
+                        onChange={onChange}
+                        error={errors?.registration_number?.message ?? ""}
+                      />
                     );
                   }}
                 />
@@ -236,137 +273,18 @@ const ServicerProviderProfilePage = () => {
                   }}
                 />
 
-                <Controller
-                  name="country"
-                  control={control}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <>
-                        <TextInput
-                          fieldId="country"
-                          fieldName="Country"
-                          value={value}
-                          onChange={onChange}
-                        />
-                      </>
-                    );
-                  }}
-                />
 
-                <Controller
-                  name="phone_number"
-                  control={control}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <>
-                        <TextInput
-                          fieldId="phone_number"
-                          fieldName="Phone Number"
-                          value={value}
-                          error={errors?.country?.message ?? ""}
-                          onChange={onChange}
-                        />
-                      </>
-                    );
-                  }}
-                />
-
-                <Controller
-                  name="occupation"
-                  control={control}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <>
-                        <TextInput
-                          fieldId="occupation"
-                          fieldName="Occupation"
-                          value={value}
-                          onChange={onChange}
-                          error={errors?.occupation?.message ?? ""}
-                        />
-                      </>
-                    );
-                  }}
-                />
-
-                <Controller
-                  name="date_of_birth"
-                  control={control}
-                  render={({ field: { onChange, value } }) => {
-                    return (
-                      <>
-                        <Popover>
-                          <TextInput
-                            fieldId="date_of_birth"
-                            fieldName="Date of Birth"
-                            value={formValues.date_of_birth as string}
-                            onChange={() => {}}
-                            error={errors?.date_of_birth?.message ?? ""}
-                            placeholder="Choose Date"
-                            icon={
-                              <PopoverTrigger asChild>
-                                <div>
-                                  <CalenderIcon />
-                                </div>
-                              </PopoverTrigger>
-                            }
-                          />
-
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={formValues.date_of_birth as Date}
-                              onSelect={(date_value) => {
-                                console.log({ date_value }, "date");
-                                if (!!date_value) {
-                                  const date = formatDate(date_value, "PPP");
-                                  setValue("date_of_birth", date);
-                                }
-                              }}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </>
-                    );
-                  }}
-                />
-                <Controller
-                  name="id_card"
-                  control={control}
-                  render={({ field: { onChange, value } }) => {
-                    //   console.log({value});
-
-                    const v = typeof value === "string" ? value : value?.name;
-
-                    return (
-                      <FileInput
-                        fieldId="id_card"
-                        fieldName="National ID/Passport:"
-                        selectedFileName={v}
-                        placeholder="Upload Document"
-                        error={errors?.id_card?.message ?? ""}
-                        onFileSelect={(files) => {
-                          // console.log({ files });
-                          if (!!files) {
-                            const file = files[0];
-                            onChange(file);
-                          }
-                        }}
-                      />
-                    );
-                  }}
-                />
-              </div>
               <Spacer size={32} />
-              <PrimaryButton className=" bg-[#4169E1]">
+              <PrimaryButton className=" bg-[#4169E1] w-fit">
                 Save&nbsp;Changes
               </PrimaryButton>
+              </div>
+           
             </form>
           </section>
           <Spacer size={32} />
 
-          <section className=" w-full">
+          <section className=" w-full hidden">
             <h2 className=" text-secondary-black font-bold text-2xl">
               Created Applications
             </h2>
@@ -390,8 +308,77 @@ const ServicerProviderProfilePage = () => {
                     <span>Action</span>
                   </ProfileTable.TableHeader>
                 </ProfileTable.TableRow>
-
+{/* 
                 <main className="w-full">
+                  {applicationsData?.data?.map(
+                    (application: Application, idx: number) => {
+                      return (
+                        <ProfileTable.TableRow
+                          key={application.id}
+                          className="grid grid-cols-5 grid-rows-1 border-b-2 border-b-[#0074FF0D] w-full "
+                        >
+                          <ProfileTable.TableDetail>
+                            <span>{application?.name}</span>
+                          </ProfileTable.TableDetail>
+                          <ProfileTable.TableDetail>
+                            <span>{application?.createdAt ? formatDate(application?.createdAt!, 'do, MMM yyyy') : 'N/A'}</span>
+                          </ProfileTable.TableDetail>
+                          <ProfileTable.TableDetail className=" whitespace-break-spaces">
+                            <span className=" capitalize">{mergeArrayString(application?.data_access!,', ','.')}</span>
+                      
+                          </ProfileTable.TableDetail>
+                          <ProfileTable.TableDetail>
+                            <span>{application?.updatedAt ? formatDate(application?.updatedAt, 'do, MMM yyyy') : 'N/A'}</span>
+                            
+                          </ProfileTable.TableDetail>
+                          <ProfileTable.TableDetail>
+                            <Popover>
+                              <PopoverTrigger>
+                                {" "}
+                                <div className=" cursor-pointer">
+                                  <MoreIcon />
+                                </div>
+                              </PopoverTrigger>
+                              <PopoverContent className=" w-fit h-fit py-1 px-2 bg-white border-2  border-[#0074FF0D]">
+                                <button
+                                  className=" text-left  py-2 px-2.5 block  hover:bg-grey-30 rounded-md w-full"
+                                  onClick={() => {
+                                    handleViewDetails();
+                                  }}
+                                >
+                                  <span className=" text-secondary-black font-medium text-sm/3 ">
+                                    View&nbsp;Details
+                                  </span>
+                                </button>
+                                <button
+                                  className=" text-left  py-2 px-2.5 block hover:bg-grey-30 rounded-md  w-full"
+                                  onClick={() => {
+                                    handleManagePermissions();
+                                  }}
+                                >
+                                  <span className=" text-secondary-black font-medium text-sm/3  truncate">
+                                    Manage&nbsp;Permission
+                                  </span>
+                                </button>
+                                <button
+                                  className=" text-left  py-2 px-2.5 block  rounded-md hover:bg-danger-1 text-[#D60B0B]  transition-colors ease-in-out duration-100  w-full"
+                                  onClick={() => {
+                                    handleDisconnect();
+                                  }}
+                                >
+                                  <span className="   font-medium text-sm/3 ">
+                                    Disconnect
+                                  </span>
+                                </button>
+                              </PopoverContent>
+                            </Popover>
+                          </ProfileTable.TableDetail>
+                        </ProfileTable.TableRow>
+                      );
+                    }
+                  )}
+                </main>  */}
+                {/* <main className="w-full">
                   {connectedApplications?.map(
                     (ca: ConnectedApplication, idx: number) => {
                       return (
@@ -457,7 +444,7 @@ const ServicerProviderProfilePage = () => {
                       );
                     }
                   )}
-                </main>
+                </main> */}
               </ProfileTable>
             </div>
           </section>
@@ -651,5 +638,8 @@ const ServicerProviderProfilePage = () => {
   );
 };
 
-export default ProtectServiceProviderRoute(ServicerProviderProfilePage,'/profile/user');
+export default ProtectServiceProviderRoute(
+  ServicerProviderProfilePage,
+  "/profile/user"
+);
 // export default ServicerProviderProfilePage;

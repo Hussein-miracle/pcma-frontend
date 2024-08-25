@@ -45,7 +45,7 @@ const FileInput = ({
           hidden
           onChange={(fileEvent) => {
             fileEvent?.preventDefault();
-            // console.log({ fileEvent });
+            // //console.log({ fileEvent });
             const files = fileEvent?.target?.files;
             onChange?.(fileEvent);
             onFileSelect?.(files);
@@ -54,7 +54,7 @@ const FileInput = ({
 
         <div
           onClick={() => {
-            // console.log({fl:fileInputRef?.current})
+            // //console.log({fl:fileInputRef?.current})
             fileInputRef?.current?.click();
           }}
           className="border cursor-pointer border-grey-30 border-solid w-full p-2 rounded outline-none transition ease-in-out duration-100 focus:border-secondary-blue placeholder:text-grey-90 placeholder:text-base placeholder:font-normal text-grey-90 text-base font-normal h-[2.6rem] bg-white "

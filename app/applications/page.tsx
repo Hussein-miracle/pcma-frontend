@@ -3,6 +3,7 @@ import React, { useContext, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import NextImage from "next/image";
 
 import ApplicationCard from "./components/application-card/application-card";
 import FileInput from "@/components/file-input/file-input";
@@ -18,7 +19,13 @@ import { ApplicationFlowContext } from "@/contexts/application-context/applicati
 import { ApplicationCreationData } from "@/lib/types";
 import { useGetApplications } from "@/lib/hooks/api/queries";
 import { ApplicationFlowEnum, DataAccessEnum } from "@/lib/constants";
-import { cn, handleErrorGlobal, sleep, successToast, truncateString } from "@/lib/utils";
+import {
+  cn,
+  handleErrorGlobal,
+  sleep,
+  successToast,
+  truncateString,
+} from "@/lib/utils";
 import ProtectServiceProviderRoute from "@/hoc/protect-service-provider-route/protect-service-provider-route";
 import ApplicationCardSkeleton from "./components/application-card-skeleton/application-card-skeleton";
 import ErrorMessage from "@/components/error-message/error-message";
@@ -30,9 +37,11 @@ import { AppRootState } from "@/rtk/app/store";
 import { useCopyToClipboard } from "@/lib/hooks/client/use-copy-to-clipboard";
 import { useAppRouter } from "@/lib/hooks/client/use-app-router";
 import { setLatestApplicationCreated } from "@/rtk/features/sp-slice/sp-slice";
+import { Image } from "lucide-react";
 
 const ConfirmApplicationDetails = () => {
   const router = useAppRouter();
+  const [_, copyFn] = useCopyToClipboard();
   const latestApplicationCreated = useSelector(
     (state: AppRootState) => state.service_provider.latestApplicationCreated
   );
@@ -41,7 +50,50 @@ const ConfirmApplicationDetails = () => {
     ApplicationFlowContext
   );
 
-  const [_, copyFn] = useCopyToClipboard();
+  const accessValues: {
+    email: boolean;
+    others: boolean;
+    location: boolean;
+    contact: boolean;
+  } = useMemo(() => {
+    const accessedData = {
+      email: false,
+      others: false,
+      location: false,
+      contact: false,
+    };
+
+    if (!!latestApplicationCreated) {
+      if (
+        latestApplicationCreated?.data_access?.includes(DataAccessEnum.EMAIL)
+      ) {
+        accessedData.email = true;
+      }
+      if (
+        latestApplicationCreated?.data_access?.includes(DataAccessEnum.CONTACT)
+      ) {
+        accessedData.contact = true;
+      }
+      if (
+        latestApplicationCreated?.data_access?.includes(DataAccessEnum.LOCATION)
+      ) {
+        accessedData.location = true;
+      }
+      if (
+        latestApplicationCreated?.data_access?.includes(DataAccessEnum.OTHERS)
+      ) {
+        accessedData.others = true;
+      }
+    }
+
+    return accessedData;
+  }, [
+    latestApplicationCreated?.data_access?.length,
+    latestApplicationCreated?.data_access,
+  ]);
+
+
+  //console.log({latestApplicationCreated})
 
   const screenDelay = useMemo(
     () =>
@@ -51,7 +103,7 @@ const ConfirmApplicationDetails = () => {
     [applicationFlowState]
   );
 
-  // console.log({screenDelay})
+  // //console.log({screenDelay})
 
   const handleBack = () => {
     handleSetApplicationFlowState(ApplicationFlowEnum.CREATE_APPLICATION);
@@ -71,11 +123,14 @@ const ConfirmApplicationDetails = () => {
       <div className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full flex flex-col items-center gap-8 rounded-xl">
         <section className=" w-full flex flex-col gap-1.5 items-stretch">
           <div className=" w-full bg-white py-2 flex justify-between items-center">
-            <div className="h-full flex gap-x-4 items-center justify-start">
-              <div className=" w-[46px] h-[46px] rounded-md overflow-hidden bg-grey-10" />
+            <div className="h-full flex gap-x-2.5 items-center justify-start">
+              <div className=" w-[46px] h-[46px] rounded-md overflow-hidden bg-grey-10" >
+
+               {!!latestApplicationCreated?.logo_url ? <NextImage width={46} height={46} src={latestApplicationCreated?.logo_url} alt={`${latestApplicationCreated?.name}'s logo`} className="w-full h-full"/> : <Image className="w-full h-full"/>}
+                </div>
 
               <div className="flex flex-col h-full items-start justify-between gap-2">
-                <h2 className=" text-grey-70 font-normal text-base/5">
+                <h2 className=" text-grey-70 font-normal text-base/5 whitespace-pre">
                   Application Name
                 </h2>
                 <p className=" text-grey-70 font-normal text-base/5">
@@ -85,9 +140,19 @@ const ConfirmApplicationDetails = () => {
             </div>
 
             <div className="flex flex-col h-full items-end justify-between gap-2">
-              <h2 className=" text-grey-90 font-normal text-base/5">Google</h2>
-              <p className=" text-grey-90 font-normal text-base/5">
-                www.google.com
+              <h2 className=" text-grey-90 font-normal text-base/5 text-left hover:font-semibold transition-all  duration-200 cursor-pointer " onClick={() => {
+                if(!!latestApplicationCreated?.name){
+                  copyFn(latestApplicationCreated?.name);
+                }
+              }}>
+                {truncateString(latestApplicationCreated?.name!)}
+              </h2>
+              <p className=" text-grey-90 font-normal text-base/5 text-left hover:font-semibold transition-all  duration-200 cursor-pointer" onClick={() => {
+                if(!!latestApplicationCreated?.website_url){
+                  copyFn(latestApplicationCreated?.website_url);
+                }
+              }}>
+                {truncateString(latestApplicationCreated?.website_url!)}
               </p>
             </div>
           </div>
@@ -99,19 +164,19 @@ const ConfirmApplicationDetails = () => {
             {/* <Spacer size={16} /> */}
             <main className="w-full flex flex-wrap  gap-2">
               <div className="flex items-center justify-start gap-1">
-                <Checkbox checked={true} disabled />{" "}
+                <Checkbox checked={accessValues?.email} disabled />{" "}
                 <span className="block">Email</span>
               </div>
               <div className="flex items-center justify-start gap-1">
-                <Checkbox checked={true} disabled />{" "}
+                <Checkbox checked={accessValues?.location} disabled />{" "}
                 <span className="block">Location</span>
               </div>
               <div className="flex items-center justify-start gap-1">
-                <Checkbox checked={true} disabled />{" "}
+                <Checkbox checked={accessValues?.contact} disabled />{" "}
                 <span className="block">Contact</span>
               </div>
               <div className="flex items-center justify-start gap-1">
-                <Checkbox checked={true} disabled />{" "}
+                <Checkbox checked={accessValues?.others} disabled />{" "}
                 <span className="block">Others</span>
               </div>
             </main>
@@ -130,10 +195,13 @@ const ConfirmApplicationDetails = () => {
                   <span className=" text-grey-90 text-base/5 font-normal">
                     {latestApplicationCreated?.id}
                   </span>
-                  <CopyIcon className=" cursor-pointer" onClick={() => {
-                    if (!latestApplicationCreated?.id) return;
-                    copyFn(latestApplicationCreated?.id);
-                  }} />
+                  <CopyIcon
+                    className=" cursor-pointer"
+                    onClick={() => {
+                      if (!latestApplicationCreated?.id) return;
+                      copyFn(latestApplicationCreated?.id);
+                    }}
+                  />
                 </div>
               </div>
               {/* CREDENTIAL ITEM */}
@@ -143,12 +211,15 @@ const ConfirmApplicationDetails = () => {
                 </h2>
                 <div className="w-full  bg-white rounded p-2 border border-grey-30 flex items-center justify-between">
                   <span className=" text-grey-90 text-base/5 font-normal">
-                    {truncateString(latestApplicationCreated?.secret_key!,32)}
+                    {truncateString(latestApplicationCreated?.secret_key!, 32)}
                   </span>
-                  <CopyIcon className=" cursor-pointer" onClick={() => {
-                    if (!latestApplicationCreated?.secret_key) return;
-                    copyFn(latestApplicationCreated?.secret_key);
-                  }} />
+                  <CopyIcon
+                    className=" cursor-pointer"
+                    onClick={() => {
+                      if (!latestApplicationCreated?.secret_key) return;
+                      copyFn(latestApplicationCreated?.secret_key);
+                    }}
+                  />
                 </div>
               </div>
               {/* CREDENTIAL ITEM */}
@@ -160,7 +231,8 @@ const ConfirmApplicationDetails = () => {
                   <span className=" text-grey-90 text-base/5 font-normal">
                     {truncateString(latestApplicationCreated?.public_key!, 32)}
                   </span>
-                  <CopyIcon  className=" cursor-pointer"
+                  <CopyIcon
+                    className=" cursor-pointer"
                     onClick={() => {
                       if (!latestApplicationCreated?.public_key) return;
                       copyFn(latestApplicationCreated?.public_key);
@@ -177,6 +249,7 @@ const ConfirmApplicationDetails = () => {
           type="button"
           onClick={() => {
             if (!latestApplicationCreated?.id) return;
+            handleSetApplicationFlowState(ApplicationFlowEnum.VIEW_APPLICATIONS);
             router.push(`/applications/${latestApplicationCreated?.id}`);
           }}
         >
@@ -191,6 +264,8 @@ const ApplicationCreationForm = () => {
   const { handleSetApplicationFlowState, applicationFlowState } = useContext(
     ApplicationFlowContext
   );
+
+  // const applicationFlowState =  ApplicationFlowEnum.CONFIRM_APPLICATION;
 
   const { mutateAsync: createApplication, isPending: isCreatingApplication } =
     usePostCreateApplication();
@@ -214,7 +289,7 @@ const ApplicationCreationForm = () => {
 
   const formValues = watch();
 
-  console.log({ formValues });
+  //console.log({ formValues });
 
   const screenDelay = useMemo(
     () =>
@@ -222,19 +297,17 @@ const ApplicationCreationForm = () => {
     [applicationFlowState]
   );
 
-  console.log({ screenDelay });
+  //console.log({ screenDelay });
 
   const handleCreateApplication = async (values: ApplicationCreationData) => {
-    console.log({ values });
+    //console.log({ values });
     try {
       const appResponse = await createApplication(values);
-      console.log({ appResponse }, "APP RESPONSE");
+      //console.log({ appResponse }, "APP RESPONSE");
       if (appResponse?.status === 201 && !!appResponse?.data) {
         const appDetails = appResponse?.data;
         dispatch(setLatestApplicationCreated(appDetails));
-       
-        
-        
+
         successToast(
           appResponse?.message ?? "Application created successfully"
         );
@@ -375,12 +448,12 @@ const ApplicationCreationForm = () => {
               <div
                 className="flex items-center justify-start gap-1"
                 onClick={() => {
-                  handleAddAccessType(DataAccessEnum.CONTACTS);
+                  handleAddAccessType(DataAccessEnum.CONTACT);
                 }}
               >
                 <Checkbox
                   checked={formValues.data_access.includes(
-                    DataAccessEnum.CONTACTS
+                    DataAccessEnum.CONTACT
                   )}
                 />{" "}
                 <span className="block">Contacts</span>
@@ -426,9 +499,11 @@ const ApplicationCreationForm = () => {
 
             <div className="w-full h-fit rounded border border-grey-30 focus-within:border-secondary-blue overflow-hidden ">
               <textarea
-                placeholder="To verify and authenticate users with the right crredentials"
+                placeholder="To verify and authenticate users with the right credentials"
                 className="w-full outline-none focus-within:outline-none border-none resize-none p-2"
                 rows={4}
+                value={formValues?.purpose_of_access}
+                onChange={(e) => setValue("purpose_of_access", e.target.value)}
               />
             </div>
 
@@ -468,8 +543,8 @@ const ApplicationListPage = () => {
     [applicationFlowState]
   );
 
-  // console.log({screenDelay})
-  console.log({ isLoading: isLoadingApplications, applicationsData });
+  // //console.log({screenDelay})
+  //console.log({ isLoading: isLoadingApplications, applicationsData });
 
   return (
     <motion.section

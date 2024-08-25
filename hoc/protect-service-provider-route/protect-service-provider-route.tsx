@@ -27,12 +27,12 @@ const ProtectServiceProviderRoute = <P extends object>(Page:ComponentType<P>, ex
       }
 
       if (
-        role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase() &&
-        role?.toLowerCase() === RoleEnum.USER.toLowerCase()
+        role?.toLowerCase() !== RoleEnum.SERVICE_PROVIDER.toLowerCase() &&
+        role?.toLowerCase() === RoleEnum.END_USER.toLowerCase()
       ) {
         return redirect(`${expectedRedirectUrl}`);
       } else if (
-        role?.toLowerCase() !== RoleEnum.TRANSACTION_PARTY.toLowerCase()
+        role?.toLowerCase() !== RoleEnum.SERVICE_PROVIDER.toLowerCase()
       ) {
         return redirect("/");
       }

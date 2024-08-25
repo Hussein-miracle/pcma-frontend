@@ -21,11 +21,11 @@ import Spacer from "@/components/spacer/spacer";
 import AuditTrailTable from "../components/audit-trail-table/audit-trail-table";
 import DataAccessItem from "../../profile/components/data-access-item/data-access-item";
 import { CheckIcon, FilterIcon, MoreIcon, SearchIcon } from "@/components/icons";
-import { auditTrails } from "@/data";
+// import { auditTrails } from "@/data";
 import { AuditTrail } from "@/lib/types";
 import useToggle from "@/lib/hooks/client/use-toggle";
 import { cn } from "@/lib/utils";
-import { useGetServiceProviderAuditTrailDashboard } from "@/lib/hooks/api/queries";
+// import { useGetServiceProviderAuditTrailDashboard } from "@/lib/hooks/api/queries";
 import { useSelector } from "react-redux";
 import { AppRootState } from "@/rtk/app/store";
 import { RoleEnum } from "@/lib/constants";
@@ -52,12 +52,12 @@ const AuditTrailPage = () => {
 
  
 
-  const {data:auditTrailData,isLoading:isLoadingAuditTrail}  = useGetServiceProviderAuditTrailDashboard();
+  // const {data:auditTrailData,isLoading:isLoadingAuditTrail}  = useGetServiceProviderAuditTrailDashboard();
 
-  console.log({auditTrailData,isLoadingAuditTrail});
+  // //console.log({auditTrailData,isLoadingAuditTrail});
 
   const handleViewTrail = (trail: AuditTrail) => {
-    console.log({ trail });
+    //console.log({ trail });
 
     toggleVdDialog();
   };
@@ -66,9 +66,9 @@ const AuditTrailPage = () => {
   return (
     <Fragment>
       <section className="bg-grey-10 w-full h-full min-h-screen">
-        <Header type="authed" roleType="transaction_party" />
+        <Header type="authed" roleType="service_provider" />
 
-        <main className=" pt-8 mx-auto w-full max-w-[756px]">
+        <main className=" pt-8 mx-auto w-full max-w-[47.25rem]">
           <h2 className=" font-bold text-2xl/9 text-center max-w-lg mx-auto">
             Track and review all actions related to your data privacy and
             consents.
@@ -146,7 +146,7 @@ const AuditTrailPage = () => {
                 </AuditTrailTable.TableRow>
 
                 <main className="w-full custom-scroller overflow-auto h-[35rem]">
-                  {auditTrails?.map((audit_trail: AuditTrail, idx: number) => {
+                  {/* {auditTrails?.map((audit_trail: AuditTrail, idx: number) => {
                     return (
                       <AuditTrailTable.TableRow
                         key={idx}
@@ -205,7 +205,7 @@ const AuditTrailPage = () => {
                         </AuditTrailTable.TableDetail>
                       </AuditTrailTable.TableRow>
                     );
-                  })}
+                  })} */}
                 </main>
               </AuditTrailTable>
             </main>

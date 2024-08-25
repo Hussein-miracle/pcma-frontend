@@ -1,9 +1,10 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { Montserrat, Plus_Jakarta_Sans } from "next/font/google";
-import { CountNumber, DynPixel } from './types';
+import { CountNumber, DynPixel, ErrorItem } from './types';
 import toast from "react-hot-toast";
 import { ToastOptions, toast as rtToast } from 'react-toastify';
+import { isAxiosError } from "axios";
 
 
 
@@ -24,7 +25,24 @@ export function cn(...inputs: ClassValue[]) {
 
 
 
+export const mergeArrayString = (arr: Array<string>,separator:string = " ,",endString:string = '') => {
+  let mergedString = '';
 
+
+  if(arr.length === 0 || !arr){
+    return mergedString;
+  }
+
+  for(let i = 0; i < arr.length; i++){
+    if(i === arr.length - 1){
+      mergedString += arr[i];
+    }else{
+      mergedString += arr[i] + separator;
+    }
+  }
+
+  return mergedString + endString;
+}
 
 export const dynamicRequiredErrorMsg = (errKey:string) => {
   return  `${errKey?.toLowerCase()} is required!.`;
@@ -41,10 +59,10 @@ export const errorToast = (msg: string,options:ToastOptions = {}) => {
 
 
 export const truncateString = (str: string, num: number = 22) => {
-  if (str.length <= num) {
+  if (str?.length <= num) {
     return str;
   }
-  return str.slice(0, num) + '...';
+  return str?.slice(0, num) + '...';
 }
 
 
@@ -52,12 +70,12 @@ export const pxToRemCalc = <P extends string | number>(pixels: DynPixel<P>):Coun
   if (typeof pixels === 'string') {
     const parsedValue = parseInt(pixels, 10);
     const rem = (parsedValue / 16) ;
-    // console.log({rem});
+    // //console.log({rem});
     return rem as CountNumber<typeof rem>;
   }
 
   const value = (pixels as number / 16);
-  // console.log({value});
+  // //console.log({value});
   return value as CountNumber<typeof value>;
 };
 
@@ -81,10 +99,11 @@ export const sleep = async (ms:number):Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export const handleErrorGlobal = (message:string |  Array<string>) => {
+export const handleErrorGlobal = (message:string |  Array<string> = '',error:any = null) => {
   // let message
-  if(typeof message === 'string'){
+  if(typeof message === 'string' && !!message){
     errorToast(message)
+    return;
   }else if(Array.isArray(message)){
     let errMsg = '';
 
@@ -94,6 +113,33 @@ export const handleErrorGlobal = (message:string |  Array<string>) => {
 
 
     errorToast(errMsg);
+    return;
   }
+
+
+
+  if(isAxiosError(error)){
+    const errorData = error?.response?.data;
+    const errorArray = errorData?.errors;
+
+    
+    if (!!errorArray && errorArray.length > 0) {
+      const item =  errorArray[0] as ErrorItem;
+      // for (const item of errors as ErrorItem[]) {
+        const attr = item?.attr;
+        const note = `${attr?.slice(0, 1).toUpperCase()}${attr?.slice(
+          1
+        )}: ${item?.detail}`;
+        if (!!note.trim().replace(/ /g, '') && attr) {
+          errorToast(note);
+        } else {
+          errorToast(item?.detail as string);
+        }
+      // }
+
+      return;
+    }
+  }
+
 }
 

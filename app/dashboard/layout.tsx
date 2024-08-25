@@ -3,17 +3,20 @@ import Spacer from "@/components/spacer/spacer";
 import ApplicationContextProvider from "@/contexts/application-context/application-context";
 import React from "react";
 
-const ApplicationLayout = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+
   return (
-    <ApplicationContextProvider>
-      <section className=" bg-grey-10  w-full h-full min-h-screen">
+    // <ApplicationContextProvider>
+      <section className="  bg-grey-10  w-full h-full min-h-screen">
+
         <Header type="authed" roleType="service_provider" />
+
         <Spacer size={24} />
 
         {children}
       </section>
-    </ApplicationContextProvider>
+    // </ApplicationContextProvider>
   );
 };
 
-export default ApplicationLayout;
+export default DashboardLayout;

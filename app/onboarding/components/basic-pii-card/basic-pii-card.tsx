@@ -4,29 +4,63 @@ import { useForm, Controller } from "react-hook-form";
 import TextInput from "@/components/text-input/text-input";
 import PrimaryButton from "@/components/primary-button/primary-button";
 import FormContentContainer from "@/components/form-content-container/form-content-container";
+import { BasicPiiData } from "@/lib/types";
+import { usePatchBasicPii, usePostBasicPii } from "@/lib/hooks/api/mutations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { basic_pii_schema } from "@/lib/validations";
+import { handleErrorGlobal, successToast } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setBasicPiiSaved } from "@/rtk/features/user-slice/user-slice";
 
-interface BasicPiiForm {
-  lastname: string;
-  firstname: string;
-  email: string;
-}
+
 
 const BasicPiiCard = () => {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const {
     control,
     formState: { errors },
     setValue,
     handleSubmit,
-  } = useForm<BasicPiiForm>({
+  } = useForm<BasicPiiData>({
     defaultValues: {
       email: "",
-      lastname: "",
-      firstname: "",
+      last_name: "",
+      first_name: "",
     },
+    resolver:zodResolver(basic_pii_schema),
   });
 
+  const {mutateAsync:handleBasicPii,isPending:isSavingBasicPii} = usePatchBasicPii();
+
+  const onSubmit = async (details: BasicPiiData) => {
+    //console.log({basicPiiDetails: details});
+    try {
+      const basicPiiResponse = await handleBasicPii(details);
+      //console.log({basicPiiResponse})
+      successToast("Basic PII updated successfully");
+
+      dispatch(setBasicPiiSaved(true))
+      
+      router.push("/onboarding/user/personal-pii");
+    } catch (error:any) {
+      let errorMsg =  "An error occurred";
+      // //console.log({errorLogin:error})
+      if(error instanceof Error){
+        errorMsg = error?.message;
+      }else{
+        if(error?.response?.data?.message){
+          errorMsg =  error?.response?.data?.message ;
+        }
+      }
+      // //console.log({errorMsg})
+      handleErrorGlobal(errorMsg);
+    }
+  }
+
   return (
-    <form className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl">
+    <form onSubmit={handleSubmit(onSubmit)} className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl">
       <div className="flex flex-col items-center gap-2">
         <h2 className=" font-bold  text-secondary-black text-2xl/[2.75rem] text-center ">
           Set Basic PII
@@ -39,34 +73,34 @@ const BasicPiiCard = () => {
 
       <FormContentContainer className="flex flex-col items-center w-full gap-4">
         <Controller
-          name="firstname"
+          name="first_name"
           control={control}
           render={({ field: { onChange, value } }) => {
             return (
               <TextInput
-                fieldId="firstname"
+                fieldId="first_name"
                 fieldName="First Name"
                 
                 value={value}
                 onChange={onChange}
                 
-                error={errors?.firstname?.message ?? ''}
+                error={errors?.first_name?.message ?? ''}
               />
             );
           }}
         />
         <Controller
-          name="lastname"
+          name="last_name"
           control={control}
           render={({ field: { onChange, value } }) => {
             return (
               <TextInput
-                fieldId="lastname"
+                fieldId="last_name"
                 fieldName="Last Name"
                 value={value}
                 onChange={onChange}
                 
-                error={errors?.lastname?.message ?? ''}
+                error={errors?.last_name?.message ?? ''}
               />
             );
           }}
@@ -95,7 +129,7 @@ const BasicPiiCard = () => {
         />
       </FormContentContainer>
 
-      <PrimaryButton variant="secondary">Save</PrimaryButton>
+      <PrimaryButton variant="secondary" type="submit" loading={isSavingBasicPii} disabled={isSavingBasicPii}>Save</PrimaryButton>
     </form>
   );
 };

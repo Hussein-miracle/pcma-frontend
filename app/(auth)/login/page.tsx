@@ -11,137 +11,144 @@ import {
 } from "@headlessui/react";
 import { useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { z } from "zod";
 
 import ErrorMessage from "@/components/error-message/error-message";
 import Header from "@/components/header/header";
 import PrimaryButton from "@/components/primary-button/primary-button";
 import TextInput from "@/components/text-input/text-input";
 import { CheckIcon, ChevronDownIcon } from "@/components/icons";
-import { USER_LOGIN_TYPES, VALIDATION_ERROR_MESSAGES } from "@/lib/constants";
+import { RoleEnum, USER_LOGIN_TYPES, VALIDATION_ERROR_MESSAGES } from "@/lib/constants";
 import { InferredLoginForm, LoginForm } from "@/lib/types";
 import { cn, handleErrorGlobal, successToast } from "@/lib/utils";
 import { loginSchema } from "@/lib/validations";
-import { usePostIndividualLogin, usePostServiceProviderLogin } from "@/lib/hooks/api/mutations";
+import {
+  usePostIndividualLogin,
+  usePostServiceProviderLogin,
+  usePostUnifiedLogin,
+} from "@/lib/hooks/api/mutations";
 import useToastCustom from "@/lib/hooks/client/use-toast-custom";
 import { useAppRouter } from "@/lib/hooks/client/use-app-router";
-import { setAccessToken, setFirstLogin, setRefreshToken, setRole } from "@/rtk/features/auth-slice/auth-slice";
+import {
+  setAccessToken,
+  setFirstLogin,
+  setRefreshToken,
+  setRole,
+} from "@/rtk/features/auth-slice/auth-slice";
+import { setBasicPiiSaved, setPersonalPiiSaved } from "@/rtk/features/user-slice/user-slice";
 
 const Login = () => {
   const router = useAppRouter();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
-  console.log({searchParams},'search params')
   const url_login_type = searchParams.get("loginType");
-  console.log({url_login_type},'url_login_type')
+  // //console.log({ searchParams }, "search params");
+  // //console.log({ url_login_type }, "url_login_type");
 
   const {
     control,
     // formState: { isValid },
     setValue,
     handleSubmit,
-    watch
+    watch,
   } = useForm<LoginForm>({
-    defaultValues:{
-      login_type: {    ...USER_LOGIN_TYPES[0]},
-      email:"",
-      password:""
+    defaultValues: {
+      // login_type: { ...USER_LOGIN_TYPES[0] },
+      email: "",
+      password: "",
     },
     resolver: zodResolver(loginSchema),
-    mode:"all",
-    reValidateMode:"onChange"
+    mode: "all",
+    reValidateMode: "onChange",
   });
 
+  // const loginType = watch("login_type");
 
-  const loginType = watch('login_type');
+  // //console.log({errors});
 
-  // console.log({errors});
+  // const {
+  //   isPending: isPendingServiceProvider,
+  //   mutateAsync: loginServiceProvider,
+  // } = usePostServiceProviderLogin();
 
-  const {isPending:isPendingServiceProvider,mutateAsync:loginServiceProvider} = usePostServiceProviderLogin();
+  const { isPending: isPendingIndividual, mutateAsync: loginIndividual } =
+    usePostIndividualLogin();
 
-  const {isPending:isPendingIndividual,mutateAsync:loginIndividual} = usePostIndividualLogin();
-
+  const {isPending: isPendingLogin, mutateAsync: initLogin} = usePostUnifiedLogin();
 
   useEffect(() => {
-    if(url_login_type === 'service-provider'){
-      setValue("login_type", {...USER_LOGIN_TYPES[1]});
-    }else{
-      setValue("login_type", {...USER_LOGIN_TYPES[0]});
+    if (url_login_type === "service-provider") {
+      setValue("login_type", { ...USER_LOGIN_TYPES[1] });
+    } else {
+      setValue("login_type", { ...USER_LOGIN_TYPES[0] });
     }
 
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[url_login_type])
-
+  }, [url_login_type]);
 
   const handleLogin = async (values: InferredLoginForm) => {
-   // console.log({loginValues: values });
+    // //console.log({loginValues: values });
     try {
-      if (loginType.value === "individual") {
 
-       const individualLoginResponse =  await loginIndividual({
+        const loginResponse = await initLogin({
           email: values.email,
           password: values.password,
         });
 
-        console.log({individualLoginResponse})
+     //   //console.log({ loginResponse });
 
-        const role = individualLoginResponse?.role;
-        const token = individualLoginResponse?.token;
-        const first_login = individualLoginResponse?.firstTimeLogin;
+        const role =  loginResponse?.role;
+        // const token = loginResponse?.token;
+        const first_login = loginResponse?.basic_pii_saved === false ? true :  false ;
 
+        dispatch(setAccessToken(loginResponse?.access_token));
 
-        dispatch(setAccessToken(token.access_token));
+        dispatch(setRefreshToken(loginResponse?.refresh_token));
 
-        dispatch(setRefreshToken(token.refresh_token));
+        dispatch(setBasicPiiSaved(loginResponse?.basic_pii_saved ?? false));
+        dispatch(setPersonalPiiSaved(loginResponse?.sensitive_pii_saved ?? false));
 
         dispatch(setRole(role));
         dispatch(setFirstLogin(first_login ?? false));
 
-        successToast(individualLoginResponse?.message ?? "Login Successful");
+        successToast(loginResponse?.message ?? "Login Successful");
 
         
-        if(first_login){
-          router.push("/onboarding/user");
-          return;
+        if (role?.toLowerCase() === RoleEnum.END_USER?.toLowerCase()) {
+          if(first_login && loginResponse?.sensitive_pii_saved === false){
+            router.push("/onboarding/user");
+            return;
+          }
+
+          if(loginResponse?.basic_pii_saved === true && loginResponse?.sensitive_pii_saved === false){
+            router.push("/onboarding/user/personal-pii");
+            return;
+          }
+
+
+          router.push("/overview");
+
+        }else if(role?.toLowerCase() === RoleEnum.SERVICE_PROVIDER.toLowerCase()){
+          // if(first_login){
+          //   router.push("/onboarding/service-provider");
+          //   return;
+          // }
+      
+          router.push("/dashboard");
         }
 
-   
-        router.push("/overview"); 
-
-      } else {
-
-        const spLoginResponse = await loginServiceProvider({
-          email: values.email,
-          password: values.password,
-        });
-
-        console.log({spLoginResponse});
-
-        const token = spLoginResponse?.token;
-        const role = spLoginResponse?.role;
-        const first_login = spLoginResponse?.firstTimeLogin;
-
-        dispatch(setAccessToken(token.access_token));
-        dispatch(setRefreshToken(token.refresh_token));
-        dispatch(setRole(role));  
-        dispatch(setFirstLogin(first_login ?? false));
-
-
-        successToast(spLoginResponse?.message ?? "Login Successful");
-
-        if(first_login){
-          router.push("/onboarding/service-provider");
-          return;
+       
+    } catch (error: any) {
+      let errorMsg =  "An error occurred";
+      // //console.log({errorLogin:error})
+      if(error instanceof Error){
+        errorMsg = error?.message;
+      }else{
+        if(error?.response?.data?.message){
+          errorMsg =  error?.response?.data?.message ;
         }
-
-        router.push("/applications");     
       }
-    } catch (error:any) {
-      // console.log({errorLogin:error})
-      const errorMsg = error?.response?.data?.message ?? "An error occurred";
-      // console.log({errorMsg})
-      handleErrorGlobal(errorMsg)
+      // //console.log({errorMsg})
+      handleErrorGlobal(errorMsg);
     }
   };
 
@@ -163,7 +170,7 @@ const Login = () => {
           </div>
 
           <div className="flex flex-col items-center w-full gap-4">
-            <div className="w-full">
+            {/* <div className="w-full">
               <label
                 htmlFor={"login-type"}
                 className=" text-grey-70 font-normal text-base/5"
@@ -174,16 +181,16 @@ const Login = () => {
               <Controller
                 name="login_type"
                 control={control}
-               // rules={{ required: true }}
-                render={({ field:{value}, fieldState:{error}}) => {
-                  // console.log({ field, fieldState });
+                // rules={{ required: true }}
+                render={({ field: { value }, fieldState: { error } }) => {
+                  // //console.log({ field, fieldState });
                   return (
                     <Listbox
                       as={"div"}
                       role="select"
                       value={value}
                       onChange={(currentValue) => {
-                        console.log({currentValue})
+                        //console.log({ currentValue });
                         setValue("login_type", currentValue);
                         // setSelectedLoginType(v);
                       }}
@@ -210,8 +217,6 @@ const Login = () => {
                             );
                           }}
                         </ListboxButton>
-
-
 
                         {!!error?.message && (
                           <ErrorMessage text={error?.message} />
@@ -265,13 +270,16 @@ const Login = () => {
                   );
                 }}
               />
-            </div>
+            </div> */}
 
             <Controller
               name="email"
               control={control}
               // rules={{ required: true }}
-              render={({ field: { onChange, value,onBlur } ,fieldState:{error}}) => {
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => {
                 return (
                   <TextInput
                     fieldId="email"
@@ -289,7 +297,10 @@ const Login = () => {
               control={control}
               // rules={{ required: VALIDATION_ERROR_MESSAGES.PASSWORD }}
               // rules={{ required: true }}
-              render={({ field: { onChange, value ,onBlur},fieldState:{error} }) => {
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => {
                 return (
                   <TextInput
                     fieldId="password"
@@ -305,7 +316,13 @@ const Login = () => {
             />
           </div>
 
-          <PrimaryButton variant="secondary" className="w-full" type="submit"  disabled={isPendingIndividual || isPendingServiceProvider} loading={isPendingIndividual || isPendingServiceProvider}>
+          <PrimaryButton
+            variant="secondary"
+            className="w-full"
+            type="submit"
+            disabled={isPendingLogin}
+            loading={isPendingLogin}
+          >
             Login
           </PrimaryButton>
         </form>
