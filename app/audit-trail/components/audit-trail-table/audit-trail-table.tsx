@@ -56,6 +56,29 @@ const TableDetailItem = ({
   );
 };
 
+const TableDetailLoaderItem = ({
+  children = <span>&nbsp;</span>,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <>
+      <div
+        className={cn(
+          "first:pl-6 pl-4 pr-4 py-3 truncate  last:pr-6 cursor-default text-left text-base/4 font-medium tracking-[1%] w-24 h-7 rounded-md bg-gray-100 m-0.5",
+          className
+        )}
+        id="profile-td-loader-item"
+      >
+      {children}
+        
+      </div>
+    </>
+  );
+};
+
 const AuditTrailTable = ({
   children,
   className,
@@ -79,6 +102,7 @@ const AuditTrailTable = ({
 };
 
 AuditTrailTable.TableDetail = TableDetailItem;
+AuditTrailTable.TableDetailLoaderItem = TableDetailLoaderItem;
 AuditTrailTable.TableHeader = TableHeaderItem;
 AuditTrailTable.TableRow = TableRowItem;
 

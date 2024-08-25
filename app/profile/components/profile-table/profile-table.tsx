@@ -56,6 +56,18 @@ const TableDetailItem = ({
   );
 };
 
+const TableDetailLoaderItem = ({className,skeletonClassName}: {className?:string;skeletonClassName?:string;}) => {
+  return (
+    <div         className={cn(
+      "first:pl-6 pl-4 pr-4 py-3 truncate  last:pr-6 cursor-default text-left text-base/4 font-medium tracking-[1%]",
+      className
+    )} role="status">
+      <span className={cn("bg-[#eee] block min-w-10 min-h-2 w-16 h-4 rounded-md animate-pulse",skeletonClassName)}>&nbsp;</span>
+    </div>
+  )
+}
+
+
 const ProfileTable = ({
   children,
   className,
@@ -81,5 +93,6 @@ const ProfileTable = ({
 ProfileTable.TableDetail = TableDetailItem;
 ProfileTable.TableHeader = TableHeaderItem;
 ProfileTable.TableRow = TableRowItem;
+ProfileTable.TableDetailLoaderItem = TableDetailLoaderItem;
 
 export default ProfileTable;

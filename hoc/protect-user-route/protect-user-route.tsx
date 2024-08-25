@@ -28,16 +28,19 @@ const ProtectUserRoute = <P extends object>(
     );
     const role = useSelector((state: AppRootState) => state.auth.role);
 
+
     useEffect(() => {
+      // //console.log({ access_token, role });
       if (!access_token) {
         return redirect("/login");
       }
+
       if (
-        role?.toLowerCase() !== RoleEnum.USER.toLowerCase() &&
-        role?.toLowerCase() === RoleEnum.TRANSACTION_PARTY.toLowerCase()
+        role?.toLowerCase() !== RoleEnum.END_USER.toLowerCase() &&
+        role?.toLowerCase() === RoleEnum.SERVICE_PROVIDER.toLowerCase()
       ) {
         return redirect(`${expectedRedirectUrl}`);
-      } else if (role?.toLowerCase() !== RoleEnum.USER.toLowerCase()) {
+      } else if (role?.toLowerCase() !== RoleEnum.END_USER.toLowerCase()) {
         return redirect("/");
       }
     }, [access_token, role]);

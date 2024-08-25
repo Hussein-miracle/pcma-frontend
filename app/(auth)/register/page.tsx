@@ -23,8 +23,11 @@ import { ChevronDownIcon, CheckIcon } from "@/components/icons";
 import { USER_LOGIN_TYPES } from "@/lib/constants";
 import { cn, handleErrorGlobal, sleep, successToast } from "@/lib/utils";
 import { registrationSchema } from "@/lib/validations";
-import {InferredRegistrationForm } from "@/lib/types";
-import { usePostServiceProviderRegistration, usePostIndividualRegistration } from "@/lib/hooks/api/mutations";
+import { InferredRegistrationForm } from "@/lib/types";
+import {
+  usePostServiceProviderRegistration,
+  usePostIndividualRegistration,
+} from "@/lib/hooks/api/mutations";
 import useToastCustom from "@/lib/hooks/client/use-toast-custom";
 
 const Register = () => {
@@ -39,77 +42,82 @@ const Register = () => {
     watch,
   } = useForm<InferredRegistrationForm>({
     defaultValues: {
-      registrationType: USER_LOGIN_TYPES[0],
+      registration_type: USER_LOGIN_TYPES[0],
       email: "",
       password: "",
-      confirmPassword: "",
-      lastName: "",
-      firstName: "",
-      companyName: "",
-      fullName: "",
-      companyAddress: "",
-      phoneNumber: "",
-      registrationNumber: "",
+      confirm_password: "",
+      last_name: "",
+      first_name: "",
+      company_name: "",
+      // full_name: "",
+      company_address: "",
+      phone_number: "",
+      registration_number: "",
     },
     resolver: zodResolver(registrationSchema),
     mode: "all",
     reValidateMode: "onChange",
   });
-  
-  const registrationType = watch("registrationType");
 
-  const {isPending:isPendingServiceProvider , mutateAsync:registerServiceProvider} = usePostServiceProviderRegistration();
+  const registrationType = watch("registration_type");
 
-  const {isPending:isPendingIndividual , mutateAsync:registerIndividual} = usePostIndividualRegistration();
+  const {
+    isPending: isPendingServiceProvider,
+    mutateAsync: registerServiceProvider,
+  } = usePostServiceProviderRegistration();
 
+  const { isPending: isPendingIndividual, mutateAsync: registerIndividual } =
+    usePostIndividualRegistration();
 
   // successToast("Registration Successful")
   const handleRegister = async (values: InferredRegistrationForm) => {
-    // console.log({ registerValues: values });
+    // //console.log({ registerValues: values });
 
     try {
       if (registrationType.value === "individual") {
-       const individualResponse =  await registerIndividual({
+        const individualResponse = await registerIndividual({
           email: values.email,
           password: values.password,
-          confirmPassword: values.confirmPassword,
-          firstName: values.firstName!,
-          lastName: values.lastName!,
+          confirm_password: values.confirm_password,
+          first_name: values.first_name!,
+          last_name: values.last_name!,
         });
 
-        // console.log({individualResponse})
+        // //console.log({individualResponse})
 
-        successToast(individualResponse?.message ?? "Registration Successful")
+        successToast(individualResponse?.message ?? "Registration Successful");
         await sleep(3000);
-        successToast("You're being redirected to login.")
+        successToast("You're being redirected to login.");
         await sleep(2000);
-        router.push('/login?loginType=user')
-      
+        router.push("/login?loginType=user");
       } else {
         const spResponse = await registerServiceProvider({
           email: values.email,
           password: values.password,
-          confirmPassword: values.confirmPassword,
-          // firstName: values.firstName,
-          // lastName: values.lastName,
-          fullName:values.fullName!,
-          companyName:values.companyName!,
-          companyAddress:values.companyAddress!,
-          phoneNumber:values.phoneNumber!,
-          registrationNumber:values.registrationNumber!
+          confirm_password: values.confirm_password,
+          first_name: values.first_name!,
+          last_name: values.last_name!,
+          // full_name: values.full_name!,
+          company_name: values.company_name!,
+          company_address: values.company_address!,
+          phone_number: values.phone_number!,
+          registration_number: values.registration_number!,
         });
 
-        // console.log({spResponse})
-        successToast(spResponse?.message ?? "Registration Successful")
-        await sleep(3000);
-        successToast("You're being redirected to login.")
-        await sleep(2000);
-        router.push('/login?loginType=service-provider')
+        // //console.log({spResponse})
+        if(!!spResponse){
+
+          successToast(spResponse?.message ?? "Registration Successful");
+          await sleep(3000);
+          successToast("You're being redirected to login.");
+          await sleep(2000);
+          router.push("/login?loginType=service-provider");
+        }
       }
-    } catch (error:any) {
+    } catch (error: any) {
       const errorMsg = error?.response?.data?.message ?? "An error occurred";
-      // console.log({errorMsg})
-      handleErrorGlobal(errorMsg)
+      // //console.log({errorMsg})
+      handleErrorGlobal(errorMsg);
     }
   };
 
@@ -140,17 +148,17 @@ const Register = () => {
               </label>
 
               <Controller
-                name="registrationType"
+                name="registration_type"
                 control={control}
                 render={({ field: { value }, fieldState: { error } }) => {
-                  // console.log({ field, fieldState });
+                  // //console.log({ field, fieldState });
                   return (
                     <Listbox
                       as={"div"}
                       role="select"
                       value={value}
                       onChange={(currentValue) => {
-                        setValue("registrationType", currentValue);
+                        setValue("registration_type", currentValue);
                       }}
                     >
                       <div className="w-full relative z-10">
@@ -190,35 +198,39 @@ const Register = () => {
                             {USER_LOGIN_TYPES.map((loginType, loginTypeIdx) => (
                               <ListboxOption
                                 key={loginTypeIdx}
-                                className={({ selectedOption }) =>
-                                  `relative cursor-pointer select-none py-2 pl-10 pr-4 hover:bg-secondary-blue hover:text-white text-secondary-black bg-white ${
-                                    selectedOption
-                                      ? "bg-secondary-blue text-white"
-                                      : "text-secondary-black"
-                                  }`
-                                }
+                                className={cn(
+                                  `relative cursor-pointer select-none py-2 pl-10 pr-4  text-secondary-black bg-white`,
+                                  loginType.value === value?.value
+                                    ? "bg-secondary-blue text-white"
+                                    : "text-secondary-black"
+                                )}
                                 value={loginType}
                               >
-                                {({  selectedOption}) => (
-                                  <>
-                                    <span
-                                      className={`block truncate ${
-                                        selectedOption ? "font-medium" : "font-normal"
-                                      }`}
-                                    >
-                                      {loginType.label}
-                                    </span>
-                                    {selectedOption ? (
-                                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 stroke-white">
-                                        <CheckIcon
-                                          className="h-5 w-5"
-                                          stroke="#4169E1"
-                                          aria-hidden="true"
-                                        />
+                                {({ selectedOption ,...others}) =>{
+                                  //console.log({selectedOption,others})
+                                  return  (
+                                    <>
+                                      <span
+                                        className={`block truncate ${
+                                          loginType.value === value?.value
+                                            ? "font-medium"
+                                            : "font-normal"
+                                        }`}
+                                      >
+                                        {loginType.label}
                                       </span>
-                                    ) : null}
-                                  </>
-                                )}
+                                      {loginType.value === value?.value ? (
+                                       
+                                          <CheckIcon
+                                            className="h-6 w-6 ml-3  absolute top-2 left-0"
+                                            stroke="white"
+                                            aria-hidden="true"
+                                          />
+                                        
+                                      ) : null}
+                                    </>
+                                  )
+                                }}
                               </ListboxOption>
                             ))}
                           </ListboxOptions>
@@ -250,10 +262,10 @@ const Register = () => {
               }}
             />
 
-            {registrationType.value === "individual" && (
+            {/* {registrationType.value === "individual" && ( */}
               <>
                 <Controller
-                  name="firstName"
+                  name="first_name"
                   control={control}
                   render={({
                     field: { onChange, value, onBlur },
@@ -262,7 +274,7 @@ const Register = () => {
                     return (
                       <TextInput
                         onBlur={onBlur}
-                        fieldId="firstName"
+                        fieldId="first_name"
                         fieldName="First Name"
                         value={value}
                         onChange={onChange}
@@ -272,7 +284,7 @@ const Register = () => {
                   }}
                 />
                 <Controller
-                  name="lastName"
+                  name="last_name"
                   control={control}
                   render={({
                     field: { onChange, value, onBlur },
@@ -281,7 +293,7 @@ const Register = () => {
                     return (
                       <TextInput
                         onBlur={onBlur}
-                        fieldId="lastName"
+                        fieldId="last_name"
                         fieldName="Last Name"
                         value={value}
                         onChange={onChange}
@@ -291,105 +303,105 @@ const Register = () => {
                   }}
                 />
               </>
-            )}
+            {/* )} */}
             {registrationType.value !== "individual" && (
               <>
-              <Controller
-                name="fullName"
-                control={control}
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => {
-                  return (
-                    <TextInput
-                      onBlur={onBlur}
-                      fieldId="fullName"
-                      fieldName="Full Name"
-                      value={value}
-                      onChange={onChange}
-                      error={error?.message ?? ""}
-                    />
-                  );
-                }}
-              />
-              <Controller
-                name="companyName"
-                control={control}
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => {
-                  return (
-                    <TextInput
-                      onBlur={onBlur}
-                      fieldId="companyName"
-                      fieldName="Company Name"
-                      value={value}
-                      onChange={onChange}
-                      error={error?.message ?? ""}
-                    />
-                  );
-                }}
-              />
-              <Controller
-                name="companyAddress"
-                control={control}
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => {
-                  return (
-                    <TextInput
-                      onBlur={onBlur}
-                      fieldId="companyAddress"
-                      fieldName="Company Address"
-                      value={value}
-                      onChange={onChange}
-                      error={error?.message ?? ""}
-                    />
-                  );
-                }}
-              />
-              <Controller
-                name="registrationNumber"
-                control={control}
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => {
-                  return (
-                    <TextInput
-                      onBlur={onBlur}
-                      fieldId="registrationNumber"
-                      fieldName="Registration Number"
-                      value={value}
-                      onChange={onChange}
-                      error={error?.message ?? ""}
-                    />
-                  );
-                }}
-              />
-              <Controller
-                name="phoneNumber"
-                control={control}
-                render={({
-                  field: { onChange, value, onBlur },
-                  fieldState: { error },
-                }) => {
-                  return (
-                    <TextInput
-                      onBlur={onBlur}
-                      fieldId="phoneNumber"
-                      fieldName="Phone Number"
-                      value={value}
-                      onChange={onChange}
-                      error={error?.message ?? ""}
-                    />
-                  );
-                }}
-              />
-                </>
+                {/* <Controller
+                  name="full_name"
+                  control={control}
+                  render={({
+                    field: { onChange, value, onBlur },
+                    fieldState: { error },
+                  }) => {
+                    return (
+                      <TextInput
+                        onBlur={onBlur}
+                        fieldId="full_name"
+                        fieldName="Full Name"
+                        value={value}
+                        onChange={onChange}
+                        error={error?.message ?? ""}
+                      />
+                    );
+                  }}
+                /> */}
+                <Controller
+                  name="company_name"
+                  control={control}
+                  render={({
+                    field: { onChange, value, onBlur },
+                    fieldState: { error },
+                  }) => {
+                    return (
+                      <TextInput
+                        onBlur={onBlur}
+                        fieldId="company_name"
+                        fieldName="Company Name"
+                        value={value}
+                        onChange={onChange}
+                        error={error?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  name="company_address"
+                  control={control}
+                  render={({
+                    field: { onChange, value, onBlur },
+                    fieldState: { error },
+                  }) => {
+                    return (
+                      <TextInput
+                        onBlur={onBlur}
+                        fieldId="company_address"
+                        fieldName="Company Address"
+                        value={value}
+                        onChange={onChange}
+                        error={error?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  name="registration_number"
+                  control={control}
+                  render={({
+                    field: { onChange, value, onBlur },
+                    fieldState: { error },
+                  }) => {
+                    return (
+                      <TextInput
+                        onBlur={onBlur}
+                        fieldId="registration_number"
+                        fieldName="Registration Number"
+                        value={value}
+                        onChange={onChange}
+                        error={error?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  name="phone_number"
+                  control={control}
+                  render={({
+                    field: { onChange, value, onBlur },
+                    fieldState: { error },
+                  }) => {
+                    return (
+                      <TextInput
+                        onBlur={onBlur}
+                        fieldId="phone_number"
+                        fieldName="Phone Number"
+                        value={value}
+                        onChange={onChange}
+                        error={error?.message ?? ""}
+                      />
+                    );
+                  }}
+                />
+              </>
             )}
             <Controller
               name="password"
@@ -413,7 +425,7 @@ const Register = () => {
             />
 
             <Controller
-              name="confirmPassword"
+              name="confirm_password"
               control={control}
               render={({
                 field: { onChange, value, onBlur },
@@ -422,7 +434,7 @@ const Register = () => {
                 return (
                   <TextInput
                     onBlur={onBlur}
-                    fieldId="confirmPassword"
+                    fieldId="confirm_password"
                     fieldName="Confirm Password"
                     secureTextEntry
                     value={value}
@@ -434,8 +446,17 @@ const Register = () => {
             />
           </FormContentContainer>
 
-          <PrimaryButton variant="secondary" className="w-full" type="submit" disabled={isPendingIndividual || isPendingServiceProvider}>
-            {(isPendingIndividual || isPendingServiceProvider) ? <ButtonLoader/>  : <span>Create&nbsp;Account</span>}
+          <PrimaryButton
+            variant="secondary"
+            className="w-full"
+            type="submit"
+            disabled={isPendingIndividual || isPendingServiceProvider}
+          >
+            {isPendingIndividual || isPendingServiceProvider ? (
+              <ButtonLoader />
+            ) : (
+              <span>Create&nbsp;Account</span>
+            )}
           </PrimaryButton>
         </form>
       </main>

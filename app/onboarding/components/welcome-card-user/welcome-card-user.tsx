@@ -1,10 +1,32 @@
+"use client";
 import PrimaryButton from "@/components/primary-button/primary-button";
-import { Role } from "@/lib/types";
+import { useAppRouter } from "@/lib/hooks/client/use-app-router";
+import { AppRootState } from "@/rtk/app/store";
 import React from "react";
+import { useSelector } from "react-redux";
 
 interface WelcomeCardUserProps {}
 
 const WelcomeCardUser = (props: WelcomeCardUserProps) => {
+  const basicPiiSaved = useSelector((state:AppRootState) => state.individual.basic_pii_saved);
+  const personalPiiSaved = useSelector((state:AppRootState) => state.individual.personal_pii_saved);
+  const router = useAppRouter();
+
+
+  const handleProceed = () => {
+    if(!basicPiiSaved){
+      router.replace("/onboarding/user/basic-pii");
+      return;
+    }
+
+
+    if(!personalPiiSaved){
+      router.replace("/onboarding/user/personal-pii");
+      return;
+    }
+  }
+
+
   return (
     <main className="border border-grey-30 border-solid py-8  h-fit px-[2.625rem] bg-white mx-auto w-full max-w-[31.625rem] flex flex-col items-center gap-8 rounded-xl">
       <div className="flex flex-col items-center gap-2">
@@ -26,7 +48,7 @@ const WelcomeCardUser = (props: WelcomeCardUserProps) => {
         Let’s ensure your data privacy together!
       </p>
 
-      <PrimaryButton variant="secondary">Proceed</PrimaryButton>
+      <PrimaryButton variant="secondary" onClick={handleProceed}>Proceed</PrimaryButton>
     </main>
   );
 };

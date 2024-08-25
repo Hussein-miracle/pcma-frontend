@@ -30,7 +30,7 @@ const Footer = () => {
   const router = useRouter();
   // const px = pxToRem(491);
 
-  // console.log({px})
+  // //console.log({px})
 
   const { control, handleSubmit, watch, setValue } = useForm<ContactForm>({
     defaultValues: {
@@ -44,7 +44,7 @@ const Footer = () => {
   const formValues = watch();
 
   const handleSubmitContactDetails = (data: ContactForm) => {
-    console.log({ data });
+    //console.log({ data });
   };
 
   return (
@@ -183,7 +183,7 @@ const Footer = () => {
                     value={formValues.where}
                     onChange={(e) => {
                       const where = e.target.value;
-                      // console.log(e.target.value);
+                      // //console.log(e.target.value);
                       setValue("where", where);
                     }}
                     className={cn(

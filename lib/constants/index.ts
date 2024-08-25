@@ -6,12 +6,12 @@ export enum DataAccessEnum{
   EMAIL = 'email',
   OTHERS = 'others',
   LOCATION = 'location',
-  CONTACTS = 'contacts'    
+  CONTACT = 'contact'    
 }
 
 export enum RoleEnum{
-  USER = "USER",
-  TRANSACTION_PARTY = "TRANSACTION_PARTY", 
+  END_USER = "END_USER",
+   SERVICE_PROVIDER = "SERVICE_PROVIDER", 
 }
 
 export enum ApplicationFlowEnum {

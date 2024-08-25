@@ -86,11 +86,11 @@ export default function Home() {
   const role = useSelector((state:AppRootState) => state.auth.role);
   const isMobile = useMedia("(max-width:640px)");
   // const pixelVal = pxToRem(17);
-  // console.log("pixelVal",pixelVal);
+  // //console.log("pixelVal",pixelVal);
 
-  //console.log({ isMobile });
+  ////console.log({ isMobile });
 
-  console.log({roleHome:role})
+  //console.log({roleHome:role})
   return (
     <main className="flex sm:min-h-screen flex-col items-center justify-between  bg-neutral-white w-full h-full">
       {/* FIRST  SECTION */}
