@@ -89,11 +89,13 @@ export const useGetRequestDetailById = (requestId:string) => {
       queryFn: async ():Promise<ServiceProviderApplicationResponse> => {
         return axiosInstance.get(`/tp/requests/${requestId}/`)
       },
-      enabled: !!requestId   
+      enabled: !!requestId ,
+      // 2 minutes
+      staleTime:2 * 60 * 1000,  
    })
 
 
-   if(response?.error){
+   if(response?.isError){
       handleErrorGlobal('',response?.error);
    }
 

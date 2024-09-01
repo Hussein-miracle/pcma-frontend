@@ -10,7 +10,9 @@ import { isAxiosError } from "axios";
 
 
 
-
+export const formatSnakeCaseString = (str: string) => {
+  return str.replace(/_/g, ' ');
+}
 
 export const montserrat = Montserrat({ weight: '400', subsets: ['latin'] })
 export const plusJakartaSans = Plus_Jakarta_Sans({
