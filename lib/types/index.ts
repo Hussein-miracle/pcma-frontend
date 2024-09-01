@@ -241,7 +241,19 @@ export interface ServiceProviderApplicationsResponse extends ApiResponse {
   data: Array<Application>;
 }
 export interface ServiceProviderApplicationResponse extends ApiResponse {
-  data: ApplicationDetails;
+  basic_pii:{
+    email: string;
+    first_name: string;
+    last_name: string;
+  },
+  sensitive_pii:{
+    date_of_birth: string;
+    phone_number: string;
+    home_address: string;
+    country: string;
+    occupation: string;
+  },
+  request:Partial<Activity>;
 }
 
 export interface IndividualOverviewResponse extends ApiResponse {

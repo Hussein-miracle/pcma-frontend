@@ -23,7 +23,7 @@ interface ContactForm {
   where: string;
   name: string;
   email: string;
-  phoneNumber: string;
+  phone_number: string;
 }
 
 const Footer = () => {
@@ -37,7 +37,7 @@ const Footer = () => {
       where: "",
       name: "",
       email: "",
-      phoneNumber: "",
+      phone_number: "",
     },
   });
 
@@ -63,16 +63,16 @@ const Footer = () => {
           </div>
 
           <div className="flex flex-col gap-12 items-start mt-12">
-            <div className="flex items-start gap-6">
+            {/* <div className="flex items-start gap-6">
               <PCMAPhoneCallIcon className=" w-6 h-6 min-h-6 min-w-6" />
               <span className=" text-base text-secondary-black font-normal">
                 ⁠+2348022904983
               </span>
-            </div>
+            </div> */}
             <div className="flex items-start gap-4">
               <PCMAEmailIcon className=" w-6 h-6 min-h-6 min-w-6" />
               <span className=" text-base text-secondary-black font-normal">
-                Tolasogbesan@ieee.org
+              tola@pcma.365data.ng
               </span>
             </div>
             <div className="flex items-start gap-4">
@@ -144,7 +144,7 @@ const Footer = () => {
               />
               <Controller
                 control={control}
-                name="phoneNumber"
+                name="phone_number"
                 render={({
                   field: { ref, ...fields },
                   fieldState: { error },
@@ -195,10 +195,10 @@ const Footer = () => {
                     )}
                   >
                     <option defaultValue={""} disabled></option>
-                    <option value="active">Active</option>
-                    <option value="paused">Paused</option>
-                    <option value="delayed">Delayed</option>
-                    <option value="canceled">Canceled</option>
+                    <option value="linkedin" className=" capitalize">linkedin</option>
+                    <option value="facebook" className=" capitalize">facebook</option>
+                    <option value="whatsapp" className=" capitalize">whatsapp</option>
+                    {/* <option value="canceled">Canceled</option> */}
                   </Select>
 
                   <ChevronDownIcon

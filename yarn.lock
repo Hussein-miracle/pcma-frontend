@@ -1271,6 +1271,11 @@ detect-node-es@^1.1.0:
   resolved "https://registry.yarnpkg.com/detect-node-es/-/detect-node-es-1.1.0.tgz#163acdf643330caa0b4cd7c21e7ee7755d6fa493"
   integrity sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==
 
+devtools-detect@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/devtools-detect/-/devtools-detect-4.0.2.tgz#a115c50e0da3c746fbee8f132aabedcd7661bd8a"
+  integrity sha512-LfvHOc/a72gt4OvHOGFK51VmOeTM9Q5uuEeKX+k5oVWZM3qDoLBFVbdhjk7zXX54FuQ370L7OpmxQbNStT+7Gw==
+
 didyoumean@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/didyoumean/-/didyoumean-1.2.2.tgz#989346ffe9e839b4555ecf5666edea0d3e8ad037"

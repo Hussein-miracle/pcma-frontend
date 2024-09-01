@@ -37,8 +37,9 @@ const ApplicationDetailsPage = ({
 
   //console.log({ applicationId });
 
-  const { data: applicationDetails, isLoading: isLoadingApplicationDetail } =
-    useGetApplicationDetailById(applicationId);
+  // const { data: applicationDetails, isLoading: isLoadingApplicationDetail } =
+    // useGetApplicationDetailById(applicationId);
+    const applicationDetails:any = null;
 
   const {mutateAsync:patchApp,isPending:isPatchingApp} = usePatchApplication();
 
@@ -64,18 +65,18 @@ const ApplicationDetailsPage = ({
   const formValues = watch();
   // //console.log({ formValues });
 
-  useEffect(() => {
-    if (!!applicationDetails?.data) {
-      for (const key in applicationDetails?.data) {
-        if (key in formValues) {
-          setValue(
-            key as keyof typeof formValues,
-            applicationDetails?.data[key as keyof typeof formValues]
-          );
-        }
-      }
-    }
-  }, [applicationDetails?.data]);
+  // useEffect(() => {
+  //   if (!!applicationDetails?.data) {
+  //     for (const key in applicationDetails?.data) {
+  //       if (key in formValues) {
+  //         setValue(
+  //           key as keyof typeof formValues,
+  //           applicationDetails?.data[key as keyof typeof formValues]
+  //         );
+  //       }
+  //     }
+  //   }
+  // }, [applicationDetails?.data]);
 
   const handleAddAccessType = (access_type: DataAccessEnum) => {
     const dataToAccess =
@@ -141,7 +142,7 @@ const ApplicationDetailsPage = ({
                 <h2 className=" text-secondary-black font-bold text-xl">
                   {formValues?.name}
                 </h2>
-                <p className=" font-normal text-sm/5 text-grey-90">
+                {/* <p className=" font-normal text-sm/5 text-grey-90">
                   {!!applicationDetails?.data?.createdAt!
                     ? formatDate(
                         new Date(
@@ -150,7 +151,7 @@ const ApplicationDetailsPage = ({
                         "do, MMM yyyy"
                       )
                     : "N/A"}
-                </p>
+                </p> */}
               </div>
             </div>
             <div className="flex items-center justify-center gap-2 rounded-xl bg-[#F7F9FD] py-1 px-2 text-sm/5 font-semibold capitalize text-grey-90 border border-[#D7E1F4]">
